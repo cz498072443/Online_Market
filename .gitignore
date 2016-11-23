@@ -1,0 +1,9 @@
+
+# 忽略工程文件
+.idea/*
+# 文档
+doc/*
+components/*
+logs/*
+.DS_Store
+
