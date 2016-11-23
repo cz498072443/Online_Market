@@ -12,6 +12,7 @@ var routers = require('./routers/index');
 var multer = require('multer');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
+var logger = require('morgan');
 
 app.engine('.html',template.__express);
 app.set('view engine','html');
@@ -33,6 +34,9 @@ app.use(session({
 }))
 
 app.use(express.static(path.join(__dirname,'public')));
+
+app.use(logger('dev'));
+
 app.use('/',routers);
 
 module.exports = app;
