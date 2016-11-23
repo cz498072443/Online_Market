@@ -15,5 +15,20 @@
   "bugs": {
     "url": "https://github.com/cz498072443/Online_Market/issues"
   },
-  "homepage": "https://github.com/cz498072443/Online_Market#readme"
+  "homepage": "https://github.com/cz498072443/Online_Market#readme",
+  "dependencies": {
+    "art-template": "~3.0.3",
+    "body-parser": "^1.0.2",
+    "cookie-parser": "~1.0.1",
+    "eventproxy": "~0.3.1",
+    "express": "~4.2.0",
+    "moment": "~2.8.3",
+    "mongoose": "~3.8.15",
+    "multer": "^0.1.6",
+    "path": "^0.12.7",
+    "request": "~2.40.0"
+  },
+  "devDependencies": {
+    "express-session": "^1.14.1"
+  }
 }
