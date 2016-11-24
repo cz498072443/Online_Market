@@ -26,9 +26,15 @@
 .search_bar .search_babel{
     margin-top: 2px;
 }
-
 .search_bar .search_babel span{
     text-align: center;
     color: orange;
-
+}
+.main.container{
+    width: 800px;
+    max-width: 100%;
+    position: relative;
+    height: 500px;
+    margin: 0px auto;
+    background-color: white;
 }
