@@ -1,0 +1,80 @@
+{{include 'headers'}}
+
+<style>
+    body {
+
+    }
+    body > .grid {
+        height: 100%;
+    }
+    .image {
+        margin-top: -100px;
+    }
+    .column {
+        max-width: 450px;
+        min-width: 320px;
+    }
+
+</style>
+<div class="ui middle aligned center aligned grid">
+    <div class="four wide column">
+        <h1 class="ui orange header" style="font-size: 65px">
+            <div class="content">
+                Sign Up
+            </div>
+        </h1>
+        <form class="ui large form">
+            <div class="field">
+                <div class="ui icon input">
+                    <i class="user icon"></i>
+                    <input type="text" name="email" placeholder="UserName">
+                </div>
+            </div>
+            <div class="field">
+                <div class="ui icon input">
+                    <i class="lock icon"></i>
+                    <input type="password" name="password" placeholder="Password">
+                </div>
+            </div>
+            <div class="ui fluid large buttons">
+                <div class="ui button orange">确认</div>
+                <div class="or"></div>
+                <a href="/signUp" class="ui button red">注册</a>
+            </div>
+
+            <div class="ui error message"></div>
+        </form>
+    </div>
+</div>
+
+<script src="/tools/jquery-2.0.3.min.js"></script>
+<script src="/tools/semanticUI/semantic.min.js"></script>
+<script src="/tools/template-native.js"></script>
+<script src="/tools/MD5.js"></script>
+
+<script>
+    $(document).ready(function(){
+        $(document).on('click','#conformLogin',function(){
+            var username = $.md5(($("#username").val()));
+            var password = $.md5(($("#password").val()));
+            var remember = $("#remember").is(":checked");
+
+            if(username!=undefined && password!=undefined){
+                $.ajax({
+                    url:"/",
+                    type:"POST",
+                    data:{
+                        username: username,
+                        password: password,
+                        remember: remember
+                    },
+                    success:function(){
+                        window.location.href="/analysis/gameinfo"
+                    }
+                })
+            }
+
+
+        })
+    })
+</script>

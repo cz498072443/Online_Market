@@ -1,6 +1,7 @@
 {{include 'headers'}}
 
 {{include 'nav'}}
+<link rel="stylesheet" type="text/css" href="/tools/unslider/css/unslider.css">
 
 <div class="pusher">
     <div class="full height">
@@ -23,40 +24,45 @@
 
             </div>
         </div>
-        <div class="main container"></div>
+        <div class="main container">
+            <div class="ui grid centered">
+                <div class="banner">
+                    <ul>
+                        <li style=" background-image: url('/upload/index/slider_banner/img1.jpg');"></li>
+                        <li style=" background-image: url('/upload/index/slider_banner/img2.jpg');"></li>
+                        <li style="background-image: url('/upload/index/slider_banner/img3.jpg');"></li>
+                        <li style="background-image: url('/upload/index/slider_banner/img4.jpg');"></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 <script src="/tools/jquery-2.0.3.min.js"></script>
-<!--<script src="/tools/uikit/2.24.3/js/uikit.js"></script>-->
-<script src="tools/semanticUI/semantic.min.js"></script>
+<script src="/tools/semanticUI/semantic.min.js"></script>
+<script src="/tools/unslider/js/unslider.js"></script>
 <script src="/tools/template-native.js"></script>
-<script src="/tools/MD5.js"></script>
 
 <script>
     $(document).ready(function(){
-        $(document).on('click','#conformLogin',function(){
-            var username = $.md5(($("#username").val()));
-            var password = $.md5(($("#password").val()));
-            var remember = $("#remember").is(":checked");
 
-            if(username!=undefined && password!=undefined){
-                $.ajax({
-                    url:"/",
-                    type:"POST",
-                    data:{
-                        username: username,
-                        password: password,
-                        remember: remember
-                    },
-                    success:function(){
-                        window.location.href="/analysis/gameinfo"
-                    }
-                })
-            }
-
-
-        })
+        $('.banner').unslider({
+            speed: 500,               //  切换的速度
+            delay: 3000,              //  切换的速度
+            keys: true,               //  是否启用左右按钮控制slider切换
+            fluid: false,              // 是否每次在容器大小改变的时候，修正slider的大小
+            pause:true,                 //鼠标以上去是否暂停播放
+            starting:function(){        //每次开始切换时回叫方法
+                console.log("starting");
+            },
+            complete:function(){         //每次完成切换时回叫方法
+                console.log("complete");
+            },
+            arrows: false,               //  是否显示左右箭头，用于slider切换
+            dots: true                  //  是否显示白色圆点，用于slider切换
+        });
     })
 </script>
+
 
