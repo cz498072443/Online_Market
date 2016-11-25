@@ -14,7 +14,8 @@ var signUp = require("./signUp");
 
 router.get('/',middleware.checkAccess,function(req,res){
     if(req.session.hasLogin){
-        res.render('index.html',{ user:"Admin"});
+        var loc_user = req.session.user;
+        res.render('index.html',{ user:loc_user.username});
     }else{
         res.render('index.html',{ user:"未登录"});
     }

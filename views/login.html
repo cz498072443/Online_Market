@@ -37,12 +37,13 @@
                 </div>
             </div>
             <div class="ui fluid large buttons">
-                <div class="ui button orange">登陆</div>
+                <div class="ui button orange" id="Login">登陆</div>
                 <div class="or"></div>
-                <a href="/signUp" class="ui button red">注册</a>
+                <a href="/signUp" class="ui button red" id="signUp">注册</a>
             </div>
-
-            <div class="ui error message"></div>
+            <div class="field">
+                <h4 class="ui red header"><br>{{error}}</h4>
+            </div>
         </form>
     </div>
 </div>
@@ -54,22 +55,28 @@
 
 <script>
 $(document).ready(function(){
-    $(document).on('click','#conformLogin',function(){
-        var username = $.md5(($("#username").val()));
-        var password = $.md5(($("#password").val()));
-        var remember = $("#remember").is(":checked");
+    $(document).on('click','#Login',function(){
+        var thisID = $(this).attr("id");
+
+//        var username = $.md5(($("#username").val()));
+//        var password = $.md5(($("#password").val()));
+
+        var username = $("input[name='username']").val();
+        var password = $("input[name='password']").val();
 
         if(username!=undefined && password!=undefined){
             $.ajax({
-                url:"/",
+                url:"/login",
                 type:"POST",
                 data:{
                     username: username,
                     password: password,
-                    remember: remember
                 },
                 success:function(){
-                    window.location.href="/analysis/gameinfo"
+                    window.location.href="/"
+                },
+                error:function(){
+                    window.location.href="/login"
                 }
             })
         }

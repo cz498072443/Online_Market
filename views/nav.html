@@ -6,8 +6,14 @@
         <a class="item">
             <i class="user icon"></i> {{user}}
         </a>
+        {{if user=="未登录"}}
         <a class="ui item" href="/login">
             登陆/注册
         </a>
+        {{else}}
+        <a class="ui item" href="/lose">
+            注销
+        </a>
+        {{/if}}
     </div>
 </div>
