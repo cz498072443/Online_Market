@@ -12,19 +12,24 @@ var middleware = require('./../middleware');
 var login = require("./login");
 var signUp = require("./signUp");
 
-router.get('/',function(req,res){
-    var error = req.session.error;
-    req.session.error = null;
-    res.render('index.html',{ error: error });
+router.get('/',middleware.checkAccess,function(req,res){
+    if(req.session.hasLogin){
+        res.render('index.html',{ user:"Admin"});
+    }else{
+        res.render('index.html',{ user:"未登录"});
+    }
 });
 
+//登陆控制
 router.use('/login',login);
 router.use('/signUp',signUp);
-
-//router.use(middleware.checkLogin);
-//
-//router.get('/accessin',function(req,res){
-//    res.render("accessin.html");
-//});
+router.get('/lose',function(req,res){
+    req.session.destroy(function(){
+        res.redirect('/login');
+    })
+});
+router.get('/logout',function(req,res){
+    res.render('index.html',{user:"未登录"})
+});
 
 module.exports = router;

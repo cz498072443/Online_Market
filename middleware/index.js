@@ -9,24 +9,30 @@ var admin = {
 
 
 module.exports={
-    checkLogin:function(req,res,next){
-        if(req.session.access){
-            next();
+    checkAccess:function(req,res,next){
+        if(req.session.user){
+            User.findOne({userName: req.session.user.userName},function(err,user){
+                if(err){
+                    return next(err);
+                }
+                req.user = user;
+                res.locals.user = user;
+                if(user){
+                    req.session.hasLogin = true;
+                    next();
+                }else{
+                    res.redirect('/lose');
+                }
+            })
         }else {
-            req.session.error = "请先登录!";
-            if(req.session.loginWrong){
-                req.session.error = "账号密码错误!";
-                req.session.loginWrong = false;
-            }
-            res.redirect('/');
+            req.session.hasLogin = false;
+            next();
         }
     },
-    checkAccess:function(req,res,next){
-        if(req.session.access){
-            res.redirect('accessin')
-        }else {
-            next();
-        }
+    checkLogin:function(req,res,next){
+        User.findOne({userName: req.body.username},function(err,user){
+
+        })
     },
     checkUser:function(req,res,next){
         if(req.body.username == admin.username && req.body.password == admin.password){

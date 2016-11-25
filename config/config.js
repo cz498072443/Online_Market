@@ -3,8 +3,14 @@
  */
 
 var config = {
+
+    session_host: "127.0.0.1",
+    session_port: 27017,
+    session_db: "market",
+    session_maxage: 60000 * 60 * 24 * 7,    //session保存7天
+
     db:{
-        home: "mongodb://localhost/market" ////
+        market: "mongodb://localhost/market" //
     }
 };
 

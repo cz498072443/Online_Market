@@ -6,12 +6,14 @@ var path = require("path");
 var app = require("./config/server").app;
 var server = require("./config/server").server;
 var express = require("./config/server").express;
+var config = require("./config/config");
 var template = require("./common/artTemplate");
 var bodyParser = require("body-parser");
 var routers = require('./routers/index');
 var multer = require('multer');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
+var MongoStore = require("connect-mongo")(session);
 var logger = require('morgan');
 
 app.engine('.html',template.__express);
@@ -25,13 +27,19 @@ app.use(cookieParser());
 app.use(multer());
 
 app.use(session({
-    secret:'secret',
-    resave:false,
-    saveUninitialized:false,
+    secret:'onlineMarket',
+    store: new MongoStore({
+        host: config.session_host,
+        port: config.session_port,
+        db: config.session_db
+    }),
+    name:"market.uid",
+    resave:true,
+    saveUninitialized:true,
     cookie:{
-        maxAge:1000*60*60
+        maxAge:config.session_maxage
     }
-}))
+}));
 
 app.use(express.static(path.join(__dirname,'public')));
 

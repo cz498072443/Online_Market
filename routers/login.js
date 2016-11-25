@@ -4,7 +4,9 @@
 var express = require("express");
 var router = express.Router();
 
-router.post('/',function(req,res){
+var middleware = require('./../middleware');
+
+router.post('/',middleware.checkLogin,function(req,res){
     req.session.access = true;
     res.send(200);
 });
