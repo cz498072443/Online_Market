@@ -36,7 +36,7 @@ module.exports={
         }
     },
     checkLogin:function(req,res,next){
-        User.findOne({username: req.body.username},function(err,doc){
+        User.getOneByUsername(req.body.username,function(err,doc){
             console.log(doc);
 
             if(err){
@@ -60,6 +60,13 @@ module.exports={
         })
     },
     signUp:function (req, res, next) {
-        User.
+        User.createOne(req.body,function (err, doc) {
+            if(err){
+                req.session.error = "注册失败!";
+                res.send(400);
+            }else {
+                next();
+            }
+        })
     }
 }

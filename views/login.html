@@ -52,6 +52,10 @@
     <h1 class="ui text model_inner"></h1>
 </div>
 
+<div class="ui page inverted dimmer signUpSucceed">
+    <h1 class="ui header model_inner green">注册成功，请尝试登录！</h1>
+</div>
+
 <script src="/tools/jquery-2.0.3.min.js"></script>
 <script src="/tools/semanticUI/semantic.min.js"></script>
 <script src="/tools/template-native.js"></script>
@@ -59,9 +63,22 @@
 
 <script>
 $(document).ready(function(){
+
+    {{if error == "注册成功，请登录!"}}
+    $(".signUpSucceed").dimmer('show');
+    {{/if}}
+
+    $('.signUpSucceed').on('click',function () {
+        $(".signUpSucceed").dimmer('hide');
+        $(".withoutInput").dimmer('hide');
+    });
+
+    $('.withoutInput').on('click',function () {
+        $(".withoutInput").dimmer('hide');
+        $(".signUpSucceed").dimmer('hide');
+    });
+
     $(document).on('click','#Login',function(){
-
-
 //        var username = $.md5(($("#username").val()));
 //        var password = $.md5(($("#password").val()));
 
@@ -71,13 +88,18 @@ $(document).ready(function(){
         if(!username && !password){
             $(".withoutInput h1").html('<i class="ban icon"></i> 请输入用户名和密码!');
             $(".withoutInput").dimmer('show');
+            pageContr = true;
         } else if (username && !password){
             $(".withoutInput h1").html('<i class="ban icon"></i> 请输入密码!');
             $(".withoutInput").dimmer('show');
+            pageContr = true;
         } else if (!username && password){
             $(".withoutInput h1").html('<i class="ban icon"></i> 请输入用户名!');
             $(".withoutInput").dimmer('show');
+            pageContr = true;
         } else if (username && password){
+            $(".withoutInput").html('<div class="ui text loader">玩命加载中...</div>');
+            $(".withoutInput").dimmer('show');
             $.ajax({
                 url:"/login",
                 type:"POST",

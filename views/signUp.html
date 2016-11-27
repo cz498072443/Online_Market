@@ -53,6 +53,8 @@
     </div>
 </div>
 
+<div class="ui page inverted dimmer signUpMassage"></div>
+
 <script src="/tools/jquery-2.0.3.min.js"></script>
 <script src="/tools/semanticUI/semantic.min.js"></script>
 <script src="/tools/template-native.js"></script>
@@ -68,9 +70,19 @@
             var password_1 = $("input[name='password_1']").val();
             var password_2 = $("input[name='password_2']").val();
 
-            console.log(username+" "+password_1+" "+password_2)
+            $('.signUpMassage').on('click',function () {
+                $(".signUpMassage").dimmer('hide');
+            });
 
-            if(password_1 && password_2 && password_1 == password_2 && username){
+            if(!username || !password_1 || !password_2){
+                $(".signUpMassage").html('<h1 class="ui text model_inner"><i class="ban icon"></i> 请输入完整内容!</h1>');
+                $(".signUpMassage").dimmer('show');
+            } else if (password_1 !== password_2){
+                $(".signUpMassage").html('<h1 class="ui text model_inner"><i class="ban icon"></i> 两次输入的密码不一致!</h1>');
+                $(".signUpMassage").dimmer('show');
+            } else if(password_1 && password_2 && password_1 == password_2 && username){
+                $(".signUpMassage").html('<div class="ui text loader">玩命加载中...</div>');
+                $(".signUpMassage").dimmer('show');
                 $.ajax({
                     url:"/signUp",
                     type:"POST",
@@ -80,6 +92,9 @@
                     },
                     success:function(){
                         window.location.href="/login"
+                    },
+                    error:function () {
+                        window.location.href="/signUp"
                     }
                 })
             }

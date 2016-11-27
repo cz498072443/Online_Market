@@ -5,7 +5,10 @@
 var express = require("express");
 var router = express.Router();
 
+var middleware = require('./../middleware');
+
 router.post('/',middleware.signUp,function(req,res){
+    req.session.error = "注册成功，请登录!";
     res.send(200);
 });
 
