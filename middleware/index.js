@@ -24,7 +24,6 @@ module.exports={
                     res.locals.user = user;
                     if(user){
                         req.session.hasLogin = true;
-                        console.log("完成登记")
                         next();
                     }else{
                         res.redirect('/lose');
