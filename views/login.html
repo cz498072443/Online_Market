@@ -48,6 +48,10 @@
     </div>
 </div>
 
+<div class="ui page inverted dimmer withoutInput">
+    <h1 class="ui text model_inner"></h1>
+</div>
+
 <script src="/tools/jquery-2.0.3.min.js"></script>
 <script src="/tools/semanticUI/semantic.min.js"></script>
 <script src="/tools/template-native.js"></script>
@@ -56,7 +60,7 @@
 <script>
 $(document).ready(function(){
     $(document).on('click','#Login',function(){
-        var thisID = $(this).attr("id");
+
 
 //        var username = $.md5(($("#username").val()));
 //        var password = $.md5(($("#password").val()));
@@ -64,7 +68,16 @@ $(document).ready(function(){
         var username = $("input[name='username']").val();
         var password = $("input[name='password']").val();
 
-        if(username!=undefined && password!=undefined){
+        if(!username && !password){
+            $(".withoutInput h1").html('<i class="ban icon"></i> 请输入用户名和密码!');
+            $(".withoutInput").dimmer('show');
+        } else if (username && !password){
+            $(".withoutInput h1").html('<i class="ban icon"></i> 请输入密码!');
+            $(".withoutInput").dimmer('show');
+        } else if (!username && password){
+            $(".withoutInput h1").html('<i class="ban icon"></i> 请输入用户名!');
+            $(".withoutInput").dimmer('show');
+        } else if (username && password){
             $.ajax({
                 url:"/login",
                 type:"POST",
@@ -80,8 +93,6 @@ $(document).ready(function(){
                 }
             })
         }
-
-
     })
 })
 </script>

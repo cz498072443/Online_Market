@@ -27,7 +27,7 @@
             <div class="field">
                 <div class="ui icon input">
                     <i class="user icon"></i>
-                    <input type="text" name="email" placeholder="请输入用户名">
+                    <input type="text" name="username" placeholder="请输入用户名">
                 </div>
             </div>
             <div class="field">
@@ -43,9 +43,9 @@
                 </div>
             </div>
             <div class="ui fluid large buttons">
-                <div class="ui button green">确认</div>
+                <div class="ui button green" id="singUp">确认</div>
                 <div class="or"></div>
-                <a href="/signUp" class="ui button teal">返回</a>
+                <a href="/login" class="ui button teal">返回</a>
             </div>
 
             <div class="ui error message"></div>
@@ -60,22 +60,26 @@
 
 <script>
     $(document).ready(function(){
-        $(document).on('click','#conformLogin',function(){
-            var username = $.md5(($("#username").val()));
-            var password = $.md5(($("#password").val()));
-            var remember = $("#remember").is(":checked");
+        $(document).on('click','#singUp',function(){
+//            var username = $.md5(($("#username").val()));
+//            var password = $.md5(($("#password").val()));
 
-            if(username!=undefined && password!=undefined){
+            var username = $("input[name='username']").val();
+            var password_1 = $("input[name='password_1']").val();
+            var password_2 = $("input[name='password_2']").val();
+
+            console.log(username+" "+password_1+" "+password_2)
+
+            if(password_1 && password_2 && password_1 == password_2 && username){
                 $.ajax({
-                    url:"/",
+                    url:"/signUp",
                     type:"POST",
                     data:{
                         username: username,
-                        password: password,
-                        remember: remember
+                        password: password_1
                     },
                     success:function(){
-                        window.location.href="/analysis/gameinfo"
+                        window.location.href="/login"
                     }
                 })
             }

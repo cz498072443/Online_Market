@@ -2,7 +2,7 @@
  * Created by YUK on 16/10/13.
  */
 
-var User = require('./../models').User;
+var User = require('./../proxy').User;
 
 var admin = {
     username:"21232f297a57a5a743894a0e4a801fc3",
@@ -16,7 +16,7 @@ module.exports={
             next();
         }else{
             if(req.session.user){
-                User.findOne({username: req.session.user.username},function(err,user){
+                User.getOneByUsername(req.session.user.username,function(err,user){
                     if(err){
                         return next(err);
                     }
@@ -54,9 +54,12 @@ module.exports={
                 }
             }else{
                 console.log("用户错误");
-                req.session.error = "用户名错误!";
+                req.session.error = "不存在该用户名!";
                 res.send(400);
             }
         })
     },
+    signUp:function (req, res, next) {
+        User.
+    }
 }
