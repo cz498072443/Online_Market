@@ -26,14 +26,9 @@
                     <h1>添加商品</h1>
                     <script id="editor" type="text/plain" style="width:100%;height:500px;"></script>
                 </div>
-                <div id="btns">
-
-                    <div>
-                        <button onclick="getContent()">获得内容</button>
-                    </div>
-
-                </div>
-
+                <button class="ui green button" id="save">
+                    <i class="save icon"></i>保存
+                </button>
             </div>
         </div>
     </div>
@@ -46,17 +41,42 @@
 
 <script type="text/javascript">
 
-    //实例化编辑器
-    //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
-    var ue = UE.getEditor('editor');
 
-    function getContent() {
-        var arr = [];
-        arr.push("使用editor.getContent()方法可以获得编辑器的内容");
-        arr.push("内容为：");
-        arr.push(UE.getEditor('editor').getContent());
-        alert(arr.join("\n"));
-    }
+
+    $(document).ready(function(){
+        //实例化编辑器
+        //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
+        var ue = UE.getEditor('editor');
+
+        var goodsContent = "";
+
+        $("#save").on('click',function(){
+            var allContent = ""+ue.getContent();
+
+            var patt =/src=[\'\"]?([^\'\"]*)[\'\"]?/i;
+
+            var header_str = patt.exec(allContent)[0];
+            var s = header_str.split('"');
+            var header_src = s[1];
+            alert(header_src);
+
+        });
+
+
+
+//        $.ajax({
+//            url:"/addGoods",
+//            type:"POST",
+//            data:{
+//                name:"测试商品",
+//                type:"文具",
+//                content:ue.getContent()
+//            },
+//            success:function(data){
+//
+//            }
+//        })
+    })
 
 </script>
 
