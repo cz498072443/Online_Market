@@ -12,10 +12,12 @@ var middleware = require('./../middleware');
 var login = require("./login");
 var signUp = require("./signUp");
 
+var addGoods = require("./functions/addGoods");
+
 router.get('/',middleware.checkAccess,function(req,res){
     if(req.session.hasLogin){
         var loc_user = req.session.user;
-        res.render('index.html',{ user:loc_user.username});
+        res.render('index.html',{ user:loc_user.username,role:loc_user.role});
     }else{
         res.render('index.html',{ user:"未登录"});
     }
@@ -32,5 +34,10 @@ router.get('/lose',function(req,res){
 router.get('/logout',function(req,res){
     res.render('index.html',{user:"未登录"})
 });
+
+//功能
+
+router.get('/addGoods',addGoods);
+
 
 module.exports = router;

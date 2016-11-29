@@ -2,7 +2,6 @@
 
 <style>
     body {
-
     }
     body > .grid {
         height: 100%;
@@ -14,7 +13,6 @@
         max-width: 450px;
         min-width: 320px;
     }
-
 </style>
 <div class="ui middle aligned center aligned grid">
     <div class="four wide column">
@@ -65,15 +63,12 @@
         $(document).on('click','#singUp',function(){
 //            var username = $.md5(($("#username").val()));
 //            var password = $.md5(($("#password").val()));
-
             var username = $("input[name='username']").val();
             var password_1 = $("input[name='password_1']").val();
             var password_2 = $("input[name='password_2']").val();
-
             $('.signUpMassage').on('click',function () {
                 $(".signUpMassage").dimmer('hide');
             });
-
             if(!username || !password_1 || !password_2){
                 $(".signUpMassage").html('<h1 class="ui text model_inner"><i class="ban icon"></i> 请输入完整内容!</h1>');
                 $(".signUpMassage").dimmer('show');
@@ -98,8 +93,6 @@
                     }
                 })
             }
-
-
         })
     })
 </script>

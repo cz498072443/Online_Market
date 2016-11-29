@@ -7,7 +7,8 @@
         <a class="item">
             <i class="user icon"></i> {{user}}
         </a>
-        {{else}}
+
+        {{else if role == "User"}}
         <div class="ui floating dropdown item" tabindex="0">
             <i class="user icon"></i>
             <span class="text">{{user}}</span>
@@ -33,6 +34,60 @@
                 </div>
             </div>
         </div>
+
+        {{else if role == "Admin"}}
+        <div class="ui floating dropdown item" tabindex="0">
+            <i class="user icon"></i>
+            <span class="text">{{user}}</span>
+            <div class="menu" tabindex="-1">
+                <div class="header">
+                    操作
+                </div>
+                <div class="item">
+                    <div class="ui red empty circular label"></div>
+                    查看个人信息
+                </div>
+                <div class="item">
+                    <div class="ui blue empty circular label"></div>
+                    修改密码
+                </div>
+                <a class="item" href="/addGoods">
+                    <i class="add square icon"></i>上架商品
+                </a>
+                <div class="item">
+                    <div class="ui green empty circular label"></div>
+                    标签 D
+                </div>
+            </div>
+        </div>
+
+        {{else if role == "SuperAdmin"}}
+        <div class="ui floating dropdown item" tabindex="0">
+            <i class="user icon"></i>
+            <span class="text">{{user}}</span>
+            <div class="menu" tabindex="-1">
+                <div class="header">
+                    操作
+                </div>
+                <div class="item">
+                    <div class="ui red empty circular label"></div>
+                    查看个人信息
+                </div>
+                <div class="item">
+                    <div class="ui blue empty circular label"></div>
+                    修改密码
+                </div>
+                <div class="item">
+                    <div class="ui black empty circular label"></div>
+                    权限管理
+                </div>
+                <div class="item">
+                    <div class="ui green empty circular label"></div>
+                    上架商品
+                </div>
+            </div>
+        </div>
+
         {{/if}}
         {{if user=="未登录"}}
         <a class="ui item" href="/login">
