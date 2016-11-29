@@ -4,12 +4,6 @@
 
 var User = require('./../proxy').User;
 
-var admin = {
-    username:"21232f297a57a5a743894a0e4a801fc3",
-    password:"4f10fae53c1cf8556b16d6b061ddf295"
-};
-
-
 module.exports={
     checkAccess:function(req,res,next){
         if(req.session.hasLogin){

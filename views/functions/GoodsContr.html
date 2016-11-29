@@ -11,7 +11,7 @@
                         <h3>Hello {{user}}</h3>
                     </div>
                     <div class="blue column">
-                        <p>这是一个短行</p>
+                        <p>啊啊啊啊啊啊啊啊啊</p>
                     </div>
                     <div class="green column">
                         <p>这是一个长行，旁边有很多文本内容。</p>
@@ -35,9 +35,9 @@
 </div>
 
 <script src="/tools/template-native.js"></script>
-<script type="text/javascript" src="tools/ueditor/ueditor.config.js"></script>
-<script type="text/javascript" src="tools/ueditor/ueditor.all.min.js"></script>
-<script type="text/javascript" src="tools/ueditor/lang/zh-cn/zh-cn.js"></script>
+<script type="text/javascript" src="/tools/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="/tools/ueditor/ueditor.all.min.js"></script>
+<script type="text/javascript" src="/tools/ueditor/lang/zh-cn/zh-cn.js"></script>
 
 <script type="text/javascript">
 
@@ -50,32 +50,34 @@
 
         var goodsContent = "";
 
-        $("#save").on('click',function(){
-            var allContent = ""+ue.getContent();
-
+        //获取第一张图片路径
+        var GetImageSrc = function (str){
             var patt =/src=[\'\"]?([^\'\"]*)[\'\"]?/i;
-
-            var header_str = patt.exec(allContent)[0];
+            var header_str = patt.exec(str)[0];
             var s = header_str.split('"');
-            var header_src = s[1];
-            alert(header_src);
+            return s[1];
+        };
 
+        $("#save").on('click',function(){
+            var allContent = ue.getContent();
+
+            $.ajax({
+                url:"/GoodsContr/add",
+                type:"POST",
+                data:{
+                    name:"测试商品",
+                    type:"文具",
+                    content:ue.getContent(),
+                    headSrc:GetImageSrc(allContent),
+                    totalNum:20,
+                    resNum:20
+                },
+                success:function(data){
+                    alert("添加成功！")
+                }
+            })
         });
 
-
-
-//        $.ajax({
-//            url:"/addGoods",
-//            type:"POST",
-//            data:{
-//                name:"测试商品",
-//                type:"文具",
-//                content:ue.getContent()
-//            },
-//            success:function(data){
-//
-//            }
-//        })
     })
 
 </script>

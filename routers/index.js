@@ -12,7 +12,7 @@ var middleware = require('./../middleware');
 var login = require("./login");
 var signUp = require("./signUp");
 
-var addGoods = require("./functions/addGoods");
+var GoodsContr = require("./functions").GoodsContr;
 
 router.get('/',middleware.checkAccess,function(req,res){
     if(req.session.hasLogin){
@@ -37,7 +37,7 @@ router.get('/logout',function(req,res){
 
 //功能
 
-router.get('/addGoods',addGoods);
+router.use('/GoodsContr',GoodsContr);
 
 
 module.exports = router;
