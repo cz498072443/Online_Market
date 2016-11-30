@@ -101,10 +101,17 @@
     </div>
 </div>
 
+<div class="ui page inverted dimmer loading_page"></div>
+
 <script src="/tools/jquery-2.0.3.min.js"></script>
 <script src="/tools/semanticUI/semantic.min.js"></script>
 <script>
     $('.ui.dropdown').dropdown();
     $('.ui.menu .dropdown').dropdown({on: 'hover'});
+
+    $(document).on('click','a',function(){
+        $(".loading_page").html('<div class="ui text loader">玩命加载中...</div>');
+        $(".loading_page").dimmer('show');
+    })
 </script>
 

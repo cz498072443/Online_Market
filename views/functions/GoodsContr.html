@@ -20,31 +20,73 @@
                 </div>
             </div>
         </div>
-        <div class="main container">
-            <div class="ui grid centered">
+        <div class="ui centered grid main container">
+            <div class="fourteen wide column">
+                <h1 class="ui red header"><i class="settings icon"></i><div class="content">商品管理<div class="sub header">管理你的商品</div></div></h1>
+                <a href="/GoodsContr/add" class="ui labeled icon button"><i class="tag icon"></i>添加商品</a>
+                <h3 class="ui horizontal header divider">
+                    <i class="bar chart icon"></i>
+                    已上架商品
+                </h3>
                 <table class="ui table">
                     <thead>
                     <tr>
-                        <th>种类</th>
-                        <th>图片</th>
-                        <th>商品名</th>
-                        <th>余量</th>
-                        <th>操作</th>
+                        <th class="three wide">种类</th>
+                        <th class="three wide">图片</th>
+                        <th class="three wide">商品名</th>
+                        <th class="two wide">余量</th>
+                        <th class="two wide">价格</th>
+                        <th class="three wide">操作</th>
                     </tr>
                     </thead>
                     <tbody>
                     {{each goodList}}
                     <tr>
                         <td>{{$value.type}}</td>
-                        <td></td>
-                        <td>{{$value.name}}</td>
+                        <td><img style="width: 60px;height: 60px" src="{{$value.headSrc}}"></td>
+                        <td class="global_text_danger">{{$value.name}}</td>
                         <td>{{$value.resNum}}</td>
-                        <td></td>
+                        <td class="global_text_success">{{$value.price}}</td>
+                        <td>
+                            <div class="ui buttons">
+                                <a class="ui primary button" href="/GoodsContr/edit/{{$value.id}}">修改</a>
+                                <div class="or"></div>
+                                <button class="ui red button delete_btn" data-id="{{$value.id}}">删除</button>
+                            </div>
+                        </td>
                     </tr>
                     {{/each}}
                     </tbody>
                 </table>
             </div>
+
+        </div>
+    </div>
+</div>
+
+<!--删除确认控制-->
+<div class="ui basic demo modal check_modal">
+    <div class="header">
+        <h1>警告</h1>
+    </div>
+    <div class="content">
+        <div class="image" style="float: left">
+            <i class="warning sign icon"></i>
+        </div>
+        <div class="description">
+            <p>确认删除该商品吗？</p>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="two fluid ui inverted buttons">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                不
+            </div>
+            <a data-href="" class="ui green ok basic inverted button">
+                <i class="checkmark icon"></i>
+                是
+            </a>
         </div>
     </div>
 </div>
@@ -53,9 +95,34 @@
 
 <script type="text/javascript">
 
-
-
     $(document).ready(function(){
+        var loadConfig = (function(){
+            $('.demo.modal').modal();
+            $('.basic.demo.modal').modal('attach events', '.delete_btn');
+
+            $("table").on('click','.delete_btn',function(){
+                console.log("wocao");
+                var href = $(this).attr("data-id");
+                $(".check_modal a.ok").attr("data-id",href);
+            });
+
+            $(".check_modal a.ok").on('click',function(){
+                $.ajax({
+                    url: '/GoodsContr/delete',
+                    type: 'delete',
+                    data:{
+                        id:  $(".check_modal a.ok").attr("data-id")
+                    },
+                    success:function(){
+                        window.location.reload();
+                    },
+                    error:function(){
+                        alert("删除出错请重试!!");
+                        window.location.reload();
+                    }
+                })
+            });
+        })();
 
     })
 

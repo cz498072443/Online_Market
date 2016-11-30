@@ -48,4 +48,14 @@ router.post('/add',pageControl,function(req,res){
     })
 });
 
+router.delete('/delete',function(req,res,next){
+    Goods.removeById(req.body.id, function(err, doc){
+        if(err){
+            res.send(400);
+        }else{
+            res.send(200);
+        }
+    })
+});
+
 module.exports = router;
