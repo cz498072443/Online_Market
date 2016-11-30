@@ -22,61 +22,40 @@
         </div>
         <div class="main container">
             <div class="ui grid centered">
-                <div class="addGoods">
-                    <h1>添加商品</h1>
-                    <script id="editor" type="text/plain" style="width:100%;height:500px;"></script>
-                </div>
-                <button class="ui green button" id="save">
-                    <i class="save icon"></i>保存
-                </button>
+                <table class="ui table">
+                    <thead>
+                    <tr>
+                        <th>种类</th>
+                        <th>图片</th>
+                        <th>商品名</th>
+                        <th>余量</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{each goodList}}
+                    <tr>
+                        <td>{{$value.type}}</td>
+                        <td></td>
+                        <td>{{$value.name}}</td>
+                        <td>{{$value.resNum}}</td>
+                        <td></td>
+                    </tr>
+                    {{/each}}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
 
 <script src="/tools/template-native.js"></script>
-<script type="text/javascript" src="/tools/ueditor/ueditor.config.js"></script>
-<script type="text/javascript" src="/tools/ueditor/ueditor.all.min.js"></script>
-<script type="text/javascript" src="/tools/ueditor/lang/zh-cn/zh-cn.js"></script>
 
 <script type="text/javascript">
 
 
 
     $(document).ready(function(){
-        //实例化编辑器
-        //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
-        var ue = UE.getEditor('editor');
-
-        var goodsContent = "";
-
-        //获取第一张图片路径
-        var GetImageSrc = function (str){
-            var patt =/src=[\'\"]?([^\'\"]*)[\'\"]?/i;
-            var header_str = patt.exec(str)[0];
-            var s = header_str.split('"');
-            return s[1];
-        };
-
-        $("#save").on('click',function(){
-            var allContent = ue.getContent();
-
-            $.ajax({
-                url:"/GoodsContr/add",
-                type:"POST",
-                data:{
-                    name:"测试商品",
-                    type:"文具",
-                    content:ue.getContent(),
-                    headSrc:GetImageSrc(allContent),
-                    totalNum:20,
-                    resNum:20
-                },
-                success:function(data){
-                    alert("添加成功！")
-                }
-            })
-        });
 
     })
 

@@ -4,6 +4,7 @@
 var express = require("express");
 var router = express.Router();
 var Goods = require("./../../proxy").Goods;
+var eventproxy = require("eventproxy");
 
 //页面控制中间件
 var pageControl = function (req, res, next) {
@@ -16,14 +17,24 @@ var pageControl = function (req, res, next) {
     }
 };
 
-router.get('/',pageControl,function(req,res){
+router.get('/',pageControl,function(req,res,next){
     var loc_user = req.session.user;
-    res.render('functions/GoodsContr.html',{ user:loc_user.username,role:loc_user.role });
+    var ep = new eventproxy();
+
+    ep.fail(next);
+    ep.all('good_list',function(goodList){
+        res.render('functions/GoodsContr.html',{ user:loc_user.username,role:loc_user.role,goodList:goodList });
+    });
+    Goods.findAll(function(err,docs){
+        console.log(docs);
+        ep.emit('good_list',docs);
+    })
+
 });
 
 router.get('/add',pageControl,function(req,res){
     var loc_user = req.session.user;
-    res.render('functions/GoodsContr.html',{ user:loc_user.username,role:loc_user.role });
+    res.render('functions/GoodsContrAdd.html',{ user:loc_user.username,role:loc_user.role });
 });
 
 router.post('/add',pageControl,function(req,res){
