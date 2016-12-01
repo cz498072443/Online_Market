@@ -16,10 +16,10 @@
                             <button class="ui button orange"><i class="search icon"></i>搜索</button>
                         </div>
                         <div class="search_babel ui grid">
-                            <span class="four wide column">测试</span>
-                            <span class="four wide column">测试</span>
-                            <span class="four wide column">测试</span>
-                            <span class="four wide column">测试</span>
+                            <span class="four wide column">食品</span>
+                            <span class="four wide column">书籍</span>
+                            <span class="four wide column">游戏</span>
+                            <span class="four wide column">服装</span>
                         </div>
                     </div>
                 </div>
@@ -27,13 +27,41 @@
             </div>
         </div>
         <div class="ui main container centered grid">
-            <div class="fourteen wide column banner">
+            <div class="banner">
                 <ul>
                     <li style=" background-image: url('/upload/index/slider_banner/img1.jpg');"></li>
                     <li style=" background-image: url('/upload/index/slider_banner/img2.jpg');"></li>
                     <li style="background-image: url('/upload/index/slider_banner/img3.jpg');"></li>
                     <li style="background-image: url('/upload/index/slider_banner/img4.jpg');"></li>
                 </ul>
+            </div>
+        </div>
+        <div class="ui main container grid goodsShow" style="margin-top: 5px">
+            <div class="doubling four column row">
+                {{each goodList}}
+                <div class="column">
+                    <div class="ui card" style="margin-top: 10px" data-id="{{$value.id}}">
+                        <div class="image dimmable">
+                            <div class="ui dimmer">
+                                <div class="content">
+                                    <div class="center">
+                                        <div class="ui inverted orange button"><i class="shop icon"></i>加入购物车</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <img src="{{$value.headSrc}}">
+                        </div>
+                        <div class="content">
+                            <div class="header">{{$value.name}}</div>
+                            <div class="description" style="color: orange">{{$value.type}}</div>
+                        </div>
+                        <div class="extra content">
+                            <a class="right floated created" style="color: red;font-weight: bold">{{$value.price}}元</a>
+                            <div data-rating="3" class="ui star rating"><i class="icon active"></i><i class="icon active"></i><i class="icon active"></i><i class="icon"></i></div>
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
             </div>
         </div>
     </div>
@@ -45,24 +73,44 @@
 
 <script>
     $(document).ready(function(){
+        var loadPage = (function(){
+            //调整商品卡片高度
+            var cardWidth = parseInt($(".card .image img").css("width").replace("px",""));
+            var cardHeight = cardWidth * 1.1 +"px";
+            $(".card .image img").css({"height":cardHeight});
 
-        $('.banner').unslider({
-            speed: 500,               //  切换的速度
-            delay: 3000,              //  切换的速度
-            keys: true,               //  是否启用左右按钮控制slider切换
-            fluid: false,              // 是否每次在容器大小改变的时候，修正slider的大小
-            pause:true,                 //鼠标以上去是否暂停播放
-            starting:function(){        //每次开始切换时回叫方法
+            //加载轮播图
+            $('.banner').unslider({
+                speed: 500,               //  切换的速度
+                delay: 3000,              //  切换的速度
+                keys: false,               //  是否启用左右按钮控制slider切换
+                fluid: false,              // 是否每次在容器大小改变的时候，修正slider的大小
+                pause:true,                 //鼠标以上去是否暂停播放
+                starting:function(){        //每次开始切换时回叫方法
 
-            },
-            complete:function(){         //每次完成切换时回叫方法
+                },
+                complete:function(){         //每次完成切换时回叫方法
 
-            },
-            arrows: false,               //  是否显示左右箭头，用于slider切换
-            dots: true                  //  是否显示白色圆点，用于slider切换
-        });
+                },
+                arrows: false,               //  是否显示左右箭头，用于slider切换
+                dots: true                  //  是否显示白色圆点，用于slider切换
+            });
 
 
+        })();
+
+        var loadConfig = (function(){
+            $('.card .dimmer').dimmer({on: 'hover'});
+            $(".goodsShow").on('click','.ui.card',function(){
+                $(".loading_page").html('<div class="ui text loader">玩命加载中...</div>');
+                $(".loading_page").dimmer('show');
+
+                var goodId = $(this).attr("data-id");
+                window.location.href="/Goods/"+goodId;
+            });
+
+
+        })();
     })
 </script>
 

@@ -26,7 +26,6 @@ router.get('/',pageControl,function(req, res, next){
         res.render('functions/GoodsContr.html',{ user:loc_user.username,role:loc_user.role,goodList:goodList });
     });
     Goods.findAll(function(err,docs){
-        console.log(docs);
         ep.emit('good_list',docs);
     })
 
@@ -60,6 +59,16 @@ router.get('/edit/:id',function(req, res, next){
     Goods.getOneById(req.params.id, function(err,docs){
         console.log(docs);
         ep.emit('good_detail',docs);
+    })
+});
+
+router.put('/edit/:id',function(req, res, next){
+    Goods.update(req.params.id, req.body, function(err, doc){
+        if(err){
+            res.send(400);
+        }else{
+            res.send(200);
+        }
     })
 });
 

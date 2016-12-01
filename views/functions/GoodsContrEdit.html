@@ -23,14 +23,14 @@
         <div class="ui centered grid main container">
             <div class="fourteen wide column">
                 <a href="/GoodsContr" class="ui labeled icon button"><i class="reply icon"></i>返回</a>
-                <h1 class="ui red header"><i class="settings icon"></i><div class="content">添加商品<div class="sub header">设置并添加商品</div></div></h1>
+                <h1 class="ui red header"><i class="settings icon"></i><div class="content">修改商品<div class="sub header">修改并重置商品</div></div></h1>
                 <h3 class="ui horizontal header divider"><i class="tag icon"></i>基本配置</h3>
 
                 <div class="ui form">
                     <div class="two fields">
                         <div class="field">
                             <label>商品名</label>
-                            <input name="name" type="text">
+                            <input name="name" type="text" value="{{goodDetail.name}}">
                         </div>
                         <div class="field">
                             <label>类别</label>
@@ -44,8 +44,12 @@
                     </div>
                     <div class="four fields">
                         <div class="field">
-                            <label>商品数量</label>
-                            <input name="totalNum" type="number">
+                            <label>商品余量</label>
+                            <input name="totalNum" type="number" value="{{goodDetail.resNum}}">
+                        </div>
+                        <div class="field">
+                            <label>商品总量</label>
+                            <input name="totalNum" type="number" value="{{goodDetail.totalNum}}">
                         </div>
                     </div>
                     <div class="four fields">
@@ -53,7 +57,7 @@
                             <label>价格 (/元)</label>
                             <div class="ui icon input">
                                 <i class="payment icon"></i>
-                                <input name="price" type="number">
+                                <input name="price" type="number" value="{{goodDetail.price}}">
                             </div>
 
                         </div>
@@ -61,8 +65,9 @@
 
                     <h3 class="ui horizontal header divider"><i class="tag icon"></i>介绍内容</h3>
                     <div class="addGoods">
-                        <script id="editor" type="text/plain" style="width:100%;height:500px;"></script>
+                        <script id="editor" type="text/plain" style="width:100%;height:500px;">{{#goodDetail.content}}</script>
                     </div>
+                    <p class="global_text_danger">Tips: 内容中的第一张图片会被选作为商品头像</p>
                 </div>
 
                 <h3 class="ui horizontal header divider"><i class="tag icon"></i>结束</h3>
@@ -83,6 +88,10 @@
 <script type="text/javascript">
 
     $(document).ready(function(){
+        var loadPage = (function(){
+            $("select[name='type']").val("{{goodDetail.type}}");
+        })();
+
         var loadConfig = (function(){
             $('select.dropdown').dropdown();
 
@@ -110,7 +119,7 @@
                 var totalNum = $("input[name='totalNum']").val();
                 var price = $("input[name='price']").val();
 
-                console.log("name:"+name)
+                console.log("name:"+name);
 
                 if(!name || !totalNum || !price){
                     $(".loading_page").html('<h1 class="ui text model_inner"><i class="ban icon"></i> 请输入完整内容!</h1>');
@@ -120,8 +129,8 @@
                     $(".loading_page").dimmer('show');
 
                     $.ajax({
-                        url:"/GoodsContr/add",
-                        type:"POST",
+                        url:"/GoodsContr/edit/{{goodDetail.id}}",
+                        type:"PUT",
                         data:{
                             name: name,
                             type: type,
@@ -131,8 +140,12 @@
                             resNum: totalNum,
                             price: price
                         },
-                        success:function(data){
-                            window.location.href="/GoodsContr";
+                        success:function(){
+                            window.location.reload();
+                        },
+                        error:function(){
+                            alert("更新失败,请重试!");
+                            window.location.reload();
                         }
                     })
                 }

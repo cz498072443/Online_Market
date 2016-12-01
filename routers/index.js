@@ -6,6 +6,7 @@
 var express = require("express");
 var router = express.Router();
 var moment = require("moment");
+var eventproxy = require("eventproxy");
 
 var middleware = require('./../middleware');
 
@@ -13,14 +14,27 @@ var login = require("./login");
 var signUp = require("./signUp");
 
 var GoodsContr = require("./functions").GoodsContr;
+var GoodsPage = require("./goods").GoodsPage;
 
-router.get('/',middleware.checkAccess,function(req,res){
-    if(req.session.hasLogin){
-        var loc_user = req.session.user;
-        res.render('index.html',{ user:loc_user.username,role:loc_user.role});
-    }else{
-        res.render('index.html',{ user:"未登录"});
-    }
+var Goods = require("./../proxy").Goods;
+
+router.get('/',middleware.checkAccess,function(req,res,next){
+    var ep = new eventproxy();
+    ep.fail(next);
+
+    ep.all('good_list',function(goodList){
+        if(req.session.hasLogin){
+            var loc_user = req.session.user;
+            res.render('index.html',{ user:loc_user.username,role:loc_user.role,goodList:goodList });
+        }else{
+            res.render('index.html',{ user:"未登录"});
+        }
+    });
+
+    Goods.findAll(function(err,docs){
+        console.log(docs);
+        ep.emit('good_list', docs);
+    })
 });
 
 //登陆控制
@@ -36,8 +50,10 @@ router.get('/logout',function(req,res){
 });
 
 //功能
-
 router.use('/GoodsContr',GoodsContr);
+
+//商品
+router.use('/Goods',GoodsPage);
 
 
 module.exports = router;

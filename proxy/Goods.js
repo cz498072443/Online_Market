@@ -14,7 +14,6 @@ exports.createOne = function (params, callback) {
 
 exports.update = function (id, params, callback) {
     Goods.findOneAndUpdate({_id:id}, verifyParams(params)).exec(function(err,doc){
-
         callback(err,doc);
     });
 };
