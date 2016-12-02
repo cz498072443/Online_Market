@@ -26,10 +26,10 @@ function verifyParams(params) {
     var result = {
         'username': params.username,
         'password': params.password,
-        'role': "User",
-        "secPassword": "",
+        'role': params.role || "User",
+        "secPassword": params.secPassword || "",
         "wallet": params.wallet || 0,
-        "favorite": []
+        "favorite": params.favorite || []
     };
     if(params.create_time !== ""){
         result["create_time"] = new Date(params.create_time);
