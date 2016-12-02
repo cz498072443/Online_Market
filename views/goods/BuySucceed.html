@@ -1,0 +1,45 @@
+{{include './../headers'}}
+
+
+<div class="pusher">
+    <div class="full height">
+        <div class="ui grid main centered container" style="padding: 1vh;min-height: 30vh;">
+            <div class="column row">
+                <h1 class="ui red header" style="font-size: 5vh">购买成功!
+                    <div class="sub header" style="margin-top: 10px">页面将在<span class="resTime">5</span>秒后自动跳转...</div>
+                </h1>
+
+            </div>
+            <div class="three column centered row">
+                <div class="column" style="text-align: center">
+                    <a href="/Goods/{{goodId}}" class="ui orange button">继续购买</a>
+                </div>
+                <div class="column" style="text-align: center">
+                    <a href="" class="ui green button">看看订单</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/tools/jquery-2.0.3.min.js"></script>
+<script src="/tools/semanticUI/semantic.min.js"></script>
+<script src="/tools/template-native.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        var loadConfig = (function(){
+            var resTime = 5;
+
+            setInterval(function(){
+                if(resTime > 1){
+                    resTime -= 1;
+                    $(".resTime").html(resTime);
+                }else {
+                    window.location.href="/Goods/{{goodId}}";
+                }
+            },1000)
+        })()
+
+    })
+
+</script>

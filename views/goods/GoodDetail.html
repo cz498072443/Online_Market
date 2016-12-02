@@ -8,10 +8,10 @@
             <div class="ui three column horizontally padded grid head_info">
                 <div class="equal height row">
                     <div class="red column">
-                        <h3>Hello {{user}}</h3>
+                        <h3>Hello {{user.username}}!</h3>
                     </div>
                     <div class="blue column">
-                        <p>啊啊啊啊啊啊啊啊啊</p>
+                        <p>当前账户余额: <span class="global_text_danger">{{user.wallet || 0}}</span> 元</p>
                     </div>
                     <div class="green column">
                         <p>这是一个长行，旁边有很多文本内容。</p>
@@ -50,7 +50,7 @@
                     <div class="description" style="padding-left:10px;height:50px;line-height:50px;margin-top: 20px;background-color:#F1F1F1;width: 70%;">
                         <div class="ui two column centered grid">
                             <div class="column"><h3>价格:</h3></div>
-                            <div class="column"><h1 class="ui red header">{{goodDetail.price}}</h1></div>
+                            <div class="column"><h1 class="ui red header">{{goodDetail.price}}元</h1></div>
                         </div>
                     </div>
                     <div class="ui form" style="margin-top: 20px">
@@ -63,7 +63,7 @@
                     </div>
                     <h3 class="ui horizontal header divider"><i class="chevron circle down icon"></i></h3>
                     <div class="ui large button orange">加入购物车</div><br><br>
-                    <div class="ui large button red">立即购买</div>
+                    <div class="ui large button red buyNow">立即购买</div>
                 </div>
             </div>
         </div>
@@ -82,25 +82,29 @@
 <!--删除确认控制-->
 <div class="ui basic demo modal check_modal">
     <div class="header">
-        <h1>警告</h1>
+        <h1>购买确认</h1>
     </div>
     <div class="content">
         <div class="image" style="float: left">
-            <i class="warning sign icon"></i>
+            <i class="payment green icon"></i>
         </div>
+        {{if user.secPassword == ""}}
         <div class="description">
-            <p>确认删除该商品吗？</p>
+            <p>确认购买该商品吗？</p>
+            <p class="global_text_warning"><i class="warning red sign icon"></i>警告:您尚未设置二级密码,为保证用户安全请尽快<a href="/personalInfo" style="color: orangered">前往设置</a></p>
         </div>
+        {{else}}
+        {{/if}}
     </div>
     <div class="actions">
         <div class="two fluid ui inverted buttons">
             <div class="ui red basic cancel inverted button">
                 <i class="remove icon"></i>
-                不
+                容我三思
             </div>
-            <a data-href="" class="ui green ok basic inverted button">
+            <a class="ui green ok basic inverted button confirmBuy">
                 <i class="checkmark icon"></i>
-                是
+                确认购买
             </a>
         </div>
     </div>
@@ -115,36 +119,31 @@
 
             $('.demo.modal').modal();
 
-            $('.basic.demo.modal').modal('attach events', '.delete_btn');
-
-            $("table").on('click','.delete_btn',function(){
-                console.log("wocao");
-                var href = $(this).attr("data-id");
-                $(".check_modal a.ok").attr("data-id",href);
-            });
-
-            $(".check_modal a.ok").on('click',function(){
-                $.ajax({
-                    url: '/GoodsContr/delete',
-                    type: 'delete',
-                    data:{
-                        id:  $(".check_modal a.ok").attr("data-id")
-                    },
-                    success:function(){
-                        window.location.reload();
-                    },
-                    error:function(){
-                        alert("删除出错请重试!!");
-                        window.location.reload();
-                    }
-                })
-            });
+            $('.basic.demo.modal').modal('attach events', '.buyNow');
 
             //控制购买数量
             $("input[name='buyNum']").keyup(function(){
                 if($(this).val() > {{goodDetail.resNum}}){
                     $("input[name='buyNum']").val("{{goodDetail.resNum}}")
                 }
+            });
+
+            //购买按钮
+            $(document).on('click','.buttons .confirmBuy',function(){
+                $.ajax({
+                    url:"/Goods",
+                    type:"POST",
+                    data:{
+                        goodId: "{{goodDetail.id}}",
+                        buyNum: $("input[name='buyNum']").val()
+                    },
+                    success:function(){
+                        window.location.href="/Goods/paySecceed/{{goodDetail.id}}";
+                    },
+                    error: function (){
+                        alert("购买失败");
+                    }
+                });
             })
         })();
 

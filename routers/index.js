@@ -17,6 +17,7 @@ var GoodsContr = require("./functions").GoodsContr;
 var GoodsPage = require("./goods").GoodsPage;
 
 var Goods = require("./../proxy").Goods;
+var User = require("./../proxy").User;
 
 router.get('/',middleware.checkAccess,function(req,res,next){
     var ep = new eventproxy();
@@ -25,16 +26,18 @@ router.get('/',middleware.checkAccess,function(req,res,next){
     ep.all('good_list',function(goodList){
         if(req.session.hasLogin){
             var loc_user = req.session.user;
-            res.render('index.html',{ user:loc_user.username,role:loc_user.role,goodList:goodList });
+
+            User.getOneById(loc_user._id, function(err,userDetail){
+                res.render('index.html',{ user:userDetail, goodList:goodList });
+            });
         }else{
             res.render('index.html',{ user:"未登录"});
         }
     });
 
     Goods.findAll(function(err,docs){
-        console.log(docs);
         ep.emit('good_list', docs);
-    })
+    });
 });
 
 //登陆控制

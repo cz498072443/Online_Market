@@ -11,6 +11,9 @@ var UserSchema = new Schema({
     "username": {type: String},
     "role": {type: String},
     "password": {type: String},
+    "secPassword": {type: String},
+    "wallet": {type: Number},
+    "favorite": {type: Array},
     "create_time": { type:Date, default: new Date() },
     "modify_time": { type:Date, default: new Date() }
 },{collection:'user',versionKey:false});

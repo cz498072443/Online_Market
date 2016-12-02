@@ -8,10 +8,10 @@
             <i class="user icon"></i> {{user}}
         </a>
 
-        {{else if role == "User"}}
+        {{else if user.role == "User"}}
         <div class="ui floating dropdown item" tabindex="0">
             <i class="user icon"></i>
-            <span class="text">{{user}}</span>
+            <span class="text">{{user.username}}</span>
             <div class="menu" tabindex="-1">
                 <div class="header">
                     操作
@@ -35,10 +35,10 @@
             </div>
         </div>
 
-        {{else if role == "Admin"}}
+        {{else if user.role == "Admin"}}
         <div class="ui floating dropdown item" tabindex="0">
             <i class="user icon"></i>
-            <span class="text">{{user}}</span>
+            <span class="text">{{user.username}}</span>
             <div class="menu" tabindex="-1">
                 <div class="header">
                     操作
@@ -61,10 +61,10 @@
             </div>
         </div>
 
-        {{else if role == "SuperAdmin"}}
+        {{else if user.role == "SuperAdmin"}}
         <div class="ui floating dropdown item" tabindex="0">
             <i class="user icon"></i>
-            <span class="text">{{user}}</span>
+            <span class="text">{{user.username}}</span>
             <div class="menu" tabindex="-1">
                 <div class="header">
                     操作

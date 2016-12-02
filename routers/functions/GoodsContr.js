@@ -4,6 +4,7 @@
 var express = require("express");
 var router = express.Router();
 var Goods = require("./../../proxy").Goods;
+var User = require("./../../proxy").User;
 var eventproxy = require("eventproxy");
 
 //页面控制中间件
@@ -22,24 +23,37 @@ router.get('/',pageControl,function(req, res, next){
     var ep = new eventproxy();
 
     ep.fail(next);
-    ep.all('good_list',function(goodList){
-        res.render('functions/GoodsContr.html',{ user:loc_user.username,role:loc_user.role,goodList:goodList });
+    ep.all('good_list','user_detail', function(goodList, userDetail){
+        res.render('functions/GoodsContr.html',{ user:userDetail,goodList:goodList });
     });
+
     Goods.findAll(function(err,docs){
         ep.emit('good_list',docs);
-    })
+    });
+
+    User.getOneById(loc_user._id, function(err, docs){
+        ep.emit('user_detail',docs)
+    });
 
 });
 
-router.get('/add',pageControl,function(req, res){
+router.get('/add',pageControl,function(req, res, next){
     var loc_user = req.session.user;
-    res.render('functions/GoodsContrAdd.html',{ user:loc_user.username,role:loc_user.role });
+    var ep = new eventproxy();
+
+    ep.fail(next);
+    ep.all('user_detail',function(userDetail){
+        res.render('functions/GoodsContrAdd.html',{ user:userDetail });
+    });
+
+    User.getOneById(loc_user._id, function(err, docs){
+        ep.emit('user_detail',docs)
+    });
 });
 
 router.post('/add',pageControl,function(req, res){
     Goods.createOne(req.body,function (err, doc) {
         if(err){
-            req.session.error = "注册失败!";
             res.send(400);
         }else {
             res.send(200);
@@ -47,22 +61,26 @@ router.post('/add',pageControl,function(req, res){
     })
 });
 
-router.get('/edit/:id',function(req, res, next){
+router.get('/edit/:id',pageControl,function(req, res, next){
     var loc_user = req.session.user;
     var ep = new eventproxy();
     ep.fail(next);
 
-    ep.all('good_detail',function(goodDetail){
-        res.render('functions/GoodsContrEdit.html',{ user:loc_user.username,role:loc_user.role,goodDetail:goodDetail });
+    ep.all('good_detail','user_detail', function(goodDetail, userDetail){
+        res.render('functions/GoodsContrEdit.html',{ user:userDetail,goodDetail:goodDetail });
     });
 
     Goods.getOneById(req.params.id, function(err,docs){
         console.log(docs);
         ep.emit('good_detail',docs);
-    })
+    });
+
+    User.getOneById(loc_user._id, function(err, docs){
+        ep.emit('user_detail',docs)
+    });
 });
 
-router.put('/edit/:id',function(req, res, next){
+router.put('/edit/:id',pageControl,function(req, res, next){
     Goods.update(req.params.id, req.body, function(err, doc){
         if(err){
             res.send(400);
@@ -72,7 +90,7 @@ router.put('/edit/:id',function(req, res, next){
     })
 });
 
-router.delete('/delete',function(req, res){
+router.delete('/delete',pageControl,function(req, res){
     Goods.removeById(req.body.id, function(err, doc){
         if(err){
             res.send(400);
