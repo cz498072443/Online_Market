@@ -100,3 +100,8 @@ li{
 .addGoods{
     margin-top: 20px;
 }
+
+/*商品详情页*/
+.goodContent{
+    display: inline-block;
+}

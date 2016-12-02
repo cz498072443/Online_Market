@@ -45,10 +45,11 @@
                             <div class="ui dimmer">
                                 <div class="content">
                                     <div class="center">
-                                        <div class="ui inverted orange button"><i class="shop icon"></i>加入购物车</div>
+                                        <div class="ui inverted orange button addShopList"><i class="shop icon"></i>加入购物车</div>
                                     </div>
                                 </div>
                             </div>
+                            <a class="ui corner red label"><i class="heart icon"></i></a>
                             <img src="{{$value.headSrc}}">
                         </div>
                         <div class="content">
@@ -109,6 +110,10 @@
                 window.location.href="/Goods/"+goodId;
             });
 
+            $(".addShopList").on('click',function(event){
+                event.stopPropagation();
+                alert("添加至购物车")
+            })
 
         })();
     })
