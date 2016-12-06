@@ -3,11 +3,27 @@
         <i class="home icon"></i> 主页
     </a>
     <div class="right menu">
+        {{if user.shoppingCart.length !== 0}}
+
+        <div class="ui floating dropdown item" tabindex="0">
+            <i class="shop icon"></i>
+            <div class="ui red circular label">{{user.shoppingCart.length}}</div>
+            <div class="menu" tabindex="-1" style="width: 20px">
+                {{each user.shoppingCart}}
+                <div class="item">
+                    <img src="{{$value.headSrc}}">
+                    <span style="font-size:10px;width: 50px">{{$value.name}}</span>
+                    <span><input type="number"></span>
+                </div>
+                {{/each}}
+                <button class="ui button red fluid" style="text-align: center">购买</button>
+            </div>
+        </div>
+        {{/if}}
         {{if user=="未登录"}}
         <a class="item">
             <i class="user icon"></i> {{user}}
         </a>
-
         {{else if user.role == "User"}}
         <div class="ui floating dropdown item" tabindex="0">
             <i class="user icon"></i>
@@ -24,10 +40,10 @@
                     <div class="ui blue empty circular label"></div>
                     修改密码
                 </div>
-                <div class="item">
+                <a class="item" href="/Orders">
                     <div class="ui black empty circular label"></div>
-                    标签 C
-                </div>
+                    查询订单
+                </a>
                 <div class="item">
                     <div class="ui green empty circular label"></div>
                     标签 D
@@ -54,10 +70,10 @@
                 <a class="item" href="/GoodsContr">
                     <i class="add square icon"></i>管理商品
                 </a>
-                <div class="item">
-                    <div class="ui green empty circular label"></div>
-                    标签 D
-                </div>
+                <a class="item" href="/Orders">
+                    <div class="ui black empty circular label"></div>
+                    查询订单
+                </a>
             </div>
         </div>
 

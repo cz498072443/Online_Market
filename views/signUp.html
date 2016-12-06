@@ -83,7 +83,8 @@
                     type:"POST",
                     data:{
                         username: username,
-                        password: password_1
+                        password: password_1,
+                        create_time: new Date()
                     },
                     success:function(){
                         window.location.href="/login"

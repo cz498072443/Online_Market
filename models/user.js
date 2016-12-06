@@ -8,12 +8,13 @@ var conn = require('./database_market').connection;
 var ObjectId = Schema.Types.ObjectId;
 
 var UserSchema = new Schema({
-    "username": {type: String},
-    "role": {type: String},
-    "password": {type: String},
-    "secPassword": {type: String},
-    "wallet": {type: Number},
-    "favorite": {type: Array},
+    "username": { type: String },
+    "role": { type: String },
+    "password": { type: String },
+    "secPassword": { type: String },
+    "wallet": { type: Number },
+    "favorite": { type: Array },
+    "shoppingCart": { type: Array },
     "create_time": { type:Date, default: new Date() },
     "modify_time": { type:Date, default: new Date() }
 },{collection:'user',versionKey:false});

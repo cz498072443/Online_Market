@@ -135,7 +135,8 @@
                     type:"POST",
                     data:{
                         goodId: "{{goodDetail.id}}",
-                        buyNum: $("input[name='buyNum']").val()
+                        buyNum: $("input[name='buyNum']").val(),
+                        create_time: new Date()
                     },
                     success:function(){
                         window.location.href="/Goods/paySecceed/{{goodDetail.id}}";

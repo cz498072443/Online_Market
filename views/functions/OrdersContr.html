@@ -23,29 +23,29 @@
         <div class="ui centered grid main container">
             <div class="ui left very close rail">
                 <!--<div class="ui segment">-->
-                    <div class="ui vertical steps">
-                        <a class="completed step">
-                            <i class="truck icon"></i>
-                            <div class="content">
-                                <div class="title">上一步</div>
-                                <div class="description">描述</div>
-                            </div>
-                        </a>
-                        <a class="active step">
-                            <i class="payment icon"></i>
-                            <div class="content">
-                                <div class="title">当前步骤</div>
-                                <div class="description">描述</div>
-                            </div>
-                        </a>
-                        <a class="disabled step">
-                            <i class="info icon"></i>
-                            <div class="content">
-                                <div class="title">禁用步骤</div>
-                                <div class="description">描述</div>
-                            </div>
-                        </a>
-                    </div>
+                <div class="ui vertical steps">
+                    <a class="completed step">
+                        <i class="truck icon"></i>
+                        <div class="content">
+                            <div class="title">上一步</div>
+                            <div class="description">描述</div>
+                        </div>
+                    </a>
+                    <a class="active step">
+                        <i class="payment icon"></i>
+                        <div class="content">
+                            <div class="title">当前步骤</div>
+                            <div class="description">描述</div>
+                        </div>
+                    </a>
+                    <a class="disabled step">
+                        <i class="info icon"></i>
+                        <div class="content">
+                            <div class="title">禁用步骤</div>
+                            <div class="description">描述</div>
+                        </div>
+                    </a>
+                </div>
                 <!--</div>-->
             </div>
 
@@ -56,48 +56,46 @@
             </div>
 
             <div class="fourteen wide column">
-                <h1 class="ui red header"><i class="settings icon"></i><div class="content">商品管理<div class="sub header">管理你的商品</div></div></h1>
-                <a href="/GoodsContr/add" class="ui labeled icon button"><i class="tag icon"></i>添加商品</a>
+                <h1 class="ui red header"><i class="settings icon"></i><div class="content">订单管理<div class="sub header">管理你的订单</div></div></h1>
                 <h3 class="ui horizontal header divider">
                     <i class="bar chart icon"></i>
-                    已上架商品
+                    你的订单列表
                 </h3>
+                {{if ordersList.length == 0}}
+                <h3 class="global_text_danger">还没有订单信息,快去买买买吧!</h3>
+                {{else}}
+                {{each ordersList}}
                 <table class="ui table">
+                    <button class="ui red right ribbon label delete_btn" data-id="{{$value.id}}">删除该订单</button>
+                    <div class="ui pointing below label">
+                        订单号: <span class="global_text_warning">{{$value.id}}</span>
+                    </div>
+                    <div class="ui pointing below label">
+                        总价: <span class="global_text_success">{{$value.totalPrice}}</span> 元
+                    </div>
                     <thead>
                     <tr>
-                        <th class="three wide">种类</th>
+                        <th class="three wide">商品类型</th>
                         <th class="three wide">图片</th>
                         <th class="three wide">商品名</th>
-                        <th class="two wide">余量</th>
+                        <th class="two wide">购买数</th>
                         <th class="two wide">价格</th>
-                        <th class="three wide">操作</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {{if goodList.length == 0}}
+                    {{each $value.goodsList as good index}}
                     <tr>
-                        <td colspan="6">还没有订单信息,快去买买买吧!</td>
-                    </tr>
-                    {{else}}
-                    {{each goodList}}
-                    <tr>
-                        <td>{{$value.type}}</td>
-                        <td><a href="/Goods/{{$value.id}}"><img style="width: 60px;height: 60px" src="{{$value.headSrc}}"></a></td>
-                        <td class="global_text_danger">{{$value.name}}</td>
-                        <td>{{$value.resNum}}</td>
-                        <td class="global_text_success">{{$value.price}}</td>
-                        <td>
-                            <div class="ui buttons">
-                                <a class="ui primary button" href="/GoodsContr/edit/{{$value.id}}">修改</a>
-                                <div class="or"></div>
-                                <button class="ui red button delete_btn" data-id="{{$value.id}}">删除</button>
-                            </div>
-                        </td>
+                        <td>{{good.type}}</td>
+                        <td><a href="/Goods/{{good.id}}"><img style="width: 60px;height: 60px" src="{{good.headSrc}}"></a></td>
+                        <td class="global_text_danger">{{good.name}}</td>
+                        <td>{{good.buyNum}}</td>
+                        <td class="global_text_success">{{good.price}}</td>
                     </tr>
                     {{/each}}
-                    {{/if}}
                     </tbody>
                 </table>
+                {{/each}}
+                {{/if}}
             </div>
 
         </div>
@@ -114,7 +112,7 @@
             <i class="warning sign icon"></i>
         </div>
         <div class="description">
-            <p>确认删除该商品吗？</p>
+            <p>确认删除该订单吗？</p>
         </div>
     </div>
     <div class="actions">
@@ -140,17 +138,18 @@
             $('.demo.modal').modal();
             $('.basic.demo.modal').modal('attach events', '.delete_btn');
 
-            $("table").on('click','.delete_btn',function(){
+            $(document).on('click','.delete_btn',function(){
                 var href = $(this).attr("data-id");
-                $(".check_modal a.ok").attr("data-id",href);
+                console.log(href)
+                $(".check_modal a.ok").attr("data-href",href);
             });
 
             $(".check_modal .deleteGood").on('click',function(){
                 $.ajax({
-                    url: '/GoodsContr/delete',
+                    url: '/Orders/delete',
                     type: 'delete',
                     data:{
-                        id:  $(".check_modal .deleteGood").attr("data-id")
+                        id:  $(".check_modal .deleteGood").attr("data-href")
                     },
                     success:function(){
                         window.location.reload();

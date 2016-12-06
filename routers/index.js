@@ -14,6 +14,8 @@ var login = require("./login");
 var signUp = require("./signUp");
 
 var GoodsContr = require("./functions").GoodsContr;
+var OrdersContr = require("./functions").OrdersContr;
+var ShoppingCart = require("./functions").ShoppingCart;
 var GoodsPage = require("./goods").GoodsPage;
 
 var Goods = require("./../proxy").Goods;
@@ -54,6 +56,8 @@ router.get('/logout',function(req,res){
 
 //功能
 router.use('/GoodsContr',GoodsContr);
+router.use('/Orders',OrdersContr);
+router.use('/ShoppingCart',ShoppingCart);
 
 //商品
 router.use('/Goods',GoodsPage);

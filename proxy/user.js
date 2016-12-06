@@ -22,6 +22,13 @@ exports.update = function (id, params, callback) {
     });
 };
 
+exports.updateShoppingCart = function (id, shoppingCart, callback){
+    User.update({_id:id}, {'$set':{'shoppingCart': shoppingCart}}).exec(function(err,doc){
+        console.log(doc)
+        callback(err,doc);
+    });
+};
+
 function verifyParams(params) {
     var result = {
         'username': params.username,
@@ -29,7 +36,8 @@ function verifyParams(params) {
         'role': params.role || "User",
         "secPassword": params.secPassword || "",
         "wallet": params.wallet || 0,
-        "favorite": params.favorite || []
+        "favorite": params.favorite || [],
+        "shoppingCart": params.shoppingCart || []
     };
     if(params.create_time !== ""){
         result["create_time"] = new Date(params.create_time);

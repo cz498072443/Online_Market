@@ -6,6 +6,7 @@ var express = require("express");
 var router = express.Router();
 var Goods = require("./../../proxy").Goods;
 var User = require("./../../proxy").User;
+var Orders = require("./../../proxy").Orders;
 
 var eventproxy = require("eventproxy");
 
@@ -68,6 +69,27 @@ router.post("/",pageControl,function(req, res, next){
                     res.send(200);
                 }
             });
+            //生成订单
+            var orderObj = { customer:"",goodsList:[],totalPrice:0,create_time:req.body.create_time };
+            orderObj["customer"] = userDetail._id;
+            var goodObj = {};
+            goodObj["id"] = String(goodDetail._id);
+            goodObj["name"] = goodDetail.name;
+            goodObj["type"] = goodDetail.type;
+            goodObj["headSrc"] = goodDetail.headSrc;
+            goodObj["price"] = goodDetail.price;
+            goodObj["buyNum"] = parseInt(req.body.buyNum);
+
+            orderObj["goodsList"].push(goodObj);
+            orderObj["totalPrice"] = totalPrice;
+
+            Orders.createOne( orderObj, function(err, doc){
+                if(err){
+                    res.send(400);
+                }else{
+                    res.send(200);
+                }
+            })
         }
     });
 

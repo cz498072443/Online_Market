@@ -4,3 +4,4 @@
 
 exports.User = require('./User');
 exports.Goods = require('./Goods');
+exports.Orders = require('./Orders');
