@@ -7,16 +7,15 @@
 
         <div class="ui floating dropdown item" tabindex="0">
             <i class="shop icon"></i>
-            <div class="ui red circular label">{{user.shoppingCart.length}}</div>
-            <div class="menu" tabindex="-1" style="width: 20px">
+            <div class="ui red circular label shoppingCartDetail">{{user.shoppingCart.length}}</div>
+            <div class="menu shoppingCartMenu" tabindex="-1" style="width: 20px">
                 {{each user.shoppingCart}}
                 <div class="item">
                     <img src="{{$value.headSrc}}">
-                    <span style="font-size:10px;width: 50px">{{$value.name}}</span>
-                    <span><input type="number"></span>
+                    <span class="global_text_success">{{$value.name}}</span> 购买数 :<span class="global_text_danger"> {{$value.buyNum}}</span> 单价: <span class="global_text_danger">{{$value.price}}</span>
                 </div>
                 {{/each}}
-                <button class="ui button red fluid" style="text-align: center">购买</button>
+                <button class="ui button red fluid shoppingCartBtn" style="text-align: center">购买</button>
             </div>
         </div>
         {{/if}}
@@ -117,6 +116,55 @@
     </div>
 </div>
 
+<!--订单详情模态框-->
+<div class="ui long modal shoppingCartDetailShow">
+    <i class="close icon"></i>
+    <div class="header">
+        订单详情
+    </div>
+    <div class="content">
+        <div class="description">
+            <h3 class="ui horizontal header divider">
+                <i class="bar chart icon"></i>
+                你的订单
+            </h3>
+            <form class="ui form">
+                <table class="ui table">
+                    <thead>
+                    <tr>
+                        <th class="three wide">商品类型</th>
+                        <th class="three wide">图片</th>
+                        <th class="three wide">商品名</th>
+                        <th class="two wide">购买数</th>
+                        <th class="two wide">价格</th>
+                        <th class="three">删除</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{each user.shoppingCart}}
+                    <tr>
+                        <td>{{$value.type}}</td>
+                        <td><a href="/Goods/{{$value.id}}"><img style="width: 60px;height: 60px" src="{{$value.headSrc}}"></a></td>
+                        <td class="global_text_danger">{{$value.name}}</td>
+                        <td class="ui"><input type="number" value="{{$value.buyNum}}"></td>
+                        <td class="global_text_success">{{$value.price}}</td>
+                        <td><button class="ui red button">删除</button></td>
+                    </tr>
+                    {{/each}}
+                    </tbody>
+                </table>
+            </form>
+
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui primary button">
+            继续
+            <i class="right chevron icon"></i>
+        </div>
+    </div>
+</div>
+
 <div class="ui page inverted dimmer loading_page"></div>
 
 <script src="/tools/jquery-2.0.3.min.js"></script>
@@ -125,9 +173,20 @@
     $('.ui.dropdown').dropdown();
     $('.ui.menu .dropdown').dropdown({on: 'hover'});
 
+    var totalPrice = 0;
+    {{each user.shoppingCart}}
+    totalPrice += {{$value.price}} * {{$value.buyNum}}
+    {{/each}}
+
+    $(".shoppingCartBtn").html("<span>购买<span class='global_text_success'> 总价:"+totalPrice+"</span></span> ")
+
     $(document).on('click','a',function(){
         $(".loading_page").html('<div class="ui text loader">玩命加载中...</div>');
         $(".loading_page").dimmer('show');
+    });
+
+    $(".shoppingCartDetail").on('click',function () {
+        $(".shoppingCartDetailShow").modal('show')
     })
 </script>
 

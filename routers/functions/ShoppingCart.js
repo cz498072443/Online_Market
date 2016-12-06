@@ -38,17 +38,29 @@ router.put('/add',pageControl,function(req, res, next){
 
     ep.fail(next);
     ep.all('user_detail', 'good_detail', function(userDetail, goodDetail){
+        var isRepeat = false;
         var ShoppingCart = {};
         var AllShoppingCart = userDetail.shoppingCart;
 
-        ShoppingCart["_id"] = String(goodDetail._id);
-        ShoppingCart["name"] = goodDetail.name;
-        ShoppingCart["price"] = goodDetail.price;
-        ShoppingCart["resNum"] = goodDetail.resNum;
-        ShoppingCart["headSrc"] = goodDetail.headSrc;
-        ShoppingCart["buyNum"] = 1;
-
-        AllShoppingCart.push(ShoppingCart);
+        //若添加商品重复则直接buyNum+1即可
+        for(var i = 0;i < AllShoppingCart.length;i ++){
+            if(AllShoppingCart[i]._id == String(goodDetail._id)){
+                AllShoppingCart[i].buyNum += req.body.buyNum || 1;
+                isRepeat = true;
+                break;
+            }
+        }
+        //如果不重复则新建
+        if(!isRepeat){
+            ShoppingCart["_id"] = String(goodDetail._id);
+            ShoppingCart["name"] = goodDetail.name;
+            ShoppingCart["price"] = goodDetail.price;
+            ShoppingCart["resNum"] = goodDetail.resNum;
+            ShoppingCart["headSrc"] = goodDetail.headSrc;
+            ShoppingCart["type"] = goodDetail.type;
+            ShoppingCart["buyNum"] = req.body.buyNum || 1;
+            AllShoppingCart.push(ShoppingCart);
+        }
 
         User.updateShoppingCart(loc_user._id, AllShoppingCart, function(err,docs){
             if(err){
