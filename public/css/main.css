@@ -105,3 +105,18 @@ li{
 .goodContent{
     display: inline-block;
 }
+
+/*购物车样式*/
+.buyShoppingCartModal .content:after{
+    content:"";
+    display: block;
+    clear: both;
+}
+.buyShoppingCartModal .content .image{
+    float: left;
+    width: 30%;
+}
+.buyShoppingCartModal .content .description{
+    width: 50%;
+    margin-top: 10px;
+}

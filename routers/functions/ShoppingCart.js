@@ -68,7 +68,7 @@ router.put('/add',pageControl,function(req, res, next){
             }else{
                 res.send(200);
             }
-        })
+        });
     });
 
     Goods.getOneById(req.body.goodId, function(err,docs){
@@ -88,14 +88,37 @@ router.put('/add',pageControl,function(req, res, next){
     });
 });
 
-router.delete('/delete',pageControl,function(req, res){
-    Orders.removeById(req.body.id, function(err, doc){
+router.delete('/delete',pageControl,function(req, res, next){
+    var loc_user = req.session.user;
+    var ep = new eventproxy();
+
+    ep.fail(next);
+    ep.all('user_detail', function(userDetail){
+        var AllShoppingCart = userDetail.shoppingCart;
+
+        for(var i = 0;i < AllShoppingCart.length;i ++){
+            if(AllShoppingCart[i]._id == req.body.id){
+                AllShoppingCart.splice(i,1);
+                break;
+            }
+        }
+
+        User.updateShoppingCart(loc_user._id, AllShoppingCart, function(err,docs){
+            if(err){
+                res.send(400);
+            }else{
+                res.send(200);
+            }
+        })
+    });
+
+    User.getOneById(loc_user._id, function(err, docs){
         if(err){
             res.send(400);
-        }else{
-            res.send(200);
+        }else {
+            ep.emit('user_detail',docs)
         }
-    })
+    });
 });
 
 module.exports = router;

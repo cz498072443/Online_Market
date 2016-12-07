@@ -80,7 +80,7 @@
 </div>
 
 <!--删除确认控制-->
-<div class="ui basic demo modal check_modal">
+<div class="ui basic modal check_modal">
     <div class="header">
         <h1>购买确认</h1>
     </div>
@@ -117,14 +117,14 @@
         var loadConfig = (function(){
             $('.ui.rating').rating();
 
-            $('.demo.modal').modal();
+            $('.check_modal').modal();
 
-            $('.basic.demo.modal').modal('attach events', '.buyNow');
+            $('.check_modal').modal('attach events', '.buyNow');
 
             //控制购买数量
-            $("input[name='buyNum']").keyup(function(){
-                if($(this).val() > {{goodDetail.resNum}}){
-                    $("input[name='buyNum']").val("{{goodDetail.resNum}}")
+            $(document).on('keyup',"input[name='buyNum']",function(){
+                if($(this).val() > parseInt($(this).attr("max"))){
+                    $(this).val($(this).attr("max"))
                 }
             });
 

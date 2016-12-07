@@ -4,16 +4,18 @@
     </a>
     <div class="right menu">
         {{if user.shoppingCart.length !== 0}}
-
         <div class="ui floating dropdown item" tabindex="0">
-            <i class="shop icon"></i>
+            <i class="shop icon shoppingCartDetail"></i>
             <div class="ui red circular label shoppingCartDetail">{{user.shoppingCart.length}}</div>
-            <div class="menu shoppingCartMenu" tabindex="-1" style="width: 20px">
+            <div class="menu shoppingCartMenu" tabindex="-1">
                 {{each user.shoppingCart}}
-                <div class="item">
-                    <img src="{{$value.headSrc}}">
-                    <span class="global_text_success">{{$value.name}}</span> 购买数 :<span class="global_text_danger"> {{$value.buyNum}}</span> 单价: <span class="global_text_danger">{{$value.price}}</span>
+                <div class="header">
+                    <img width="25px" src="{{$value.headSrc}}" style="margin-right: 5px"><span class="global_text_success"> {{$value.name}}</span>
                 </div>
+                <div class="item">
+                    购买数 :<span class="global_text_danger"> {{$value.buyNum}}</span> 单价: <span class="global_text_danger">{{$value.price}}</span>
+                </div>
+                <div class="ui divider"></div>
                 {{/each}}
                 <button class="ui button red fluid shoppingCartBtn" style="text-align: center">购买</button>
             </div>
@@ -49,7 +51,6 @@
                 </div>
             </div>
         </div>
-
         {{else if user.role == "Admin"}}
         <div class="ui floating dropdown item" tabindex="0">
             <i class="user icon"></i>
@@ -75,7 +76,6 @@
                 </a>
             </div>
         </div>
-
         {{else if user.role == "SuperAdmin"}}
         <div class="ui floating dropdown item" tabindex="0">
             <i class="user icon"></i>
@@ -102,7 +102,6 @@
                 </div>
             </div>
         </div>
-
         {{/if}}
         {{if user=="未登录"}}
         <a class="ui item" href="/login">
@@ -116,69 +115,21 @@
     </div>
 </div>
 
-<!--订单详情模态框-->
-<div class="ui long modal shoppingCartDetailShow">
-    <i class="close icon"></i>
-    <div class="header">
-        订单详情
-    </div>
-    <div class="content">
-        <div class="description">
-            <h3 class="ui horizontal header divider">
-                <i class="bar chart icon"></i>
-                你的订单
-            </h3>
-            <form class="ui form">
-                <table class="ui table">
-                    <thead>
-                    <tr>
-                        <th class="three wide">商品类型</th>
-                        <th class="three wide">图片</th>
-                        <th class="three wide">商品名</th>
-                        <th class="two wide">购买数</th>
-                        <th class="two wide">价格</th>
-                        <th class="three">删除</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {{each user.shoppingCart}}
-                    <tr>
-                        <td>{{$value.type}}</td>
-                        <td><a href="/Goods/{{$value.id}}"><img style="width: 60px;height: 60px" src="{{$value.headSrc}}"></a></td>
-                        <td class="global_text_danger">{{$value.name}}</td>
-                        <td class="ui"><input type="number" value="{{$value.buyNum}}"></td>
-                        <td class="global_text_success">{{$value.price}}</td>
-                        <td><button class="ui red button">删除</button></td>
-                    </tr>
-                    {{/each}}
-                    </tbody>
-                </table>
-            </form>
-
-        </div>
-    </div>
-    <div class="actions">
-        <div class="ui primary button">
-            继续
-            <i class="right chevron icon"></i>
-        </div>
-    </div>
-</div>
+{{include './functions/ShoppingCart'}}
 
 <div class="ui page inverted dimmer loading_page"></div>
 
-<script src="/tools/jquery-2.0.3.min.js"></script>
-<script src="/tools/semanticUI/semantic.min.js"></script>
 <script>
     $('.ui.dropdown').dropdown();
     $('.ui.menu .dropdown').dropdown({on: 'hover'});
 
+    //算个总价
     var totalPrice = 0;
     {{each user.shoppingCart}}
     totalPrice += {{$value.price}} * {{$value.buyNum}}
     {{/each}}
 
-    $(".shoppingCartBtn").html("<span>购买<span class='global_text_success'> 总价:"+totalPrice+"</span></span> ")
+    $(".shoppingCartBtn").html("<span>购买<span class='global_text_success'> 总价:"+totalPrice+"</span></span> ");
 
     $(document).on('click','a',function(){
         $(".loading_page").html('<div class="ui text loader">玩命加载中...</div>');
