@@ -121,6 +121,9 @@
                     success:function(){
                         $(".loading_page").html('<h1 class="ui header model_inner green">添加购物车成功！</h1>');
                         $(".loading_page").dimmer('show');
+                        setTimeout(function () {
+                            window.location.reload();
+                        },500)
                     },
                     error:function(){
                         $(".loading_page").html('<h1 class="ui header model_inner red">添加失败,请再重试一次...</div>');

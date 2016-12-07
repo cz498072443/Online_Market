@@ -78,6 +78,25 @@
 <script src="/tools/semanticUI/semantic.min.js"></script>
 
 <script>
+    var isClickBack = true;  //点击控制，防止点击购买全部时依然刷新
+    var ShoppingCartObj = {};
+
+    var buildShoppingCartObj = function (controller) {
+        if(controller){
+            isClickBack = false;
+        }
+        ShoppingCartObj = {};
+        $(".shoppingCartDetailShow table tbody tr").each(function(){
+            if( $(this).find("input[name='buyNum']").val() != 0 ){
+                var goodObj = {};
+                goodObj["id"] = $(this).attr("data-id");
+                goodObj["buyNum"] = parseInt( $(this).find("input[name='buyNum']").val() );
+
+                ShoppingCartObj[$(this).attr("data-id")] = goodObj;
+            }
+        });
+    }
+
     //控制购买数量
     $(document).on('keyup',"input[name='buyNum']",function(){
         if($(this).val() > parseInt($(this).attr("max"))){
@@ -90,10 +109,26 @@
     $('.second.modal').modal('attach events', '.buyShoppingCartShow' );
     $('.second.modal').modal('attach events', '.quickShoppingCartBtn');
     $(".shoppingCartDetailShow").modal({
+        onHide:function () {
+            setTimeout(function () {
+                if(isClickBack){
+                    $(".loading_page").html('<div class="ui text loader">重构页面...</div>');
+                    $(".loading_page").dimmer('show');
+
+                    buildShoppingCartObj();
+                    console.log(ShoppingCartObj);
+//                    window.location.reload()
+                }else {
+                    isClickBack = true;
+                }
+            },0);
+
+        },
         onHidden:function () {
-            alert("wocao")
+
         }
     }).modal('attach events','.returnCartBtn');
+
 
     //购物车删除商品
     $(".shoppingCartDetailShow").on("click",".deleteShoppingCartBtn",function(){
@@ -116,18 +151,8 @@
 
 
     //点击购买全部后生成购物单对象
-    var ShoppingCartObj = {};
-    $(".shoppingCartDetailShow").on("click",".buyShoppingCartShow",function() {
-        ShoppingCartObj = {};
-        $(".shoppingCartDetailShow table tbody tr").each(function(){
-            if( $(this).find("input[name='buyNum']").val() != 0 ){
-                var goodObj = {};
-                goodObj["id"] = $(this).attr("data-id");
-                goodObj["buyNum"] = parseInt( $(this).find("input[name='buyNum']").val() );
-
-                ShoppingCartObj[$(this).attr("data-id")] = goodObj;
-            }
-        });
+    $(".shoppingCartDetailShow").on("click",".buyShoppingCartShow",function () {
+        buildShoppingCartObj(true);
     });
 
 
@@ -151,5 +176,6 @@
     $(".quickShoppingCartBtn").on('click', function(){
         alert("wocao")
     });
+
 
 </script>
