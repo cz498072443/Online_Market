@@ -87,8 +87,13 @@
 
     //模态框相关
     $('.coupled.modal').modal({allowMultiple: false});
-    $('.second.modal').modal('attach events', '.buyShoppingCartShow');
-    $(".shoppingCartDetailShow").modal('attach events','.returnCartBtn');
+    $('.second.modal').modal('attach events', '.buyShoppingCartShow' );
+    $('.second.modal').modal('attach events', '.quickShoppingCartBtn');
+    $(".shoppingCartDetailShow").modal({
+        onHidden:function () {
+            alert("wocao")
+        }
+    }).modal('attach events','.returnCartBtn');
 
     //购物车删除商品
     $(".shoppingCartDetailShow").on("click",".deleteShoppingCartBtn",function(){

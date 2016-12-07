@@ -129,7 +129,7 @@
     totalPrice += {{$value.price}} * {{$value.buyNum}}
     {{/each}}
 
-    $(".shoppingCartBtn").html("<span>购买<span class='global_text_success'> 总价:"+totalPrice+"</span></span> ");
+    $(".quickShoppingCartBtn").html("<span>购买<span class='global_text_success'> 总价:"+totalPrice+"</span></span> ");
 
     $(document).on('click','a',function(){
         $(".loading_page").html('<div class="ui text loader">玩命加载中...</div>');
