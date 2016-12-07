@@ -73,6 +73,9 @@
                     <div class="ui pointing below label">
                         总价: <span class="global_text_success">{{$value.totalPrice}}</span> 元
                     </div>
+                    <div class="ui pointing below label">
+                        创建日期: <span class="global_text_success">{{$value.create_time | obj2date :"YYYY-MM-DD HH:mm:ss"}}</span>
+                    </div>
                     <thead>
                     <tr>
                         <th class="three wide">商品类型</th>

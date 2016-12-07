@@ -6,6 +6,7 @@ var router = express.Router();
 
 var User = require("./../../proxy").User;
 var Goods = require("./../../proxy").Goods;
+var Orders = require("./../../proxy").Orders;
 var eventproxy = require("eventproxy");
 
 //页面控制中间件
@@ -30,6 +31,91 @@ router.get("/", pageControl, function(req, res, next){
         ep.emit('user_detail', docs);
     });
 
+});
+
+router.post("/", pageControl, function(req, res, next){
+    var loc_user = req.session.user;
+    var ShoppingCartObj = JSON.parse(req.body.ShoppingCartObj);    //要转回来!!!!!!!!!!!!!!!
+    var ShoppingCartIndex = 0;  //控制异步回调
+    var totalPrice = 0;  //总价格
+
+    var ep = new eventproxy();
+    var orderObj = { customer:"",goodsList:[],totalPrice:0,create_time:req.body.create_time };
+
+    ep.fail(next);
+    ep.all('user_detail', 'good_finish', function(userDetail){
+        var ep2 = new eventproxy();
+        ep2.all('user_finish','order_finish',function(){
+            res.send(200);
+        });
+
+        //更新个人信息(钱包)
+        userDetail.wallet -= totalPrice;
+        if(userDetail.wallet < 0){
+            res.send(400);
+        }else {
+            //支付成功后清空购物车
+            userDetail.shoppingCart = [];
+            User.update(userDetail._id, userDetail, function(err, doc){
+                if(err){
+                    res.send(400);
+                }else{
+                    ep2.emit("user_finish");
+                }
+            });
+        }
+
+        //生成订单
+        orderObj["customer"] = userDetail._id;
+        orderObj["totalPrice"] = totalPrice;
+
+        Orders.createOne( orderObj, function(err, doc){
+            if(err){
+                res.send(400);
+            }else{
+                ep2.emit("order_finish");
+            }
+        })
+    });
+
+    //处理一下个人信息问题顺便构建一下订单
+    User.getOneById(loc_user._id, function(err,docs){
+        ep.emit('user_detail',docs);
+    });
+
+    //处理一下商品余量问题顺便构建一下订单
+    for(var x in ShoppingCartObj){
+        Goods.getOneById(x, function(err,docs){
+            var getOne = docs;
+            getOne.resNum -= ShoppingCartObj[x].buyNum;
+            totalPrice += ShoppingCartObj[x].buyNum * getOne.price;
+
+            if(getOne.resNum < 0){
+                res.send(400)
+            }else{
+                //构建订单的商品一栏(简直乱得一逼,其实是懒得再写了)
+                var goodObj = {};
+                goodObj["id"] = String(getOne._id);
+                goodObj["name"] = getOne.name;
+                goodObj["type"] = getOne.type;
+                goodObj["headSrc"] = getOne.headSrc;
+                goodObj["price"] = getOne.price;
+                goodObj["buyNum"] = ShoppingCartObj[x].buyNum;
+                orderObj["goodsList"].push(goodObj);
+
+                Goods.update(getOne._id, getOne, function(err, doc){
+                    if(err){
+                        res.send(400);
+                    }else{
+                        ShoppingCartIndex ++;
+                        if(ShoppingCartIndex == Object.getOwnPropertyNames(ShoppingCartObj).length){
+                            ep.emit('good_finish');
+                        }
+                    }
+                });
+            }
+        });
+    }
 });
 
 router.put('/add',pageControl,function(req, res, next){
@@ -119,6 +205,11 @@ router.delete('/delete',pageControl,function(req, res, next){
             ep.emit('user_detail',docs)
         }
     });
+});
+
+router.get('/paySucceed', function(req, res){
+    var loc_user = req.session.user;
+    res.render("goods/BuySucceed.html",{ userId:loc_user._id,goodId:"" })
 });
 
 module.exports = router;

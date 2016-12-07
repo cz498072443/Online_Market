@@ -102,7 +102,7 @@ router.post("/",pageControl,function(req, res, next){
     });
 });
 
-router.get('/paySecceed/:id',pageControl,function(req, res, next){
+router.get('/paySucceed/:id',pageControl,function(req, res, next){
     var loc_user = req.session.user;
     res.render("goods/BuySucceed.html",{ userId:loc_user._id,goodId:req.params.id })
 });

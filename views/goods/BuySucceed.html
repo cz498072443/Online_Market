@@ -12,7 +12,11 @@
             </div>
             <div class="three column centered row">
                 <div class="column" style="text-align: center">
+                    {{if goodId != ""}}
                     <a href="/Goods/{{goodId}}" class="ui orange button">继续购买</a>
+                    {{else}}
+                    <a href="/" class="ui orange button">继续购买</a>
+                    {{/if}}
                 </div>
                 <div class="column" style="text-align: center">
                     <a href="" class="ui green button">看看订单</a>
@@ -35,10 +39,14 @@
                     resTime -= 1;
                     $(".resTime").html(resTime);
                 }else {
+                    {{if goodId != ""}}
                     window.location.href="/Goods/{{goodId}}";
+                    {{else}}
+                    window.location.href="/";
+                    {{/if}}
                 }
-            },1000)
-        })()
+            },1000);
+        })();
 
     })
 

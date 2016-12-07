@@ -26,7 +26,7 @@
                         <td><a href="/Goods/{{$value._id}}"><img style="width: 60px;height: 60px" src="{{$value.headSrc}}"></a></td>
                         <td class="global_text_danger">{{$value.name}}</td>
                         <td class="ui input" style="padding-top: 25px"><input min="0" max="{{$value.resNum}}" type="number" name="buyNum" value="{{$value.buyNum}}"></td>
-                        <td class="global_text_success">{{$value.price}}</td>
+                        <td class="global_text_success price">{{$value.price}}</td>
                         <td><button class="ui red button deleteShoppingCartBtn">删除</button></td>
                     </tr>
                     {{/each}}
@@ -36,10 +36,10 @@
         </div>
     </div>
     <div class="actions">
-        <div class="ui orange button buyShoppingCartShow">
+        <button class="ui orange button buyShoppingCartShow">
             购买全部
             <i class="right payment icon"></i>
-        </div>
+        </button>
     </div>
 </div>
 
@@ -50,11 +50,11 @@
     </div>
     <div class="content">
         <div class="image" style="float: left">
-            <i class="payment green icon"></i>
+            <i class="shop orange icon"></i>
         </div>
         {{if user.secPassword == ""}}
         <div class="description">
-            <p>确认购买该商品吗？</p>
+            <p>确认清空购物车吗？</p>
             <p class="global_text_warning"><i class="warning red sign icon"></i>警告:您尚未设置二级密码,为保证用户安全请尽快<a href="/personalInfo" style="color: orangered">前往设置</a></p>
         </div>
         {{else}}
@@ -64,11 +64,11 @@
         <div class="two fluid ui inverted buttons">
             <div class="ui red basic cancel inverted button returnCartBtn">
                 <i class="remove icon"></i>
-                容我三思
+                慢着!
             </div>
-            <a class="ui green ok basic inverted button confirmBuy">
+            <a class="ui green ok basic inverted button confirmBuyShoppingCart">
                 <i class="checkmark icon"></i>
-                确认购买
+                说清就清!
             </a>
         </div>
     </div>
@@ -85,10 +85,12 @@
         }
     });
 
+    //模态框相关
     $('.coupled.modal').modal({allowMultiple: false});
     $('.second.modal').modal('attach events', '.buyShoppingCartShow');
     $(".shoppingCartDetailShow").modal('attach events','.returnCartBtn');
 
+    //购物车删除商品
     $(".shoppingCartDetailShow").on("click",".deleteShoppingCartBtn",function(){
         var loc = $(this);
 
@@ -100,7 +102,6 @@
                 id: $(this).parent().parent().attr("data-id")
             },
             success: function(){
-                alert("删除成功")
                 loc.parent().parent().remove();
             },error: function(){
                 alert("删除失败!!")
@@ -108,5 +109,42 @@
         });
     });
 
+
+    //点击购买全部后生成购物单对象
+    var ShoppingCartObj = {};
+    $(".shoppingCartDetailShow").on("click",".buyShoppingCartShow",function() {
+        ShoppingCartObj = {};
+        $(".shoppingCartDetailShow table tbody tr").each(function(){
+            if( $(this).find("input[name='buyNum']").val() != 0 ){
+                var goodObj = {};
+                goodObj["id"] = $(this).attr("data-id");
+                goodObj["buyNum"] = parseInt( $(this).find("input[name='buyNum']").val() );
+
+                ShoppingCartObj[$(this).attr("data-id")] = goodObj;
+            }
+        });
+    });
+
+
+    $(".buyShoppingCartModal").on("click", ".confirmBuyShoppingCart", function(){
+        $.ajax({
+            url: "/ShoppingCart",
+            type: "POST",
+            data: {
+                ShoppingCartObj: JSON.stringify(ShoppingCartObj),
+                create_time: new Date()
+            },
+            success: function(){
+                window.location.href = "/ShoppingCart/paySucceed"
+            },
+            error: function(){
+                alert("购买失败");
+            }
+        })
+    });
+
+    $(".quickShoppingCartBtn").on('click', function(){
+        alert("wocao")
+    });
 
 </script>
