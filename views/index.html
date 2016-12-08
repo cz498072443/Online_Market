@@ -68,6 +68,11 @@
     </div>
 </div>
 
+<!--清空购物车确认控制-->
+<div class="ui modal addSuccess" style="background-color: white">
+        <h1>添加成功</h1>
+</div>
+
 <script src="/tools/unslider/js/unslider.js"></script>
 <script src="/tools/template-native.js"></script>
 
@@ -108,6 +113,8 @@
                 var goodId = $(this).attr("data-id");
                 window.location.href="/Goods/"+goodId;
             });
+
+            $('.addSuccess').modal('attach events', '.addShopList' );
 
             $(".addShopList").on('click',function(event){
                 event.stopPropagation();
