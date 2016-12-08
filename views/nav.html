@@ -4,7 +4,7 @@
     </a>
     <div class="right menu">
         {{if user.shoppingCart.length !== 0}}
-        <div class="ui floating dropdown item ShoppingCartBar" tabindex="0">
+        <div class="ui floating dropdown item ShoppingCartBar" id="ShoppingCartBar" tabindex="0">
             <i class="shop icon shoppingCartDetail"></i>
             <div class="ui red circular label shoppingCartDetail">{{user.shoppingCart.length}}</div>
             <div class="menu shoppingCartMenu" tabindex="-1">
@@ -17,7 +17,7 @@
                 </div>
                 <div class="ui divider"></div>
                 {{/each}}
-                <button class="ui button red fluid quickShoppingCartBtn" style="text-align: center">购买</button>
+                <button class="ui button red fluid buyShoppingCartShow" id="quickBuy" style="text-align: center">购买</button>
             </div>
         </div>
         {{/if}}
@@ -121,7 +121,7 @@
 
 <script id="ShoppingCartBarTmpl" type="text/html">
     <% if(data.length !== 0){ %>
-    <div class="ui floating dropdown item ShoppingCartBar" tabindex="0">
+    <div class="ui floating dropdown item ShoppingCartBar" id="ShoppingCartBar" tabindex="0">
         <i class="shop icon shoppingCartDetail"></i>
         <div class="ui red circular label shoppingCartDetail"><%=data.length %></div>
         <div class="menu shoppingCartMenu" tabindex="-1">
@@ -134,7 +134,7 @@
             </div>
             <div class="ui divider"></div>
             <% } %>
-            <button class="ui button red fluid quickShoppingCartBtn" style="text-align: center">购买</button>
+            <button class="ui button red fluid buyShoppingCartShow" id="quickBuy" style="text-align: center">购买</button>
         </div>
     </div>
     <% } %>
@@ -170,10 +170,10 @@
     {{each user.shoppingCart}}
     totalPrice += {{$value.price}} * {{$value.buyNum}}
     {{/each}}
-    $(".quickShoppingCartBtn").html("<span>购买<span class='global_text_success'> 总价:"+totalPrice+"</span></span> ");
+    $(".ShoppingCartBar .buyShoppingCartShow").html("<span>购买<span class='global_text_success'> 总价:"+totalPrice+"</span></span> ");
 
-    //加载购物车导航栏
-    var loadShoppingCartBar = function(){
+    //重新加载购物车导航栏和购物车详情页面
+    var RefreshShoppingCart = function(){
         $.ajax({
             url:"/ShoppingCart",
             type:"GET",
@@ -182,7 +182,9 @@
                 var ShoppingCartBarTmpl = template('ShoppingCartBarTmpl',{data: shoppingCart});
                 var ShoppingCartTableTmpl = template('ShoppingCartTableTmpl',{data: shoppingCart});
 
-                $(".inverted.menu .right.menu div").eq(0).remove();
+                if($(".inverted.menu .right.menu div").eq(0).attr("id") == "ShoppingCartBar"){
+                    $(".inverted.menu .right.menu div").eq(0).remove();
+                }
                 $(".inverted.menu .right.menu").prepend(ShoppingCartBarTmpl);
                 $(".shoppingCartDetailShow table tbody").html(ShoppingCartTableTmpl);
 
@@ -191,15 +193,11 @@
                     for(var i = 0;i < shoppingCart.length;i ++){
                         totalPrice += shoppingCart[i].price * shoppingCart[i].buyNum;
                     }
-                    $(".quickShoppingCartBtn").html("<span>购买<span class='global_text_success'> 总价:"+totalPrice+"</span></span> ");
+                    $("#quickBuy").html("<span>购买<span class='global_text_success'> 总价:"+totalPrice+"</span></span> ");
                 })();
 
                 $('.ui.menu .dropdown').dropdown({on: 'hover'});
                 $('.second.modal').modal('attach events', '.buyShoppingCartShow' );
-                $('.second.modal').modal('attach events', '.quickShoppingCartBtn');
-            },
-            error: function(){
-
             }
         });
     };

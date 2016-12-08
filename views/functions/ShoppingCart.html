@@ -43,7 +43,7 @@
     </div>
 </div>
 
-<!--删除确认控制-->
+<!--清空购物车确认控制-->
 <div class="ui basic coupled second modal buyShoppingCartModal">
     <div class="header">
         <h1>购买确认</h1>
@@ -54,6 +54,7 @@
         </div>
         {{if user.secPassword == ""}}
         <div class="description">
+            <h3>总价 : <span class="global_text_success"></span></h3>
             <p>确认清空购物车吗？</p>
             <p class="global_text_warning"><i class="warning red sign icon"></i>警告:您尚未设置二级密码,为保证用户安全请尽快<a href="/personalInfo" style="color: orangered">前往设置</a></p>
         </div>
@@ -83,6 +84,7 @@
     var ShoppingCartObj = {};
 
     var buildShoppingCartObj = function (controller) {
+        var totalPrice = 0
         if(controller){
             isClickBack = false;
         }
@@ -92,10 +94,13 @@
                 var goodObj = {};
                 goodObj["id"] = $(this).attr("data-id");
                 goodObj["buyNum"] = parseInt( $(this).find("input[name='buyNum']").val() );
+                totalPrice += goodObj["buyNum"] * parseInt($(this).find(".price").html());
 
                 ShoppingCartObj[$(this).attr("data-id")] = goodObj;
             }
         });
+
+        $(".buyShoppingCartModal .description .global_text_success").html(totalPrice);
     };
 
     //控制购买数量
@@ -108,26 +113,28 @@
     //模态框相关
     $('.coupled.modal').modal({allowMultiple: false});
     $('.second.modal').modal('attach events', '.buyShoppingCartShow' );
-    $('.second.modal').modal('attach events', '.quickShoppingCartBtn');
     $(".shoppingCartDetailShow").modal({
         onHide:function () {
             setTimeout(function () {
                 if(isClickBack){
                     buildShoppingCartObj();
-                    $.ajax({
-                        url: "/ShoppingCart/update",
-                        type: "PUT",
-                        data:{
-                            ShoppingCartObj: JSON.stringify(ShoppingCartObj)
-                        },
-                        success: function(){
-                            loadShoppingCartBar();
-                        },
-                        error: function(){
-                            alert("更新失败")
-                        }
-                    });
-
+                    if(Object.getOwnPropertyNames(ShoppingCartObj).length != 0){
+                        $.ajax({
+                            url: "/ShoppingCart/update",
+                            type: "PUT",
+                            data:{
+                                ShoppingCartObj: JSON.stringify(ShoppingCartObj)
+                            },
+                            success: function(){
+                                RefreshShoppingCart();
+                            },
+                            error: function(){
+                                alert("更新失败")
+                            }
+                        });
+                    }else{
+                        RefreshShoppingCart();
+                    }
                 }else {
                     isClickBack = true;
                 }
@@ -144,7 +151,6 @@
     $(".shoppingCartDetailShow").on("click",".deleteShoppingCartBtn",function(){
         var loc = $(this);
 
-        console.log($(this).parent().parent().attr("data-id"));
         $.ajax({
             url: "/ShoppingCart/delete",
             type: "delete",
@@ -154,14 +160,20 @@
             success: function(){
                 loc.parent().parent().remove();
             },error: function(){
-                alert("删除失败!!")
+                alert("删除失败!!");
             }
         });
     });
 
     //点击购买全部后生成购物单对象
-    $(".shoppingCartDetailShow").on("click",".buyShoppingCartShow",function () {
-        buildShoppingCartObj(true);
+    $(document).on("click",".buyShoppingCartShow",function () {
+        if($(this).attr("id") == "quickBuy"){
+            RefreshShoppingCart();
+            buildShoppingCartObj();
+        }else {
+            buildShoppingCartObj(true);
+        }
+
     });
 
     $(".buyShoppingCartModal").on("click", ".confirmBuyShoppingCart", function(){

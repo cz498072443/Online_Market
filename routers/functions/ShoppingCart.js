@@ -79,36 +79,40 @@ router.post("/", pageControl, function(req, res, next){
 
     //处理一下商品余量问题顺便构建一下订单
     for(var x in ShoppingCartObj){
-        Goods.getOneById(x, function(err,docs){
-            var getOne = docs;
-            getOne.resNum -= ShoppingCartObj[x].buyNum;
-            totalPrice += ShoppingCartObj[x].buyNum * getOne.price;
+        Goods.getOneById(x, test(x));
+        //呵呵作用域链,如果不这样的话,下面那个x在使用时,for循环早就结束了...
+        function test(x){
+            return (function(err,docs){
+                var getOne = docs;
+                getOne.resNum -= ShoppingCartObj[x].buyNum;
+                totalPrice += ShoppingCartObj[x].buyNum * getOne.price;
 
-            if(getOne.resNum < 0){
-                res.send(400)
-            }else{
-                //构建订单的商品一栏(简直乱得一逼,其实是懒得再写了)
-                var goodObj = {};
-                goodObj["id"] = String(getOne._id);
-                goodObj["name"] = getOne.name;
-                goodObj["type"] = getOne.type;
-                goodObj["headSrc"] = getOne.headSrc;
-                goodObj["price"] = getOne.price;
-                goodObj["buyNum"] = ShoppingCartObj[x].buyNum;
-                orderObj["goodsList"].push(goodObj);
+                if(getOne.resNum < 0){
+                    res.send(400)
+                }else{
+                    //构建订单的商品一栏(简直乱得一逼,其实是懒得再写了)
+                    var goodObj = {};
+                    goodObj["id"] = String(getOne._id);
+                    goodObj["name"] = getOne.name;
+                    goodObj["type"] = getOne.type;
+                    goodObj["headSrc"] = getOne.headSrc;
+                    goodObj["price"] = getOne.price;
+                    goodObj["buyNum"] = ShoppingCartObj[x].buyNum;
+                    orderObj["goodsList"].push(goodObj);
 
-                Goods.update(getOne._id, getOne, function(err, doc){
-                    if(err){
-                        res.send(400);
-                    }else{
-                        ShoppingCartIndex ++;
-                        if(ShoppingCartIndex == Object.getOwnPropertyNames(ShoppingCartObj).length){
-                            ep.emit('good_finish');
+                    Goods.update(getOne._id, getOne, function(err, doc){
+                        if(err){
+                            res.send(400);
+                        }else{
+                            ShoppingCartIndex ++;
+                            if(ShoppingCartIndex == Object.getOwnPropertyNames(ShoppingCartObj).length){
+                                ep.emit('good_finish');
+                            }
                         }
-                    }
-                });
-            }
-        });
+                    });
+                }
+            });
+        }
     }
 });
 
@@ -211,9 +215,7 @@ router.put('/update', function(req, res, next){
 
     ep.fail(next);
     ep.all('shoppingCartFinish', function(){
-        console.log(thisShoppingCartObj)
         User.updateShoppingCart(loc_user._id, thisShoppingCartObj, function(err,docs){
-            //console.log(thisShoppingCartObj);
             if(err){
                 res.send(400);
             }else{
@@ -223,26 +225,33 @@ router.put('/update', function(req, res, next){
     });
 
     //根据新的订单获取新的商品数据(尤其是商品余量)
-    for(var x in ShoppingCartObj){
-        Goods.getOneById(x, function(err,docs){
-            var goodObj = {};
-            goodObj["_id"] = x;
-            goodObj["name"] = docs.name;
-            goodObj["price"] = docs.price;
-            goodObj["resNum"] = docs.resNum;
-            goodObj["headSrc"] = docs.headSrc;
-            goodObj["type"] = docs.type;
-            goodObj["buyNum"] = ShoppingCartObj[x].buyNum;
+    if(!ShoppingCartObj){
+        ep.emit('shoppingCartFinish');
+    }else{
+        for(var x in ShoppingCartObj){
+            Goods.getOneById(x,test(x));
+            //作用域链你大爷
+            function test(x){
+                return (function(err,docs){
+                    var goodObj = {};
+                    goodObj["_id"] = x;
+                    goodObj["name"] = docs.name;
+                    goodObj["price"] = docs.price;
+                    goodObj["resNum"] = docs.resNum;
+                    goodObj["headSrc"] = docs.headSrc;
+                    goodObj["type"] = docs.type;
+                    goodObj["buyNum"] = ShoppingCartObj[x].buyNum;
 
-            thisShoppingCartObj.push(goodObj);
-            Index++;
-            if(Index == Object.getOwnPropertyNames(ShoppingCartObj).length){
-                ep.emit('shoppingCartFinish');
-                console.log(thisShoppingCartObj)
+                    thisShoppingCartObj.push(goodObj);
+                    Index++;
+                    if(Index == Object.getOwnPropertyNames(ShoppingCartObj).length){
+                        ep.emit('shoppingCartFinish');
+                    }
+                })
             }
-        });
-    }
 
+        }
+    }
 });
 
 router.get('/paySucceed', function(req, res){

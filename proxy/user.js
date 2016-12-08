@@ -23,7 +23,7 @@ exports.update = function (id, params, callback) {
 };
 
 exports.updateShoppingCart = function (id, shoppingCart, callback){
-    //console.log(shoppingCart)
+    console.log(shoppingCart)
     User.update({_id:id}, {'$set':{'shoppingCart': shoppingCart}}).exec(function(err,doc){
         callback(err,doc);
     });
