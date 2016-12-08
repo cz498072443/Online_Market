@@ -20,15 +20,9 @@ var pageControl = function (req, res, next) {
 
 router.get("/", pageControl, function(req, res, next){
     var loc_user = req.session.user;
-    var ep = new eventproxy();
-
-    ep.fail(next);
-    ep.all('user_detail', function(userDetail){
-        res.render('functions/ShoppingCart.html',{ user: userDetail });
-    });
 
     User.getOneById(loc_user._id, function(err, docs){
-        ep.emit('user_detail', docs);
+        res.send({res:docs});
     });
 
 });
@@ -205,6 +199,50 @@ router.delete('/delete',pageControl,function(req, res, next){
             ep.emit('user_detail',docs)
         }
     });
+});
+
+//更新购物车
+router.put('/update', function(req, res, next){
+    var loc_user = req.session.user;
+    var ep = new eventproxy();
+    var ShoppingCartObj = JSON.parse(req.body.ShoppingCartObj);    //要转回来!!!!!!!!!!!!!!!
+    var Index = 0;  //控制异步回调的哨兵
+    var thisShoppingCartObj = [];
+
+    ep.fail(next);
+    ep.all('shoppingCartFinish', function(){
+        console.log(thisShoppingCartObj)
+        User.updateShoppingCart(loc_user._id, thisShoppingCartObj, function(err,docs){
+            //console.log(thisShoppingCartObj);
+            if(err){
+                res.send(400);
+            }else{
+                res.send(200);
+            }
+        });
+    });
+
+    //根据新的订单获取新的商品数据(尤其是商品余量)
+    for(var x in ShoppingCartObj){
+        Goods.getOneById(x, function(err,docs){
+            var goodObj = {};
+            goodObj["_id"] = x;
+            goodObj["name"] = docs.name;
+            goodObj["price"] = docs.price;
+            goodObj["resNum"] = docs.resNum;
+            goodObj["headSrc"] = docs.headSrc;
+            goodObj["type"] = docs.type;
+            goodObj["buyNum"] = ShoppingCartObj[x].buyNum;
+
+            thisShoppingCartObj.push(goodObj);
+            Index++;
+            if(Index == Object.getOwnPropertyNames(ShoppingCartObj).length){
+                ep.emit('shoppingCartFinish');
+                console.log(thisShoppingCartObj)
+            }
+        });
+    }
+
 });
 
 router.get('/paySucceed', function(req, res){

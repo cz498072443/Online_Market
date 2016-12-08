@@ -4,7 +4,7 @@
     </a>
     <div class="right menu">
         {{if user.shoppingCart.length !== 0}}
-        <div class="ui floating dropdown item" tabindex="0">
+        <div class="ui floating dropdown item ShoppingCartBar" tabindex="0">
             <i class="shop icon shoppingCartDetail"></i>
             <div class="ui red circular label shoppingCartDetail">{{user.shoppingCart.length}}</div>
             <div class="menu shoppingCartMenu" tabindex="-1">
@@ -119,26 +119,91 @@
 
 <div class="ui page inverted dimmer loading_page"></div>
 
+<script id="ShoppingCartBarTmpl" type="text/html">
+    <% if(data.length !== 0){ %>
+    <div class="ui floating dropdown item ShoppingCartBar" tabindex="0">
+        <i class="shop icon shoppingCartDetail"></i>
+        <div class="ui red circular label shoppingCartDetail"><%=data.length %></div>
+        <div class="menu shoppingCartMenu" tabindex="-1">
+            <% for(var i = 0;i < data.length;i ++){ %>
+            <div class="header">
+                <img width="25px" src="<%=data[i].headSrc %>" style="margin-right: 5px"><span class="global_text_success"> <%=data[i].name %></span>
+            </div>
+            <div class="item">
+                购买数 :<span class="global_text_danger"> <%=data[i].buyNum %></span> 单价: <span class="global_text_danger"><%=data[i].price %></span>
+            </div>
+            <div class="ui divider"></div>
+            <% } %>
+            <button class="ui button red fluid quickShoppingCartBtn" style="text-align: center">购买</button>
+        </div>
+    </div>
+    <% } %>
+</script>
+
+<script id="ShoppingCartTableTmpl" type="text/html">
+    <% for(var i = 0;i < data.length;i ++){ %>
+    <tr data-id="<%=data[i]._id %>">
+        <td><%=data[i].type %></td>
+        <td><a href="/Goods/<%=data[i]._id %>"><img style="width: 60px;height: 60px" src="<%=data[i].headSrc %>"></a></td>
+        <td class="global_text_danger"><%=data[i].name %></td>
+        <td class="ui input" style="padding-top: 25px"><input min="0" max="<%=data[i].resNum %>" type="number" name="buyNum" value="<%=data[i].buyNum %>"></td>
+        <td class="global_text_success price"><%=data[i].price %></td>
+        <td><button class="ui red button deleteShoppingCartBtn">删除</button></td>
+    </tr>
+    <% } %>
+</script>
+
 <script>
     $('.ui.dropdown').dropdown();
     $('.ui.menu .dropdown').dropdown({on: 'hover'});
-
-    //算个总价
-    var totalPrice = 0;
-    {{each user.shoppingCart}}
-    totalPrice += {{$value.price}} * {{$value.buyNum}}
-    {{/each}}
-
-    $(".quickShoppingCartBtn").html("<span>购买<span class='global_text_success'> 总价:"+totalPrice+"</span></span> ");
 
     $(document).on('click','a',function(){
         $(".loading_page").html('<div class="ui text loader">玩命加载中...</div>');
         $(".loading_page").dimmer('show');
     });
 
-    $(".shoppingCartDetail").on('click',function () {
+    $(".inverted.menu .right.menu").on('click',".shoppingCartDetail", function () {
         $(".shoppingCartDetailShow").modal('show')
     });
+    //算个总价
+    var totalPrice = 0;
+    {{each user.shoppingCart}}
+    totalPrice += {{$value.price}} * {{$value.buyNum}}
+    {{/each}}
+    $(".quickShoppingCartBtn").html("<span>购买<span class='global_text_success'> 总价:"+totalPrice+"</span></span> ");
+
+    //加载购物车导航栏
+    var loadShoppingCartBar = function(){
+        $.ajax({
+            url:"/ShoppingCart",
+            type:"GET",
+            success: function(data){
+                var shoppingCart = data.res.shoppingCart;
+                var ShoppingCartBarTmpl = template('ShoppingCartBarTmpl',{data: shoppingCart});
+                var ShoppingCartTableTmpl = template('ShoppingCartTableTmpl',{data: shoppingCart});
+
+                $(".inverted.menu .right.menu div").eq(0).remove();
+                $(".inverted.menu .right.menu").prepend(ShoppingCartBarTmpl);
+                $(".shoppingCartDetailShow table tbody").html(ShoppingCartTableTmpl);
+
+                (function(){
+                    var totalPrice = 0;
+                    for(var i = 0;i < shoppingCart.length;i ++){
+                        totalPrice += shoppingCart[i].price * shoppingCart[i].buyNum;
+                    }
+                    $(".quickShoppingCartBtn").html("<span>购买<span class='global_text_success'> 总价:"+totalPrice+"</span></span> ");
+                })();
+
+                $('.ui.menu .dropdown').dropdown({on: 'hover'});
+                $('.second.modal').modal('attach events', '.buyShoppingCartShow' );
+                $('.second.modal').modal('attach events', '.quickShoppingCartBtn');
+            },
+            error: function(){
+
+            }
+        });
+    };
+
 
 </script>
 

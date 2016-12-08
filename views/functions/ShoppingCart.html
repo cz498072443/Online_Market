@@ -74,6 +74,7 @@
     </div>
 </div>
 
+
 <script src="/tools/jquery-2.0.3.min.js"></script>
 <script src="/tools/semanticUI/semantic.min.js"></script>
 
@@ -95,7 +96,7 @@
                 ShoppingCartObj[$(this).attr("data-id")] = goodObj;
             }
         });
-    }
+    };
 
     //控制购买数量
     $(document).on('keyup',"input[name='buyNum']",function(){
@@ -112,12 +113,21 @@
         onHide:function () {
             setTimeout(function () {
                 if(isClickBack){
-                    $(".loading_page").html('<div class="ui text loader">重构页面...</div>');
-                    $(".loading_page").dimmer('show');
-
                     buildShoppingCartObj();
-                    console.log(ShoppingCartObj);
-//                    window.location.reload()
+                    $.ajax({
+                        url: "/ShoppingCart/update",
+                        type: "PUT",
+                        data:{
+                            ShoppingCartObj: JSON.stringify(ShoppingCartObj)
+                        },
+                        success: function(){
+                            loadShoppingCartBar();
+                        },
+                        error: function(){
+                            alert("更新失败")
+                        }
+                    });
+
                 }else {
                     isClickBack = true;
                 }
@@ -149,12 +159,10 @@
         });
     });
 
-
     //点击购买全部后生成购物单对象
     $(".shoppingCartDetailShow").on("click",".buyShoppingCartShow",function () {
         buildShoppingCartObj(true);
     });
-
 
     $(".buyShoppingCartModal").on("click", ".confirmBuyShoppingCart", function(){
         $.ajax({
@@ -172,10 +180,5 @@
             }
         })
     });
-
-    $(".quickShoppingCartBtn").on('click', function(){
-        alert("wocao")
-    });
-
 
 </script>
