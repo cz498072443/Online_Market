@@ -23,7 +23,6 @@
 
         <div class="ui centered grid main container">
             <div class="ui left very close rail">
-                <!--<div class="ui segment">-->
                 <div class="ui vertical steps">
                     <a class="active step">
                         <i class="truck icon"></i>
@@ -47,60 +46,104 @@
                         </div>
                     </a>
                 </div>
-                <!--</div>-->
             </div>
 
-            <div class="eight wide column">
-                <h1 class="ui red header"><i class="settings icon"></i><div class="content">添加商品<div class="sub header">设置并添加商品</div></div></h1>
-                <h3 class="ui horizontal header divider"><i class="tag icon"></i>基本配置</h3>
-            </div>
-            <div class="eight wide column">
-                <h1 class="ui red header"><i class="settings icon"></i><div class="content">添加商品<div class="sub header">设置并添加商品</div></div></h1>
-                <h3 class="ui horizontal header divider"><i class="tag icon"></i>基本配置</h3>
-            </div>
             <div class="fourteen wide column">
-                <div class="ui form">
-                    <div class="two fields">
-                        <div class="field">
-                            <label>商品名</label>
-                            <input name="name" type="text">
-                        </div>
-                        <div class="field">
-                            <label>类别</label>
-                            <select name="type" class="ui search dropdown">
-                                <option value="书籍">书籍</option>
-                                <option value="服装">服装</option>
-                                <option value="游戏">游戏</option>
-                                <option value="食品">食品</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="four fields">
-                        <div class="field">
-                            <label>商品数量</label>
-                            <input name="totalNum" type="number">
-                        </div>
-                    </div>
-                    <div class="four fields">
-                        <div class="field">
-                            <label>价格 (/元)</label>
-                            <div class="ui icon input">
-                                <i class="payment icon"></i>
-                                <input name="price" type="number">
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <h3 class="ui horizontal header divider"><i class="tag icon"></i>介绍内容</h3>
-                    <p class="global_text_danger">Tips: 内容中的第一张图片会被选作为商品头像</p>
+                <div class="ui three item orange menu">
+                    <a class="active item" id="personalInfoTab">
+                        个人信息
+                    </a>
+                    <a class="item">
+                        菜单项B
+                    </a>
+                    <a class="item">
+                        菜单项C
+                    </a>
                 </div>
-
-                <h3 class="ui horizontal header divider"><i class="tag icon"></i>结束</h3>
-                <button class="ui green button" id="save">
-                    <i class="save icon"></i>保存
-                </button>
             </div>
+            <div class="doubling two column row fourteen wide">
+                <h3 class="ui horizontal teal header divider"><i class="tag icon"></i>基本信息</h3>
+                <div class="column">
+                    <div class="ui card" style="margin: 0 auto">
+                        <div class="image dimmable">
+                            <div class="ui dimmer">
+                                <div class="content">
+                                    <div class="center">
+                                        <div class="ui inverted button">添加好友</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <img src="/upload/Users/head/test.png">
+                        </div>
+                        <div class="content">
+                            <div class="header">陈卓</div>
+                            <div class="description">一句或两句的描述</div>
+                        </div>
+                        <div class="extra content">
+                            <a class="right floated created">随机</a>
+                            <a class="friends">
+                                随机</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="column baseInfo">
+                    <div class="ui divided very relaxed list">
+                        <div class="item baseInfo_account">
+                            <i class="star icon"></i>
+                            <div class="content" style="width: 100%;">
+                                <div class="header" style="margin-bottom: 20px">账户信息</div>
+                                <div class="discription ui sixteen wide grid">
+                                    <div class="six wide column inputLable">用户名</div>
+                                    <div class="ten wide column inputInfo personal_username">{{user.username}}</div>
+                                </div>
+                                <div class="discription ui sixteen wide grid">
+                                    <div class="six wide column">昵称</div>
+                                    <div class="ten wide column inputInfo personal_username">
+                                        {{if user.nickname}}
+                                        {{user.nickname}}
+                                        {{else}}
+                                        未设置
+                                        {{/if}}
+                                    </div>
+                                </div>
+                                <div class="discription ui sixteen wide grid">
+                                    <div class="six wide column">账户余额</div>
+                                    <div class="ten wide column inputInfo personal_username">{{user.wallet}}元</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item baseInfo_account">
+                            <i class="star icon"></i>
+                            <div class="content" style="width: 100%;">
+                                <div class="header" style="margin-bottom: 20px">账户信息</div>
+                                <div class="discription ui sixteen wide grid">
+                                    <div class="six wide column inputLable">用户名</div>
+                                    <div class="ten wide column inputInfo personal_username">{{user.username}}</div>
+                                </div>
+                                <div class="discription ui sixteen wide grid">
+                                    <div class="six wide column">昵称</div>
+                                    <div class="ten wide column inputInfo personal_username">
+                                        {{if user.nickname}}
+                                        {{user.nickname}}
+                                        {{else}}
+                                        未设置
+                                        {{/if}}
+                                    </div>
+                                </div>
+                                <div class="discription ui sixteen wide grid">
+                                    <div class="six wide column">账户余额</div>
+                                    <div class="ten wide column inputInfo personal_username">{{user.wallet}}元</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="sixteen wide column">
+                    <h1 class="ui red header"><i class="settings icon"></i><div class="content">添加商品<div class="sub header">设置并添加商品</div></div></h1>
+                    <h3 class="ui horizontal header divider"><i class="tag icon"></i>基本配置</h3>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
