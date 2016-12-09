@@ -17,6 +17,7 @@ var GoodsContr = require("./functions").GoodsContr;
 var OrdersContr = require("./functions").OrdersContr;
 var ShoppingCart = require("./functions").ShoppingCart;
 var GoodsPage = require("./goods").GoodsPage;
+var Personal = require("./users").Personal;
 
 var Goods = require("./../proxy").Goods;
 var User = require("./../proxy").User;
@@ -61,6 +62,9 @@ router.use('/ShoppingCart',ShoppingCart);
 
 //商品
 router.use('/Goods',GoodsPage);
+
+//用户
+router.use('/Personal',Personal);
 
 
 module.exports = router;

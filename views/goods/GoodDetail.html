@@ -62,7 +62,7 @@
                         <!--</div>-->
                     </div>
                     <h3 class="ui horizontal header divider"><i class="chevron circle down icon"></i></h3>
-                    <div class="ui large button orange">加入购物车</div><br><br>
+                    <div class="ui large button orange addShoppingCart">加入购物车</div><br><br>
                     <div class="ui large button red buyNow">立即购买</div>
                 </div>
             </div>
@@ -110,6 +110,13 @@
     </div>
 </div>
 
+<!--清空购物车确认控制-->
+<div class="ui modal basic addSuccess">
+    <div class="header">
+        <h1 class="ui header green" style="text-align: center">添加购物车成功</h1>
+    </div>
+</div>
+
 <script src="/tools/template-native.js"></script>
 <script type="text/javascript">
 
@@ -126,6 +133,29 @@
                 if($(this).val() > parseInt($(this).attr("max"))){
                     $(this).val($(this).attr("max"))
                 }
+            });
+
+            //添加购物车按钮
+            $('.addSuccess').modal('attach events', '.addShoppingCart' );
+            $(".addShoppingCart").on('click',function(event){
+                $('.addSuccess').modal('show');
+                setTimeout(function(){ $('.addSuccess').modal('hide'); },600);
+
+                event.stopPropagation();
+                $.ajax({
+                    url:"/ShoppingCart/add",
+                    type:"PUT",
+                    data:{
+                        goodId: "{{goodDetail.id}}"
+                    },
+                    success:function(){
+                        RefreshShoppingCart();
+                    },
+                    error:function(){
+                        $(".loading_page").html('<h1 class="ui header model_inner red">添加失败,请再重试一次...</div>');
+                        $(".loading_page").dimmer('show');
+                    }
+                });
             });
 
             //购买按钮

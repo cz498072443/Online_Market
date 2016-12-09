@@ -1,0 +1,120 @@
+{{include './../headers'}}
+
+{{include './../nav'}}
+
+<div class="pusher">
+    <div class="full height">
+        <div class="header segment">
+            <div class="ui three column horizontally padded grid head_info">
+                <div class="equal height row">
+                    <div class="red column">
+                        <h3>Hello {{user.username}}</h3>
+                    </div>
+                    <div class="blue column">
+                        <p>当前账户余额: <span class="global_text_danger">{{user.wallet || 0}}</span> 元</p>
+                    </div>
+                    <div class="green column">
+                        <p>这是一个长行，旁边有很多文本内容。</p>
+                        <p>可能会占用很多段落。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui centered grid main container">
+            <div class="ui left very close rail">
+                <!--<div class="ui segment">-->
+                <div class="ui vertical steps">
+                    <a class="active step">
+                        <i class="truck icon"></i>
+                        <div class="content">
+                            <div class="title">上一步</div>
+                            <div class="description">描述</div>
+                        </div>
+                    </a>
+                    <a class="completed step">
+                        <i class="payment icon"></i>
+                        <div class="content">
+                            <div class="title">当前步骤</div>
+                            <div class="description">描述</div>
+                        </div>
+                    </a>
+                    <a class="step">
+                        <i class="info icon"></i>
+                        <div class="content">
+                            <div class="title">禁用步骤</div>
+                            <div class="description">描述</div>
+                        </div>
+                    </a>
+                </div>
+                <!--</div>-->
+            </div>
+
+            <div class="eight wide column">
+                <h1 class="ui red header"><i class="settings icon"></i><div class="content">添加商品<div class="sub header">设置并添加商品</div></div></h1>
+                <h3 class="ui horizontal header divider"><i class="tag icon"></i>基本配置</h3>
+            </div>
+            <div class="eight wide column">
+                <h1 class="ui red header"><i class="settings icon"></i><div class="content">添加商品<div class="sub header">设置并添加商品</div></div></h1>
+                <h3 class="ui horizontal header divider"><i class="tag icon"></i>基本配置</h3>
+            </div>
+            <div class="fourteen wide column">
+                <div class="ui form">
+                    <div class="two fields">
+                        <div class="field">
+                            <label>商品名</label>
+                            <input name="name" type="text">
+                        </div>
+                        <div class="field">
+                            <label>类别</label>
+                            <select name="type" class="ui search dropdown">
+                                <option value="书籍">书籍</option>
+                                <option value="服装">服装</option>
+                                <option value="游戏">游戏</option>
+                                <option value="食品">食品</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="four fields">
+                        <div class="field">
+                            <label>商品数量</label>
+                            <input name="totalNum" type="number">
+                        </div>
+                    </div>
+                    <div class="four fields">
+                        <div class="field">
+                            <label>价格 (/元)</label>
+                            <div class="ui icon input">
+                                <i class="payment icon"></i>
+                                <input name="price" type="number">
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <h3 class="ui horizontal header divider"><i class="tag icon"></i>介绍内容</h3>
+                    <p class="global_text_danger">Tips: 内容中的第一张图片会被选作为商品头像</p>
+                </div>
+
+                <h3 class="ui horizontal header divider"><i class="tag icon"></i>结束</h3>
+                <button class="ui green button" id="save">
+                    <i class="save icon"></i>保存
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="/tools/template-native.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        var loadConfig = (function(){
+            $('select.dropdown').dropdown();
+
+        })();
+    })
+
+</script>

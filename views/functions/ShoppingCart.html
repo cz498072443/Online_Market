@@ -7,32 +7,30 @@
                 <i class="shop icon"></i>
                 你的订单
             </h3>
-            <!--<form class="ui form">-->
-                <table class="ui table">
-                    <thead>
-                    <tr>
-                        <th class="three wide">商品类型</th>
-                        <th class="three wide">图片</th>
-                        <th class="three wide">商品名</th>
-                        <th class="two wide">购买数</th>
-                        <th class="two wide">价格</th>
-                        <th class="three">删除</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {{each user.shoppingCart}}
-                    <tr data-id="{{$value._id}}">
-                        <td>{{$value.type}}</td>
-                        <td><a href="/Goods/{{$value._id}}"><img style="width: 60px;height: 60px" src="{{$value.headSrc}}"></a></td>
-                        <td class="global_text_danger">{{$value.name}}</td>
-                        <td class="ui input" style="padding-top: 25px"><input min="0" max="{{$value.resNum}}" type="number" name="buyNum" value="{{$value.buyNum}}"></td>
-                        <td class="global_text_success price">{{$value.price}}</td>
-                        <td><button class="ui red button deleteShoppingCartBtn">删除</button></td>
-                    </tr>
-                    {{/each}}
-                    </tbody>
-                </table>
-            <!--</form>-->
+            <table class="ui table">
+                <thead>
+                <tr>
+                    <th class="three wide">商品类型</th>
+                    <th class="three wide">图片</th>
+                    <th class="three wide">商品名</th>
+                    <th class="two wide">购买数</th>
+                    <th class="two wide">价格</th>
+                    <th class="three">删除</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{each user.shoppingCart}}
+                <tr data-id="{{$value._id}}">
+                    <td>{{$value.type}}</td>
+                    <td><a href="/Goods/{{$value._id}}"><img style="width: 60px;height: 60px" src="{{$value.headSrc}}"></a></td>
+                    <td class="global_text_danger">{{$value.name}}</td>
+                    <td class="ui input" style="padding-top: 25px"><input min="0" max="{{$value.resNum}}" type="number" name="buyNum" value="{{$value.buyNum}}"></td>
+                    <td class="global_text_success price">{{$value.price}}</td>
+                    <td><button class="ui red button deleteShoppingCartBtn">删除</button></td>
+                </tr>
+                {{/each}}
+                </tbody>
+            </table>
         </div>
     </div>
     <div class="actions">
@@ -83,6 +81,37 @@
     var isClickBack = true;  //点击控制，防止点击购买全部时依然刷新
     var ShoppingCartObj = {};
 
+    //重新加载购物车导航栏和购物车详情页面
+    var RefreshShoppingCart = function(){
+        $.ajax({
+            url:"/ShoppingCart",
+            type:"GET",
+            success: function(data){
+                var shoppingCart = data.res.shoppingCart;
+                var ShoppingCartBarTmpl = template('ShoppingCartBarTmpl',{data: shoppingCart});
+                var ShoppingCartTableTmpl = template('ShoppingCartTableTmpl',{data: shoppingCart});
+
+                if($(".inverted.menu .right.menu div").eq(0).attr("id") == "ShoppingCartBar"){
+                    $(".inverted.menu .right.menu div").eq(0).remove();
+                }
+                $(".inverted.menu .right.menu").prepend(ShoppingCartBarTmpl);
+                $(".shoppingCartDetailShow table tbody").html(ShoppingCartTableTmpl);
+
+                (function(){
+                    var totalPrice = 0;
+                    for(var i = 0;i < shoppingCart.length;i ++){
+                        totalPrice += shoppingCart[i].price * shoppingCart[i].buyNum;
+                    }
+                    $("#quickBuy").html("<span>购买<span class='global_text_success'> 总价:"+totalPrice+"</span></span> ");
+                })();
+
+                $('.ui.menu .dropdown').dropdown({on: 'hover'});
+                $('.second.modal').modal('attach events', '.buyShoppingCartShow' );
+            }
+        });
+    };
+
+    //构建购物车对象
     var buildShoppingCartObj = function (controller) {
         var totalPrice = 0
         if(controller){
@@ -140,9 +169,6 @@
                 }
             },0);
 
-        },
-        onHidden:function () {
-
         }
     }).modal('attach events','.returnCartBtn');
 
@@ -176,6 +202,7 @@
 
     });
 
+    //确认清空购物车
     $(".buyShoppingCartModal").on("click", ".confirmBuyShoppingCart", function(){
         $.ajax({
             url: "/ShoppingCart",

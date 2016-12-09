@@ -71,7 +71,6 @@ router.get('/edit/:id',pageControl,function(req, res, next){
     });
 
     Goods.getOneById(req.params.id, function(err,docs){
-        console.log(docs);
         ep.emit('good_detail',docs);
     });
 

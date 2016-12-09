@@ -45,9 +45,7 @@ router.post("/",pageControl,function(req, res, next){
     ep.all('good_detail', 'user_detail',function(goodDetail, userDetail){
         //消费后的各种数值变动
         var totalPrice = goodDetail.price * req.body.buyNum;
-        console.log("walletBefore:"+userDetail.wallet);
         userDetail.wallet = userDetail.wallet - totalPrice;
-        console.log("walletAfter:"+userDetail.wallet);
         goodDetail.resNum = goodDetail.resNum - req.body.buyNum;
         //余额不足||商品余量不足
         if (userDetail.wallet < 0 || goodDetail.resNum < 0){

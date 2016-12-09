@@ -69,8 +69,10 @@
 </div>
 
 <!--清空购物车确认控制-->
-<div class="ui modal addSuccess" style="background-color: white">
-        <h1>添加成功</h1>
+<div class="ui modal basic addSuccess">
+    <div class="header">
+        <h1 class="ui header green" style="text-align: center">添加购物车成功</h1>
+    </div>
 </div>
 
 <script src="/tools/unslider/js/unslider.js"></script>
@@ -117,6 +119,9 @@
             $('.addSuccess').modal('attach events', '.addShopList' );
 
             $(".addShopList").on('click',function(event){
+                $('.addSuccess').modal('show');
+                setTimeout(function(){ $('.addSuccess').modal('hide'); },600);
+
                 event.stopPropagation();
                 var goodId = $(this).attr("data-id");
                 $.ajax({

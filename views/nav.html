@@ -33,10 +33,10 @@
                 <div class="header">
                     操作
                 </div>
-                <div class="item">
+                <a class="item" href="/Personal">
                     <div class="ui red empty circular label"></div>
                     查看个人信息
-                </div>
+                </a>
                 <div class="item">
                     <div class="ui blue empty circular label"></div>
                     修改密码
@@ -59,10 +59,10 @@
                 <div class="header">
                     操作
                 </div>
-                <div class="item">
+                <a class="item" href="/Personal">
                     <div class="ui red empty circular label"></div>
                     查看个人信息
-                </div>
+                </a>
                 <div class="item">
                     <div class="ui blue empty circular label"></div>
                     修改密码
@@ -84,10 +84,10 @@
                 <div class="header">
                     操作
                 </div>
-                <div class="item">
+                <a class="item" href="/Personal">
                     <div class="ui red empty circular label"></div>
                     查看个人信息
-                </div>
+                </a>
                 <div class="item">
                     <div class="ui blue empty circular label"></div>
                     修改密码
@@ -171,37 +171,5 @@
     totalPrice += {{$value.price}} * {{$value.buyNum}}
     {{/each}}
     $(".ShoppingCartBar .buyShoppingCartShow").html("<span>购买<span class='global_text_success'> 总价:"+totalPrice+"</span></span> ");
-
-    //重新加载购物车导航栏和购物车详情页面
-    var RefreshShoppingCart = function(){
-        $.ajax({
-            url:"/ShoppingCart",
-            type:"GET",
-            success: function(data){
-                var shoppingCart = data.res.shoppingCart;
-                var ShoppingCartBarTmpl = template('ShoppingCartBarTmpl',{data: shoppingCart});
-                var ShoppingCartTableTmpl = template('ShoppingCartTableTmpl',{data: shoppingCart});
-
-                if($(".inverted.menu .right.menu div").eq(0).attr("id") == "ShoppingCartBar"){
-                    $(".inverted.menu .right.menu div").eq(0).remove();
-                }
-                $(".inverted.menu .right.menu").prepend(ShoppingCartBarTmpl);
-                $(".shoppingCartDetailShow table tbody").html(ShoppingCartTableTmpl);
-
-                (function(){
-                    var totalPrice = 0;
-                    for(var i = 0;i < shoppingCart.length;i ++){
-                        totalPrice += shoppingCart[i].price * shoppingCart[i].buyNum;
-                    }
-                    $("#quickBuy").html("<span>购买<span class='global_text_success'> 总价:"+totalPrice+"</span></span> ");
-                })();
-
-                $('.ui.menu .dropdown').dropdown({on: 'hover'});
-                $('.second.modal').modal('attach events', '.buyShoppingCartShow' );
-            }
-        });
-    };
-
-
 </script>
 
