@@ -5,6 +5,8 @@ var express = require("express");
 var router = express.Router();
 var Goods = require("./../../proxy").Goods;
 var User = require("./../../proxy").User;
+var News = require("./../../proxy").News;
+
 var eventproxy = require("eventproxy");
 
 //页面控制中间件
@@ -52,10 +54,19 @@ router.get('/add',pageControl,function(req, res, next){
 });
 
 router.post('/add',pageControl,function(req, res){
+    var loc_user = req.session.user;
+
     Goods.createOne(req.body,function (err, doc) {
         if(err){
             res.send(400);
         }else {
+            News.createOne({
+                "username": loc_user.username,
+                "type": 3,
+                "content": loc_user.username+" 添加了商品:" + req.body.name ,
+                "create_time": req.body.create_time
+            },function (err, doc) {});
+
             res.send(200);
         }
     })
@@ -80,20 +91,38 @@ router.get('/edit/:id',pageControl,function(req, res, next){
 });
 
 router.put('/edit/:id',pageControl,function(req, res, next){
+    var loc_user = req.session.user;
+
     Goods.update(req.params.id, req.body, function(err, doc){
         if(err){
             res.send(400);
         }else{
+            News.createOne({
+                "username": loc_user.username,
+                "type": 3,
+                "content": loc_user.username+" 修改了商品:" + req.body.name ,
+                "create_time": req.body.modify_time
+            },function (err, doc) {});
+
             res.send(200);
         }
     })
 });
 
 router.delete('/delete',pageControl,function(req, res){
+    var loc_user = req.session.user;
+
     Goods.removeById(req.body.id, function(err, doc){
         if(err){
             res.send(400);
         }else{
+            News.createOne({
+                "username": loc_user.username,
+                "type": 3,
+                "content": loc_user.username+" 删除了商品:id = " + req.body.id ,
+                "create_time": new Date()
+            },function (err, doc) {});
+
             res.send(200);
         }
     })

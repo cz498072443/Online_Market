@@ -7,6 +7,7 @@ var router = express.Router();
 var Goods = require("./../../proxy").Goods;
 var User = require("./../../proxy").User;
 var Orders = require("./../../proxy").Orders;
+var News = require("./../../proxy").News;
 
 var eventproxy = require("eventproxy");
 
@@ -46,6 +47,7 @@ router.post("/",pageControl,function(req, res, next){
         //消费后的各种数值变动
         var totalPrice = goodDetail.price * req.body.buyNum;
         userDetail.wallet = userDetail.wallet - totalPrice;
+        userDetail.cost = totalPrice;
         goodDetail.resNum = goodDetail.resNum - req.body.buyNum;
         //余额不足||商品余量不足
         if (userDetail.wallet < 0 || goodDetail.resNum < 0){
@@ -87,7 +89,16 @@ router.post("/",pageControl,function(req, res, next){
                 }else{
                     res.send(200);
                 }
-            })
+            });
+
+            News.createOne({
+                "username": loc_user.username,
+                "type": 2,
+                "content": loc_user.username+" 购买了"+req.body.buyNum+"个"+goodDetail.name+",总计"+totalPrice+"元" ,
+                "create_time": req.body.create_time
+            },function (err, doc) {
+
+            });
         }
     });
 

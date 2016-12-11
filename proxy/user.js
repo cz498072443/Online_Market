@@ -36,7 +36,9 @@ function verifyParams(params) {
         "secPassword": params.secPassword || "",
         "wallet": params.wallet || 0,
         "favorite": params.favorite || [],
-        "shoppingCart": params.shoppingCart || []
+        "shoppingCart": params.shoppingCart || [],
+        "level": params.level || 0,
+        "cost": params.cost || 0
     };
     if(params.create_time !== ""){
         result["create_time"] = new Date(params.create_time);

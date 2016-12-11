@@ -62,7 +62,7 @@
                 </div>
             </div>
             <div class="doubling two column row fourteen wide">
-                <h3 class="ui horizontal teal header divider"><i class="tag icon"></i>基本信息</h3>
+                <h3 class="ui horizontal orange header divider"><i class="tag icon"></i>基本信息</h3>
                 <div class="column">
                     <div class="ui card" style="margin: 0 auto">
                         <div class="image dimmable">
@@ -91,7 +91,7 @@
                         <div class="item baseInfo_account">
                             <i class="star icon"></i>
                             <div class="content" style="width: 100%;">
-                                <div class="header" style="margin-bottom: 20px">账户信息</div>
+                                <div class="header" style="margin-bottom: 20px">用户信息</div>
                                 <div class="discription ui sixteen wide grid">
                                     <div class="six wide column inputLable">用户名</div>
                                     <div class="ten wide column inputInfo personal_username">{{user.username}}</div>
@@ -102,7 +102,7 @@
                                         {{if user.nickname}}
                                         {{user.nickname}}
                                         {{else}}
-                                        未设置
+                                        未设置 <a href="#">前往设置<i class="icon share"></i></a>
                                         {{/if}}
                                     </div>
                                 </div>
@@ -117,30 +117,70 @@
                             <div class="content" style="width: 100%;">
                                 <div class="header" style="margin-bottom: 20px">账户信息</div>
                                 <div class="discription ui sixteen wide grid">
-                                    <div class="six wide column inputLable">用户名</div>
-                                    <div class="ten wide column inputInfo personal_username">{{user.username}}</div>
-                                </div>
-                                <div class="discription ui sixteen wide grid">
-                                    <div class="six wide column">昵称</div>
-                                    <div class="ten wide column inputInfo personal_username">
-                                        {{if user.nickname}}
-                                        {{user.nickname}}
-                                        {{else}}
-                                        未设置
-                                        {{/if}}
-                                    </div>
-                                </div>
-                                <div class="discription ui sixteen wide grid">
                                     <div class="six wide column">账户余额</div>
-                                    <div class="ten wide column inputInfo personal_username">{{user.wallet}}元</div>
+                                    <div class="ten wide column inputInfo personal_username">{{user.wallet}}元 <a href="#">前往充值<i class="icon share"></i></a></div>
+                                </div>
+                                <div class="discription ui sixteen wide grid">
+                                    <div class="six wide column">总计消费</div>
+                                    <div class="ten wide column inputInfo personal_username">{{user.cost}}元</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item baseInfo_account">
+                            <i class="star icon"></i>
+                            <div class="content" style="width: 100%;">
+                                <div class="header" style="margin-bottom: 20px">权限信息</div>
+                                <div class="discription ui sixteen wide grid">
+                                    <div class="six wide column">用户身份</div>
+                                    <div class="ten wide column inputInfo personal_username">{{user.role}}</div>
+                                </div>
+                                <div class="discription ui sixteen wide grid">
+                                    <div class="six wide column">用户等级</div>
+                                    <div class="ten wide column inputInfo personal_username">{{user.level}}</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="sixteen wide column">
-                    <h1 class="ui red header"><i class="settings icon"></i><div class="content">添加商品<div class="sub header">设置并添加商品</div></div></h1>
-                    <h3 class="ui horizontal header divider"><i class="tag icon"></i>基本配置</h3>
+                <div class="ui sixteen wide centered grid" style="margin-top: 40px">
+                    <h3 class="ui horizontal orange header divider"><i class="tag icon"></i>最近消息</h3>
+                    <div class="doubling four column row">
+                        {{if news.length != 0}}
+                            {{each news}}
+                                {{if $value.type == 1}}
+                                <div class="column" style="margin-bottom: 10px">
+                                    <div class="ui blue message">
+                                        <div class="header">
+                                            新用户注册
+                                        </div>
+                                        <p>{{$value.content}}</p>
+                                    </div>
+                                </div>
+                                {{else if $value.type == 2}}
+                                <div class="column" style="margin-bottom: 10px">
+                                    <div class="ui orange message">
+                                        <div class="header">
+                                            消费
+                                        </div>
+                                        <p>{{$value.content}}</p>
+                                    </div>
+                                </div>
+                                {{else if $value.type == 3}}
+                                <div class="column" style="margin-bottom: 10px">
+                                    <div class="ui red message">
+                                        <div class="header">
+                                            商品操作
+                                        </div>
+                                        <p>{{$value.content}}</p>
+                                    </div>
+                                </div>
+                                {{/if}}
+                            {{/each}}
+                        {{else}}
+                        <h3 class="global_text_danger">暂时没有新消息哟</h3>
+                        {{/if}}
+                    </div>
+
                 </div>
             </div>
 

@@ -7,6 +7,8 @@ var router = express.Router();
 var User = require("./../../proxy").User;
 var Goods = require("./../../proxy").Goods;
 var Orders = require("./../../proxy").Orders;
+var News = require("./../../proxy").News;
+
 var eventproxy = require("eventproxy");
 
 //页面控制中间件
@@ -40,11 +42,21 @@ router.post("/", pageControl, function(req, res, next){
     ep.all('user_detail', 'good_finish', function(userDetail){
         var ep2 = new eventproxy();
         ep2.all('user_finish','order_finish',function(){
+            News.createOne({
+                "username": loc_user.username,
+                "type": 2,
+                "content": loc_user.username+" 清空了购物车,总计"+totalPrice+"元" ,
+                "create_time": req.body.create_time
+            },function (err, doc) {
+
+            });
+
             res.send(200);
         });
 
         //更新个人信息(钱包)
         userDetail.wallet -= totalPrice;
+        userDetail.cost += totalPrice;
         if(userDetail.wallet < 0){
             res.send(400);
         }else {
