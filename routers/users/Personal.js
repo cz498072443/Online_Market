@@ -32,9 +32,80 @@ router.get('/', pageControl, function(req, res, next){
     });
 
     News.findAllByUserName(loc_user.username, function (err, docs) {
-        console.log(docs)
         ep.emit('news_list',docs)
     })
+});
+
+router.put('/ChangeInfo', pageControl, function(req, res, next){
+    var loc_user = req.session.user;
+    var ep = new eventproxy();
+    ep.fail(next);
+
+    ep.all('user_detail', function(userDetail){
+        userDetail.nickname = req.body.nickname;
+        userDetail.sign = req.body.sign;
+        userDetail.modify_time = req.body.modify_time;
+
+        User.update(loc_user._id, userDetail, function(err, docs){
+            if(err){
+                res.send(400);
+            }else {
+                res.send(200);
+            }
+        })
+    });
+
+    User.getOneById(loc_user._id, function(err,docs){
+        ep.emit('user_detail',docs)
+    });
+});
+
+router.put('/Apply', pageControl, function(req, res, next){
+    var loc_user = req.session.user;
+    var ep = new eventproxy();
+    ep.fail(next);
+
+    ep.all('user_detail', function(userDetail){
+        userDetail.apply = req.body.apply;
+
+        User.update(loc_user._id, userDetail, function(err, docs){
+            if(err){
+                res.send(400);
+            }else {
+                res.send(200);
+            }
+        })
+    });
+
+    User.getOneById(loc_user._id, function(err,docs){
+        ep.emit('user_detail',docs)
+    });
+});
+
+router.put('/ChangePass', pageControl, function(req, res, next){
+    var loc_user = req.session.user;
+    var ep = new eventproxy();
+    ep.fail(next);
+
+    ep.all('user_finish', function(userDetail){
+        userDetail.password = req.body.newPass;
+
+        User.update(loc_user._id, userDetail, function(err, docs){
+            if(err){
+                res.send(400);
+            }else {
+                res.send({code:1000,res:"密码修改成功"});
+            }
+        })
+    });
+
+    User.getOneById(loc_user._id, function(err,docs){
+        if(loc_user.password == req.body.oldPass){
+            ep.emit('user_finish',docs);
+        }else{
+            res.send({code:-1000,res:"旧密码输入错误"})
+        }
+    });
 });
 
 module.exports = router;

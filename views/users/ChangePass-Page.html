@@ -1,0 +1,100 @@
+<div class="doubling column row fourteen wide grid changePassPage" style="display: none">
+    <h3 class="ui horizontal orange header divider"><i class="tag icon"></i>修改密码</h3>
+    <div class="fourteen wide column">
+        <div class="ui form">
+            <div class="two fields">
+                <div class="field">
+                    <label>旧密码</label>
+                    <input name="oldPass" type="password" placeholder="输入旧密码...">
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field">
+                    <label>新密码</label>
+                    <input name="newPass" type="password" placeholder="输入新密码...">
+                </div>
+            </div>
+        </div>
+        <button class="ui green button" id="changePassBtn">
+            <i class="save icon"></i>确认修改
+        </button>
+    </div>
+</div>
+
+<!--删除确认控制-->
+<div class="ui basic modal check_modal changePass_check_modal">
+    <div class="header">
+        <h1>修改确认</h1>
+    </div>
+    <div class="content">
+        <div class="image" style="float: left">
+            <i class="warning orange icon"></i>
+        </div>
+        <div class="description">
+            <p>确认修改密码吗？</p>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="two fluid ui inverted buttons">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                返回
+            </div>
+            <div class="ui green ok basic inverted button changePassConfirm">
+                <i class="checkmark icon"></i>
+                确定
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+//    $('.changePass_check_modal').modal('attach events', '#changePassBtn');
+
+    $("#changePassBtn").click(function(){
+        var oldPass = $("input[name='oldPass']").val();
+        var newPass = $("input[name='newPass']").val();
+        if(!oldPass){
+            $('.answerPage .header').html("<h1 class='ui header red' style='text-align: center'>请输入旧密码!!!</h1>");
+            $('.answerPage').modal('show');
+        } else if(!newPass){
+            $('.answerPage .header').html("<h1 class='ui header red' style='text-align: center'>请输入新密码!!!</h1>");
+            $('.answerPage').modal('show');
+        } else if(oldPass == newPass){
+            $('.answerPage .header').html("<h1 class='ui header red' style='text-align: center'>新密码和旧密码相同!!!</h1>");
+            $('.answerPage').modal('show');
+        } else {
+            $('.changePass_check_modal').modal("show");
+        }
+    });
+
+    $(".changePassConfirm").click(function(){
+        $.ajax({
+            url: "Personal/ChangePass",
+            type: "PUT",
+            data: {
+                oldPass: $("input[name='oldPass']").val(),
+                newPass: $("input[name='newPass']").val(),
+                modify_time : new Date()
+            },
+            success: function(data){
+                if(data.code == 1000){
+                    $('.answerPage .header').html("<h1 class='ui header green' style='text-align: center'>修改密码成功!!!</h1>");
+                    $('.answerPage').modal('show');
+                    setTimeout(function(){
+                        window.location.reload();
+                    },500);
+                } else{
+                    $('.answerPage .header').html("<h1 class='ui header red' style='text-align: center'>"+data.res+"</h1>");
+                    $('.answerPage').modal('show');
+                }
+            },
+            error: function(){
+                $('.answerPage .header').html("<h1 class='ui header red' style='text-align: center'>修改密码失败!!!</h1>");
+                $('.answerPage').modal('show');
+            }
+        })
+
+    });
+</script>
+

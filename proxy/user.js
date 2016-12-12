@@ -38,7 +38,10 @@ function verifyParams(params) {
         "favorite": params.favorite || [],
         "shoppingCart": params.shoppingCart || [],
         "level": params.level || 0,
-        "cost": params.cost || 0
+        "cost": params.cost || 0,
+        "nickname": params.nickname || "",
+        "sign": params.sign || "",
+        "apply": params.apply || ""
     };
     if(params.create_time !== ""){
         result["create_time"] = new Date(params.create_time);

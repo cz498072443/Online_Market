@@ -1,0 +1,110 @@
+<div class="doubling column row fourteen wide grid changeInfoPage" style="display: none">
+    <h3 class="ui horizontal orange header divider"><i class="tag icon"></i>修改信息</h3>
+    <div class="fourteen wide column">
+        <div class="ui form">
+            <div class="two fields">
+                <div class="field">
+                    <label>用户名</label>
+                    <input name="name" disabled type="text" value="{{user.username}}">
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field">
+                    <label>昵称</label>
+                    <input name="nickname" type="text" value="{{user.nickname}}">
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field">
+                    <label>签名</label>
+                    <input name="sign" type="text" value="{{user.sign}}">
+                </div>
+            </div>
+            <div class="four fields">
+                <div class="field">
+                    <label>用户身份</label>
+                    <input name="totalNum" disabled type="text" value="{{user.role}}">
+                    {{if user.apply == ""}}
+                        {{if user.role == "user"}}
+                        <span href="#" class="apply_btn global_text_primary" data-type="apply_tobeAdmin">申请成为管理员<i class="icon rocket"></i></span>
+                        {{else user.role == "Admin"}}
+                        <span href="#" class="apply_btn global_text_primary" data-type="apply_tobeSuperAdmin">申请成为超级管理员<i class="icon rocket"></i></span>
+                        {{/if}}
+                    {{else}}
+                        <span class="global_text_warning"><i class="icon wait"></i>权限提升申请等待审核中...</span>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="ui horizontal orange header divider"><i class="tag icon"></i>结束</h3>
+    <button class="ui green button" id="save">
+        <i class="save icon"></i>保存
+    </button>
+</div>
+
+<!--反馈遮罩-->
+<div class="ui modal basic answerPage">
+    <div class="header"></div>
+</div>
+
+<script src="/tools/template-native.js"></script>
+
+<script>
+    $("#save").click(function(){
+        $.ajax({
+            url: "/Personal/ChangeInfo",
+            type: "PUT",
+            data: {
+                nickname: $("input[name='nickname']").val(),
+                sign: $("input[name='sign']").val(),
+                modify_time: new Date()
+            },
+            success: function(){
+                $('.answerPage .header').html("<h1 class='ui header green' style='text-align: center'>修改信息成功!!!</h1>");
+                $('.answerPage').modal('show');
+                setTimeout(function(){
+                    window.location.reload();
+                },500);
+            },
+            error: function(){
+                $('.answerPage .header').html("<h1 class='ui header red' style='text-align: center'>修改失败!!!</h1>");
+                $('.answerPage').modal('show');
+            }
+        });
+    });
+
+    $(".apply_btn").click(function(){
+        var applyType = $(this).attr("data-type");
+        var data;
+
+        switch (applyType){
+            case "apply_tobeAdmin":
+                data = "tobeAdmin";
+                break;
+            case "apply_tobeSuperAdmin":
+                data = "tobeSuperAdmin";
+                break;
+        }
+
+        $.ajax({
+            url: "/Personal/Apply",
+            type: "PUT",
+            data: {
+                apply: data
+            },
+            success: function(){
+                $('.answerPage .header').html("<h1 class='ui header green' style='text-align: center'>申请提升权限成功!!!</h1>");
+                $('.answerPage').modal('show');
+                setTimeout(function(){
+                    window.location.reload();
+                },500);
+            },
+            error: function(){
+                $('.answerPage .header').html("<h1 class='ui header red' style='text-align: center'>申请失败!!!</h1>");
+                $('.answerPage').modal('show');
+            }
+        });
+    });
+</script>

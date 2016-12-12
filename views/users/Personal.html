@@ -49,19 +49,22 @@
             </div>
 
             <div class="fourteen wide column">
-                <div class="ui three item orange menu">
+                <div class="ui four item orange menu">
                     <a class="active item" id="personalInfoTab">
                         个人信息
                     </a>
                     <a class="item">
-                        菜单项B
+                        修改信息
                     </a>
                     <a class="item">
-                        菜单项C
+                        在线充值
+                    </a>
+                    <a class="item">
+                        修改密码
                     </a>
                 </div>
             </div>
-            <div class="doubling two column row fourteen wide">
+            <div class="doubling two column row fourteen wide personalInfoPage" style="display: none">
                 <h3 class="ui horizontal orange header divider"><i class="tag icon"></i>基本信息</h3>
                 <div class="column">
                     <div class="ui card" style="margin: 0 auto">
@@ -77,7 +80,13 @@
                         </div>
                         <div class="content">
                             <div class="header">陈卓</div>
-                            <div class="description">一句或两句的描述</div>
+                            <div class="description">
+                                {{if user.sign != ""}}
+                                    {{user.sign}}
+                                {{else}}
+                                    这个家伙很懒,什么都没有留下...
+                                {{/if}}
+                            </div>
                         </div>
                         <div class="extra content">
                             <a class="right floated created">随机</a>
@@ -99,16 +108,12 @@
                                 <div class="discription ui sixteen wide grid">
                                     <div class="six wide column">昵称</div>
                                     <div class="ten wide column inputInfo personal_username">
-                                        {{if user.nickname}}
+                                        {{if user.nickname !== ""}}
                                         {{user.nickname}}
                                         {{else}}
                                         未设置 <a href="#">前往设置<i class="icon share"></i></a>
                                         {{/if}}
                                     </div>
-                                </div>
-                                <div class="discription ui sixteen wide grid">
-                                    <div class="six wide column">账户余额</div>
-                                    <div class="ten wide column inputInfo personal_username">{{user.wallet}}元</div>
                                 </div>
                             </div>
                         </div>
@@ -142,13 +147,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="ui sixteen wide centered grid" style="margin-top: 40px">
+                <div class="ui sixteen wide grid" style="margin-top: 40px">
                     <h3 class="ui horizontal orange header divider"><i class="tag icon"></i>最近消息</h3>
                     <div class="doubling four column row">
                         {{if news.length != 0}}
                             {{each news}}
                                 {{if $value.type == 1}}
-                                <div class="column" style="margin-bottom: 10px">
+                                <div class="column" style="margin-bottom: 15px">
                                     <div class="ui blue message">
                                         <div class="header">
                                             新用户注册
@@ -157,8 +162,8 @@
                                     </div>
                                 </div>
                                 {{else if $value.type == 2}}
-                                <div class="column" style="margin-bottom: 10px">
-                                    <div class="ui orange message">
+                                <div class="column" style="margin-bottom: 15px">
+                                    <div class="ui green message">
                                         <div class="header">
                                             消费
                                         </div>
@@ -166,7 +171,7 @@
                                     </div>
                                 </div>
                                 {{else if $value.type == 3}}
-                                <div class="column" style="margin-bottom: 10px">
+                                <div class="column" style="margin-bottom: 15px">
                                     <div class="ui red message">
                                         <div class="header">
                                             商品操作
@@ -180,23 +185,22 @@
                         <h3 class="global_text_danger">暂时没有新消息哟</h3>
                         {{/if}}
                     </div>
-
                 </div>
             </div>
-
+            {{include './ChangeInfo-Page'}}
+            {{include './Recharge-Page'}}
+            {{include './ChangePass-Page'}}
+            {{include './SecPassword-Page'}}
         </div>
     </div>
 </div>
 
-
-<script src="/tools/template-native.js"></script>
 
 <script type="text/javascript">
 
     $(document).ready(function(){
         var loadConfig = (function(){
             $('select.dropdown').dropdown();
-
         })();
     })
 

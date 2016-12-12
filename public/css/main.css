@@ -33,6 +33,9 @@ li{
 .global_text_warning{
     color: #E5AA4D;
 }
+.global_text_primary{
+    color: #5884D0;
+}
 
 /*模态框样式*/
 .check_modal .content:after{

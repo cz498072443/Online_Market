@@ -17,6 +17,9 @@ var UserSchema = new Schema({
     "shoppingCart": { type: Array },
     "level": { type: Number },
     "cost": {type: Number},
+    "nickname": {type: String},
+    "sign": {type: String},
+    "apply": {type: String},
     "create_time": { type:Date, default: new Date() },
     "modify_time": { type:Date, default: new Date() }
 },{collection:'user',versionKey:false});
