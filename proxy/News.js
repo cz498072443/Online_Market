@@ -5,13 +5,13 @@
 var News = require("./../models/").News;
 
 exports.findAll = function (callback) {
-    News.find({}).sort({create_time: 1}).limit(8).exec(function(err,docs){
+    News.find({}).sort({create_time: -1}).limit(8).exec(function(err,docs){
         callback(err,docs);
     });
 };
 
 exports.findAllByUserName = function (username, callback) {
-    News.find({username: username}).sort({create_time: 1}).limit(8).exec(function(err,docs){
+    News.find({username: username}).sort({create_time: -1}).limit(8).exec(function(err,docs){
         callback(err,docs);
     });
 };

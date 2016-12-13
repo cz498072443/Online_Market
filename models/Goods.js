@@ -15,6 +15,7 @@ var GoodsSchema = new Schema({
     "totalNum": {type: Number},
     "resNum": {type: Number},
     "price": {type: Number},
+    "sales": {type: Number},
     "create_time": { type:Date, default: new Date() },
     "modify_time": { type:Date, default: new Date() }
 },{collection:'goods',versionKey:false});

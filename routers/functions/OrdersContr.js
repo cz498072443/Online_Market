@@ -7,6 +7,7 @@ var router = express.Router();
 
 var User = require("./../../proxy").User;
 var Orders = require("./../../proxy").Orders;
+var News = require("./../../proxy").News;
 var eventproxy = require("eventproxy");
 
 //页面控制中间件
@@ -37,13 +38,22 @@ router.get("/", pageControl, function(req, res, next){
 });
 
 router.delete('/delete',pageControl,function(req, res){
+    var loc_user = req.session.user;
+
     Orders.removeById(req.body.id, function(err, doc){
         if(err){
             res.send(400);
         }else{
+            News.createOne({
+                "username": loc_user.username,
+                "type": 4,
+                "content": loc_user.username+" 删除了订单,订单号为 "+req.body.id ,
+                "create_time": req.body.create_time
+            },function (err, doc) {});
+
             res.send(200);
         }
-    })
+    });
 });
 
 module.exports = router;

@@ -57,6 +57,11 @@
             <p class="global_text_warning"><i class="warning red sign icon"></i>警告:您尚未设置二级密码,为保证用户安全请尽快<a href="/personalInfo" style="color: orangered">前往设置</a></p>
         </div>
         {{else}}
+        <div class="ui input description">
+            <h3 style="color: white">总价 : <span class="global_text_success"></span></h3>
+            <p style="color: white">确认清空购物车吗？</p>
+            <p class="global_text_warning">二级密码 : <input name="shoppingCartSecPass" type="password" style="color: black"></p>
+        </div>
         {{/if}}
     </div>
     <div class="actions">
@@ -203,6 +208,7 @@
     });
 
     //确认清空购物车
+    {{if user.secPassword == ""}}
     $(".buyShoppingCartModal").on("click", ".confirmBuyShoppingCart", function(){
         $.ajax({
             url: "/ShoppingCart",
@@ -219,5 +225,39 @@
             }
         })
     });
+    {{else}}
+    $(".buyShoppingCartModal").on('click','.confirmBuyShoppingCart',function(){
+        $.ajax({
+            url:"/Personal/CheckSecPass",
+            type:"POST",
+            data:{
+                secPass: $("input[name='shoppingCartSecPass']").val()
+            },
+            success:function(){
+                $.ajax({
+                    url: "/ShoppingCart",
+                    type: "POST",
+                    data: {
+                        ShoppingCartObj: JSON.stringify(ShoppingCartObj),
+                        create_time: new Date()
+                    },
+                    success: function(){
+                        window.location.href = "/ShoppingCart/paySucceed"
+                    },
+                    error: function(){
+                        alert("购买失败");
+                        $(".loading_page").dimmer('hide');
+                        window.location.reload();
+                    }
+                })
+            },
+            error: function (){
+                alert("二级密码输入错误");
+                $(".loading_page").dimmer('hide');
+                window.location.reload();
+            }
+        });
+    });
+    {{/if}}
 
 </script>

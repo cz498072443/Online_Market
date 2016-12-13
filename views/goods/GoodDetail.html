@@ -57,7 +57,7 @@
                         <!--<div class="three fields">-->
                             <div class="inline field">
                                 <label>购买数量:</label>
-                                <input type="number" name="buyNum" min="1" value="1" max="{{goodDetail.resNum}}"> <label style="color:orange"> 剩余存货: {{goodDetail.resNum}}</label>
+                                <input type="number" name="goodDetailPageBuyNum" min="1" value="1" max="{{goodDetail.resNum}}"> <label style="color:orange"> 剩余存货: {{goodDetail.resNum}}</label>
                             </div>
                         <!--</div>-->
                     </div>
@@ -94,6 +94,10 @@
             <p class="global_text_warning"><i class="warning red sign icon"></i>警告:您尚未设置二级密码,为保证用户安全请尽快<a href="/personalInfo" style="color: orangered">前往设置</a></p>
         </div>
         {{else}}
+        <div class="ui input description">
+            <p style="color: white">确认购买该商品吗？</p>
+            <p class="global_text_warning">请输入二级密码并点击确认</p><input name="goodDetailPageSecPass" type="password" style="color: black">
+        </div>
         {{/if}}
     </div>
     <div class="actions">
@@ -159,13 +163,14 @@
             });
 
             //购买按钮
+            {{if user.secPassword == ""}}
             $(document).on('click','.buttons .confirmBuy',function(){
                 $.ajax({
                     url:"/Goods",
                     type:"POST",
                     data:{
                         goodId: "{{goodDetail.id}}",
-                        buyNum: $("input[name='buyNum']").val(),
+                        buyNum: parseInt($("input[name='goodDetailPageBuyNum']").val()),
                         create_time: new Date()
                     },
                     success:function(){
@@ -173,9 +178,46 @@
                     },
                     error: function (){
                         alert("购买失败");
+                        $(".loading_page").dimmer('hide');
+                        window.location.reload();
                     }
                 });
-            })
+            });
+            {{else}}
+            $(document).on('click','.buttons .confirmBuy',function(){
+                $.ajax({
+                    url:"/Personal/CheckSecPass",
+                    type:"POST",
+                    data:{
+                        secPass: $("input[name='goodDetailPageSecPass']").val()
+                    },
+                    success:function(){
+                        $.ajax({
+                            url:"/Goods",
+                            type:"POST",
+                            data:{
+                                goodId: "{{goodDetail.id}}",
+                                buyNum: parseInt($("input[name='goodDetailPageBuyNum']").val()),
+                                create_time: new Date()
+                            },
+                            success:function(){
+                                window.location.href="/Goods/paySucceed/{{goodDetail.id}}";
+                            },
+                            error: function (){
+                                alert("购买失败");
+                                $(".loading_page").dimmer('hide');
+                                window.location.reload();
+                            }
+                        });
+                    },
+                    error: function (){
+                        alert("二级密码输入错误");
+                        $(".loading_page").dimmer('hide');
+                        window.location.reload();
+                    }
+                });
+            });
+            {{/if}}
         })();
 
     })

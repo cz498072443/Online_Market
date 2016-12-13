@@ -79,10 +79,11 @@
                     <thead>
                     <tr>
                         <th class="three wide">商品类型</th>
-                        <th class="three wide">图片</th>
+                        <th class="two wide">图片</th>
                         <th class="three wide">商品名</th>
                         <th class="two wide">购买数</th>
                         <th class="two wide">价格</th>
+                        <th class="four wide">评论</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -93,6 +94,13 @@
                         <td class="global_text_danger">{{good.name}}</td>
                         <td>{{good.buyNum}}</td>
                         <td class="global_text_success">{{good.price}}</td>
+                        <td>
+                            {{if good.comment.grade == -1}}
+                            <span class="global_text_warning">未评论 </span><a href="#" class="setComment createNewComment" data-orderId="{{$value.id}}" data-goodId="{{good.id}}">点击评论<i class="icon comment outline"></i></a>
+                            {{else}}
+                            {{good.comment.content}} <a href="#" class="setComment updateComment" data-orderId="{{$value.id}}" data-goodId="{{good.id}}">点击修改<i class="icon comment outline"></i></a>
+                            {{/if}}
+                        </td>
                     </tr>
                     {{/each}}
                     </tbody>
@@ -132,6 +140,49 @@
     </div>
 </div>
 
+<!--反馈遮罩-->
+<div class="ui modal basic answerPage">
+    <div class="header"></div>
+</div>
+
+<!--评论详情模态框-->
+<div class="ui long coupled modal setCommentModal"></div>
+
+<!--评论详情模板-->
+<script id="setCommentTmpl" type="text/html">
+    <i class="close icon"></i>
+    <div class="content">
+        <div class="description">
+            <h3 class="ui horizontal header divider">
+                <i class="comment outline icon"></i>
+                评论
+            </h3>
+            <div class="ui form" style="margin-top: 20px">
+                <div class="two fields">
+                    <div class="field">
+                        <label>评价</label>
+                        <div class="ui toggle checkbox">
+                            <input name="isLike" type="checkbox">
+                            <label>好评</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="commentContent">
+                    <label>评论内容</label>
+                    <textarea></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="actions">
+        <button class="ui green button setCommentConfirmBtn" data-orderId="<%=orderId %>" data-goodId="<%=goodId %>" id="<%=btnId %>">
+            保存
+            <i class="right save icon"></i>
+        </button>
+    </div>
+</script>
+
+
 <script src="/tools/template-native.js"></script>
 
 <script type="text/javascript">
@@ -151,7 +202,8 @@
                     url: '/Orders/delete',
                     type: 'delete',
                     data:{
-                        id:  $(".check_modal .deleteGood").attr("data-href")
+                        id:  $(".check_modal .deleteGood").attr("data-href"),
+                        create_time: new Date()
                     },
                     success:function(){
                         window.location.reload();
@@ -162,8 +214,54 @@
                     }
                 })
             });
-        })();
 
+//            $(".setCommentModal").modal({}).modal('attach events','.setComment');
+            $("table").on('click', '.setComment', function(event){
+                event.stopPropagation();
+                switch ($(this).attr("class")){
+                    case "setComment createNewComment":
+                        var setCommentTmpl = template("setCommentTmpl",{orderId:$(this).attr("data-orderId"), goodId:$(this).attr("data-goodId"), btnId:"setComment"});
+                        $(".setCommentModal").html(setCommentTmpl);
+                        $(".setCommentModal").modal("show");
+                        break;
+                    case "setComment updateComment":
+                        var setCommentTmpl = template("setCommentTmpl",{orderId:$(this).attr("data-orderId"), goodId:$(this).attr("data-goodId"), btnId:"updateComment"});
+                        $(".setCommentModal").html(setCommentTmpl);
+                        $(".setCommentModal").modal("show");
+                        break;
+                }
+            });
+
+            $(".setCommentModal").on("click",".setCommentConfirmBtn",function(){
+                var isLike = 0;
+                if($(".setCommentModal input[name='isLike']").is(":checked")){
+                    isLike = 1;
+                }
+
+                $.ajax({
+                    url: "/Comment/add",
+                    type: "POST",
+                    data: {
+                        orderId: $(this).attr("data-orderId"),
+                        goodId: $(this).attr("data-goodId"),
+                        isLike: isLike,
+                        content: $(".setCommentModal textarea").val(),
+                        create_time: new Date()
+                    },
+                    success: function(){
+                        $('.answerPage .header').html("<h1 class='ui header green' style='text-align: center'>评论成功</h1>");
+                        $('.answerPage').modal('show');
+                        setTimeout(function(){
+                            window.location.reload();
+                        },500);
+                    },
+                    error: function(){
+                        $('.answerPage .header').html("<h1 class='ui header red' style='text-align: center'>评论失败</h1>");
+                        $('.answerPage').modal('show');
+                    }
+                });
+            });
+        })();
     })
 
 </script>

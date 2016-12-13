@@ -97,6 +97,7 @@ router.post("/", pageControl, function(req, res, next){
             return (function(err,docs){
                 var getOne = docs;
                 getOne.resNum -= ShoppingCartObj[x].buyNum;
+                getOne.sales += ShoppingCartObj[x].buyNum;
                 totalPrice += ShoppingCartObj[x].buyNum * getOne.price;
 
                 if(getOne.resNum < 0){
@@ -110,6 +111,7 @@ router.post("/", pageControl, function(req, res, next){
                     goodObj["headSrc"] = getOne.headSrc;
                     goodObj["price"] = getOne.price;
                     goodObj["buyNum"] = ShoppingCartObj[x].buyNum;
+                    goodObj["comment"] = { grade:-1, content:"" };
                     orderObj["goodsList"].push(goodObj);
 
                     Goods.update(getOne._id, getOne, function(err, doc){

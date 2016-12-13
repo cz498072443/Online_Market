@@ -5,13 +5,13 @@
 var Orders = require("./../models/").Orders;
 
 exports.findAll = function (callback) {
-    Orders.find({}).sort({create_time: 1}).exec(function(err,docs){
+    Orders.find({}).sort({create_time: -1}).exec(function(err,docs){
         callback(err,docs);
     });
 };
 
 exports.findAllByCustomer = function (customer, callback) {
-    Orders.find({customer: customer}).sort({create_time: 1}).exec(function(err,docs){
+    Orders.find({customer: customer}).sort({create_time: -1}).exec(function(err,docs){
         callback(err,docs);
     });
 };

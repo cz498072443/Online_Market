@@ -180,6 +180,15 @@
                                         <p>{{$value.content}}</p>
                                     </div>
                                 </div>
+                                {{else if $value.type == 4}}
+                                <div class="column" style="margin-bottom: 15px">
+                                    <div class="ui orange message">
+                                        <div class="header">
+                                            订单操作
+                                        </div>
+                                        <p>{{$value.content}}</p>
+                                    </div>
+                                </div>
                                 {{/if}}
                             {{/each}}
                         {{else}}

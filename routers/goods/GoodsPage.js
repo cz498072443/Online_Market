@@ -49,6 +49,7 @@ router.post("/",pageControl,function(req, res, next){
         userDetail.wallet = userDetail.wallet - totalPrice;
         userDetail.cost = totalPrice;
         goodDetail.resNum = goodDetail.resNum - req.body.buyNum;
+        goodDetail.sales += parseInt(req.body.buyNum);
         //余额不足||商品余量不足
         if (userDetail.wallet < 0 || goodDetail.resNum < 0){
             res.send(400);
@@ -79,6 +80,7 @@ router.post("/",pageControl,function(req, res, next){
             goodObj["headSrc"] = goodDetail.headSrc;
             goodObj["price"] = goodDetail.price;
             goodObj["buyNum"] = parseInt(req.body.buyNum);
+            goodObj["comment"] = { grade:-1, content:"" };
 
             orderObj["goodsList"].push(goodObj);
             orderObj["totalPrice"] = totalPrice;

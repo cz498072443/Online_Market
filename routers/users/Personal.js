@@ -143,4 +143,16 @@ router.put('/SetSecPass', pageControl, function(req, res, next){
     });
 });
 
+router.post('/CheckSecPass', pageControl, function(req, res, next){
+    var loc_user = req.session.user;
+
+    User.getOneById(loc_user._id, function(err,docs){
+        if(docs.secPassword == req.body.secPass){
+            res.send(200);
+        }else{
+            res.send(400);
+        }
+    });
+});
+
 module.exports = router;

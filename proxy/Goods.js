@@ -34,7 +34,8 @@ function verifyParams(params) {
         'headSrc': params.headSrc,
         'totalNum': params.totalNum,
         'resNum': params.resNum,
-        'price': params.price
+        'price': params.price,
+        'sales': params.sales || 0,
     };
     if(params.create_time !== ""){
         result["create_time"] = new Date(params.create_time);
