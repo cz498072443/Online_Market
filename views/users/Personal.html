@@ -47,24 +47,15 @@
                     </a>
                 </div>
             </div>
-
             <div class="fourteen wide column">
-                <div class="ui four item orange menu">
-                    <a class="active item" id="personalInfoTab">
-                        个人信息
-                    </a>
-                    <a class="item">
-                        修改信息
-                    </a>
-                    <a class="item">
-                        在线充值
-                    </a>
-                    <a class="item">
-                        修改密码
-                    </a>
+                <div class="ui four item orange menu controlTab">
+                    <a class="item" id="personalInfoTab">个人信息</a>
+                    <a class="item" id="changeInfoTab">修改信息</a>
+                    <a class="item" id="rechargeTab">在线充值</a>
+                    <a class="item" id="changePassTab">修改密码</a>
                 </div>
             </div>
-            <div class="doubling two column row fourteen wide personalInfoPage" style="display: none">
+            <div class="doubling two column row fourteen wide personalInfoPage personalShowPage" style="display: none">
                 <h3 class="ui horizontal orange header divider"><i class="tag icon"></i>基本信息</h3>
                 <div class="column">
                     <div class="ui card" style="margin: 0 auto">
@@ -111,7 +102,17 @@
                                         {{if user.nickname !== ""}}
                                         {{user.nickname}}
                                         {{else}}
-                                        未设置 <a href="#">前往设置<i class="icon share"></i></a>
+                                        未设置 <a href="#" class="changeInfoLink pageLink">前往设置<i class="icon share"></i></a>
+                                        {{/if}}
+                                    </div>
+                                </div>
+                                <div class="discription ui sixteen wide grid">
+                                    <div class="six wide column">二级密码</div>
+                                    <div class="ten wide column inputInfo personal_username">
+                                        {{if user.secPassword !== ""}}
+                                        <span class="global_text_success" >已设置二级密码 <a href="#" class="secPassLink pageLink">前往修改<i class="icon share"></i></a></span>
+                                        {{else}}
+                                        <span class="global_text_danger">尚未设置二级密码,请尽快<a href="#" class="secPassLink pageLink">前往设置<i class="icon share"></i></a></span>
                                         {{/if}}
                                     </div>
                                 </div>
@@ -123,7 +124,7 @@
                                 <div class="header" style="margin-bottom: 20px">账户信息</div>
                                 <div class="discription ui sixteen wide grid">
                                     <div class="six wide column">账户余额</div>
-                                    <div class="ten wide column inputInfo personal_username">{{user.wallet}}元 <a href="#">前往充值<i class="icon share"></i></a></div>
+                                    <div class="ten wide column inputInfo personal_username">{{user.wallet}}元 <a href="#" class="rechargeLink pageLink">前往充值<i class="icon share"></i></a></div>
                                 </div>
                                 <div class="discription ui sixteen wide grid">
                                     <div class="six wide column">总计消费</div>
@@ -199,8 +200,57 @@
 <script type="text/javascript">
 
     $(document).ready(function(){
+        var loadPage = (function(){
+            $(".personalInfoPage").show();
+        })();
+
         var loadConfig = (function(){
             $('select.dropdown').dropdown();
+
+            $(".controlTab").on("click","a",function(event){
+                event.stopPropagation();
+                var tabType = $(this).attr("id");
+
+                $(".controlTab a").removeClass("active")
+                $(this).addClass("active");
+
+                switch (tabType){
+                    case "personalInfoTab":
+                        $(".personalShowPage").hide();
+                        $(".personalShowPage.personalInfoPage").show();
+                        break;
+                    case "changeInfoTab":
+                        $(".personalShowPage").hide();
+                        $(".personalShowPage.changeInfoPage").show();
+                        break;
+                    case "rechargeTab":
+                        $(".personalShowPage").hide();
+                        $(".personalShowPage.rechargePage").show();
+                        break;
+                    case "changePassTab":
+                        $(".personalShowPage").hide();
+                        $(".personalShowPage.changePassPage").show();
+                        break;
+                }
+            })
+
+            $(".main.container").on("click",".pageLink",function(event){
+                event.stopPropagation();
+                switch ($(this).attr("class")){
+                    case "changeInfoLink pageLink":
+                        $(".personalShowPage").hide();
+                        $(".personalShowPage.changeInfoPage").show();
+                        break;
+                    case "secPassLink pageLink":
+                        $(".personalShowPage").hide();
+                        $(".personalShowPage.secPassPage").show();
+                        break;
+                    case "rechargeLink pageLink":
+                        $(".personalShowPage").hide();
+                        $(".personalShowPage.rechargePage").show();
+                        break;
+                }
+            })
         })();
     })
 

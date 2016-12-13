@@ -100,10 +100,45 @@ router.put('/ChangePass', pageControl, function(req, res, next){
     });
 
     User.getOneById(loc_user._id, function(err,docs){
-        if(loc_user.password == req.body.oldPass){
+        if(docs.password == req.body.oldPass){
             ep.emit('user_finish',docs);
         }else{
             res.send({code:-1000,res:"旧密码输入错误"})
+        }
+    });
+});
+
+router.put('/SetSecPass', pageControl, function(req, res, next){
+    var loc_user = req.session.user;
+    var ep = new eventproxy();
+    ep.fail(next);
+
+    ep.all('user_finish', function(userDetail){
+        userDetail.secPassword = req.body.secPass;
+
+        User.update(loc_user._id, userDetail, function(err, docs){
+            if(err){
+                res.send(400);
+            }else {
+                res.send({code:1000,res:"密码修改成功"});
+            }
+        })
+    });
+
+    User.getOneById(loc_user._id, function(err,docs){
+        if(req.body.type == "SetSecPass"){
+            if(docs.password == req.body.passWord){
+                ep.emit('user_finish',docs);
+            }else{
+                res.send({code:-1000,res:"密码输入错误"})
+            }
+        }else {
+            console.log(docs.password+"="+req.body.passWord+":"+docs.secPassword+"="+req.body.oldSecPass)
+            if(docs.password == req.body.passWord && docs.secPassword == req.body.oldSecPass){
+                ep.emit('user_finish',docs);
+            }else{
+                res.send({code:-1000,res:"密码输入错误"})
+            }
         }
     });
 });
