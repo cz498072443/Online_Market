@@ -109,6 +109,24 @@ li{
     display: inline-block;
 }
 
+.goodDetailShow{
+    margin-top: 20px;
+}
+
+.customerCommentShow{
+    margin-top: 20px;
+}
+
+.customerCommentShow .ui.feed{
+    max-height: 800px;
+    overflow: auto;
+}
+
+.customerCommentShow .event{
+    margin-bottom:10px;
+    border-bottom:1px solid orange;
+}
+
 /*购物车样式*/
 .buyShoppingCartModal .content:after{
     content:"";

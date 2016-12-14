@@ -67,14 +67,51 @@
                 </div>
             </div>
         </div>
+
         <div class="ui centered grid main container goodContent">
-            <div class="fifteen wide column row">
-                <h3 class="ui horizontal header divider"><i class="chevron circle down icon"></i>商品介绍</h3>
+            <div class="fourteen wide column row">
+                <div class="ui secondary orange pointing two item menu goodContentControl">
+                    <a class="item active" id="goodInfoTab">商品介绍</a>
+                    <a class="item" id="customerCommentTab">买家评价</a>
+                </div>
             </div>
-            <div class="fifteen wide column">
+            <div class="fifteen wide column goodDetailShow">
                 {{#goodDetail.content}}
             </div>
-
+            <div class="fifteen wide column customerCommentShow">
+                {{if commentDetail.length == 0}}
+                <h2 class="ui red header" style="text-align: center">当前还没有评论哟~</h2>
+                {{else}}
+                <div class="ui feed">
+                    {{each commentDetail}}
+                    <div class="event">
+                        <div class="label">
+                            {{if $value.grade == 1}}
+                            <i class="chevron up green icon"></i>
+                            {{else}}
+                            <i class="chevron down red icon"></i>
+                            {{/if}}
+                        </div>
+                        <div class="content">
+                            <div class="summary">
+                                <span style="font-size: 18px;font-weight: bold">{{$value.customerNickName}}</span>
+                                <div class="date">
+                                    {{$value.create_time | obj2date :"YYYY-MM-DD HH:mm:ss"}}
+                                </div>
+                            </div>
+                            <div class="extra text">
+                                {{$value.content}}
+                            </div>
+                            <div class="meta">
+                                <a>{{$value.goodName}}</a>
+                                <a>{{$value.price}}元</a>
+                            </div>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+                {{/if}}
+            </div>
         </div>
     </div>
 </div>
@@ -125,6 +162,10 @@
 <script type="text/javascript">
 
     $(document).ready(function(){
+        var loadPage = (function(){
+            $(".customerCommentShow").hide();
+        })();
+
         var loadConfig = (function(){
             $('.ui.rating').rating();
 
@@ -136,6 +177,25 @@
             $(document).on('keyup',"input[name='buyNum']",function(){
                 if($(this).val() > parseInt($(this).attr("max"))){
                     $(this).val($(this).attr("max"))
+                }
+            });
+
+            //切换商品内容显示
+            $(".goodContentControl").on("click", "a", function(event){
+                event.stopPropagation();
+                switch ($(this).attr("id")){
+                    case "goodInfoTab":
+                        $(".goodContentControl a").removeClass("active");
+                        $(this).addClass("active");
+                        $(".goodDetailShow").show();
+                        $(".customerCommentShow").hide();
+                        break;
+                    case "customerCommentTab":
+                        $(".goodContentControl a").removeClass("active");
+                        $(this).addClass("active");
+                        $(".goodDetailShow").hide();
+                        $(".customerCommentShow").show();
+                        break;
                 }
             });
 

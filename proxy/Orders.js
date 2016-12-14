@@ -20,6 +20,16 @@ exports.createOne = function (params, callback) {
     Orders.create(verifyParams(params),callback);
 };
 
+exports.getOneById = function(id, callback){
+    Orders.findOne({_id: id}).exec(callback);
+};
+
+exports.update = function (id, params, callback) {
+    Orders.findOneAndUpdate({_id:id}, verifyParams(params)).exec(function(err,doc){
+        callback(err,doc);
+    });
+};
+
 exports.removeById = function(id, callback){
     Orders.findOneAndRemove({_id: id}).exec(callback);
 };

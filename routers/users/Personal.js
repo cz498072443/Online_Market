@@ -53,6 +53,13 @@ router.put('/ChangeInfo', pageControl, function(req, res, next){
                 res.send(200);
             }
         })
+
+        News.createOne({
+            "username": loc_user.username,
+            "type": 1,
+            "content": loc_user.username+" 用户修改了个人信息！" ,
+            "create_time": req.body.modify_time
+        },function (err, doc) {});
     });
 
     User.getOneById(loc_user._id, function(err,docs){
@@ -96,7 +103,14 @@ router.put('/ChangePass', pageControl, function(req, res, next){
             }else {
                 res.send({code:1000,res:"密码修改成功"});
             }
-        })
+        });
+
+        News.createOne({
+            "username": loc_user.username,
+            "type": 1,
+            "content": loc_user.username+" 用户修改了密码！" ,
+            "create_time": req.body.modify_time
+        },function (err, doc) {});
     });
 
     User.getOneById(loc_user._id, function(err,docs){
@@ -122,7 +136,14 @@ router.put('/SetSecPass', pageControl, function(req, res, next){
             }else {
                 res.send({code:1000,res:"密码修改成功"});
             }
-        })
+        });
+
+        News.createOne({
+            "username": loc_user.username,
+            "type": 1,
+            "content": loc_user.username+" 用户设置了二级密码！" ,
+            "create_time": req.body.modify_time
+        },function (err, doc) {});
     });
 
     User.getOneById(loc_user._id, function(err,docs){

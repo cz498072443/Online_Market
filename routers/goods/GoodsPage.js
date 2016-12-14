@@ -8,6 +8,7 @@ var Goods = require("./../../proxy").Goods;
 var User = require("./../../proxy").User;
 var Orders = require("./../../proxy").Orders;
 var News = require("./../../proxy").News;
+var Comments = require("./../../proxy").Comments;
 
 var eventproxy = require("eventproxy");
 
@@ -25,16 +26,20 @@ router.get("/:id",pageControl,function(req, res, next){
     var ep = new eventproxy();
     ep.fail(next);
 
-    ep.all('good_detail','user_detail',function(goodDetail, userDetail){
-        res.render('goods/GoodDetail.html',{ user:userDetail, goodDetail:goodDetail });
+    ep.all('good_detail', 'user_detail', 'comment_detail', function(goodDetail, userDetail, commentDetail){
+        res.render('goods/GoodDetail.html',{ user: userDetail, goodDetail: goodDetail, commentDetail: commentDetail });
     });
 
     Goods.getOneById(req.params.id, function(err,docs){
-        ep.emit('good_detail',docs);
+        ep.emit('good_detail', docs);
     });
 
     User.getOneById(loc_user._id, function(err,docs){
-        ep.emit('user_detail',docs)
+        ep.emit('user_detail', docs)
+    });
+
+    Comments.findAllByGoodId(req.params.id, function(err,docs){
+        ep.emit('comment_detail', docs)
     });
 });
 

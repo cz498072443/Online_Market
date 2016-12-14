@@ -12,9 +12,11 @@ var NewsSchema = new Schema({
     'goodId': {type: String},
     'orderId': {type: String},
     'goodName': {type: String},
+    'customerNickName': {type: String},
     'headSrc': {type: String},
-    'isLike': {type: Number},
+    'grade': {type: Number},
     'content': {type: String},
+    'price': {type: Number},
     "create_time": { type: Date, default: Date.parse(new Date()) },
     "modify_time": { type: Date, default: Date.parse(new Date()) }
 },{collection:'comments',versionKey:false});

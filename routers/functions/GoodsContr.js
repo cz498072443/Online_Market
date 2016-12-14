@@ -6,6 +6,7 @@ var router = express.Router();
 var Goods = require("./../../proxy").Goods;
 var User = require("./../../proxy").User;
 var News = require("./../../proxy").News;
+var Comments = require("./../../proxy").Comments;
 
 var eventproxy = require("eventproxy");
 
@@ -125,7 +126,9 @@ router.delete('/delete',pageControl,function(req, res){
 
             res.send(200);
         }
-    })
+    });
+
+    Comments.removeByGoodId(req.body.id, function(err, doc){})
 });
 
 module.exports = router;

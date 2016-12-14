@@ -157,7 +157,7 @@
                                 <div class="column" style="margin-bottom: 15px">
                                     <div class="ui blue message">
                                         <div class="header">
-                                            新用户注册
+                                            账号
                                         </div>
                                         <p>{{$value.content}}</p>
                                     </div>
@@ -185,6 +185,15 @@
                                     <div class="ui orange message">
                                         <div class="header">
                                             订单操作
+                                        </div>
+                                        <p>{{$value.content}}</p>
+                                    </div>
+                                </div>
+                                {{else if $value.type == 5}}
+                                <div class="column" style="margin-bottom: 15px">
+                                    <div class="ui teal message">
+                                        <div class="header">
+                                            评价操作
                                         </div>
                                         <p>{{$value.content}}</p>
                                     </div>
