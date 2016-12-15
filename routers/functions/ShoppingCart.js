@@ -49,6 +49,9 @@ router.post("/", pageControl, function(req, res, next){
 
     ep.fail(next);
     ep.all('user_detail', 'good_finish', function(userDetail){
+        totalPrice = Math.ceil(totalPrice * userDetail.level.discount);
+        console.log(totalPrice);
+
         var ep2 = new eventproxy();
         ep2.all('user_finish','order_finish',function(){
             News.createOne({
@@ -56,9 +59,7 @@ router.post("/", pageControl, function(req, res, next){
                 "type": 2,
                 "content": loc_user.username+" 清空了购物车,总计"+totalPrice+"元" ,
                 "create_time": req.body.create_time
-            },function (err, doc) {
-
-            });
+            },function (err, doc) {});
 
             res.send(200);
         });
@@ -66,6 +67,22 @@ router.post("/", pageControl, function(req, res, next){
         //更新个人信息(钱包)
         userDetail.wallet -= totalPrice;
         userDetail.cost += totalPrice;
+
+        //检查一下是否可以升级
+        var thisLevel = checkLevels(userDetail.cost);
+        if(thisLevel > userDetail.level.num){
+            userDetail.level.num = thisLevel;
+            userDetail.level.discount = levels[thisLevel].discount;
+            User.update(userDetail._id, userDetail, function(err, doc){});
+
+            News.createOne({
+                "username": userDetail.username,
+                "type": 1,
+                "content": userDetail.username+" 用户等级提升至 LV"+ userDetail.level,
+                "create_time": req.body.create_time
+            },function (err, doc) {});
+        };
+
         if(userDetail.wallet < 0){
             res.send(400);
         }else {

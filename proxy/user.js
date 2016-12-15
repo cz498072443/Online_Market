@@ -37,7 +37,7 @@ function verifyParams(params) {
         "wallet": params.wallet || 0,
         "favorite": params.favorite || [],
         "shoppingCart": params.shoppingCart || [],
-        "level": params.level || 0,
+        "level": params.level || { num: 0, discount: 1 },
         "cost": params.cost || 0,
         "nickname": params.nickname || "",
         "sign": params.sign || "",

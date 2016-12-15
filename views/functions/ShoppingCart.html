@@ -52,13 +52,23 @@
         </div>
         {{if user.secPassword == ""}}
         <div class="description">
-            <h3>总价 : <span class="global_text_success"></span></h3>
+            <h3>总价 :
+                <span class="global_text_success"></span>
+                {{if user.level.num > 0}}
+                <span class="global_text_primary">( {{user.level.num}} 级用户可享受 <span class="global_text_danger">{{user.level.discount * 10}}</span> 折优惠哦 )</span>
+                {{/if}}
+            </h3>
             <p>确认清空购物车吗？</p>
             <p class="global_text_warning"><i class="warning red sign icon"></i>警告:您尚未设置二级密码,为保证用户安全请尽快<a href="/personalInfo" style="color: orangered">前往设置</a></p>
         </div>
         {{else}}
         <div class="ui input description">
-            <h3 style="color: white">总价 : <span class="global_text_success"></span></h3>
+            <h3 style="color: white">总价 :
+                <span class="global_text_success"></span>
+                {{if user.level.num > 0}}
+                <span class="global_text_primary">( {{user.level.num}} 级用户可享受 <span class="global_text_danger">{{user.level.discount * 10}}</span> 折优惠哦 )</span>
+                {{/if}}
+            </h3>
             <p style="color: white">确认清空购物车吗？</p>
             <p class="global_text_warning">二级密码 : <input name="shoppingCartSecPass" type="password" style="color: black"></p>
         </div>

@@ -4,22 +4,8 @@
 
 <div class="pusher">
     <div class="full height">
-        <div class="header segment">
-            <div class="ui three column horizontally padded grid head_info">
-                <div class="equal height row">
-                    <div class="red column">
-                        <h3>Hello {{user.username}}!</h3>
-                    </div>
-                    <div class="blue column">
-                        <p>当前账户余额: <span class="global_text_danger">{{user.wallet || 0}}</span> 元</p>
-                    </div>
-                    <div class="green column">
-                        <p>这是一个长行，旁边有很多文本内容。</p>
-                        <p>可能会占用很多段落。</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {{include './../headBar'}}
+
         <div class="ui grid main container buyControl" style="padding: 0">
             <div class="ui right very close rail">
                 <div class="ui segment">
@@ -31,12 +17,17 @@
                 <div class="column">
                     <div class="ui card" style="width: 80%;margin: 0px auto">
                         <div class="image">
+                            {{if goodDetail.sales > 100}}
                             <a class="ui corner red label"><i class="heart icon"></i></a>
+                            {{else}}
+                            <a class="ui corner label"><i class="heart icon"></i></a>
+                            {{/if}}
                             <img src="{{goodDetail.headSrc}}">
                         </div>
                         <div class="extra">
-                            <div class="ui star rating" data-rating="3"></div>
+                            <!--<div class="ui star rating" data-rating="3"></div>-->
                             <!--<div data-rating="3" class="ui star rating"><i class="icon active"></i><i class="icon active"></i><i class="icon active"></i><i class="icon"></i></div>-->
+                            <span class="global_text_danger" style="font-weight: bold">总销量:{{goodDetail.sales || 0}}</span>
                         </div>
                     </div>
                 </div>
@@ -132,7 +123,11 @@
         </div>
         {{else}}
         <div class="ui input description">
-            <p style="color: white">确认购买该商品吗？</p>
+            <p style="color: white">确认购买该商品吗？
+                {{if user.level.num > 0}}
+                <span class="global_text_success">( {{user.level.num}} 级用户可享受 <span class="global_text_danger">{{user.level.discount * 10}}</span> 折优惠哦 )</span>
+                {{/if}}
+            </p>
             <p class="global_text_warning">请输入二级密码并点击确认</p><input name="goodDetailPageSecPass" type="password" style="color: black">
         </div>
         {{/if}}

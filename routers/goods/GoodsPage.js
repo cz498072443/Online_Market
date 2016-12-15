@@ -36,7 +36,7 @@ router.get("/:id",pageControl,function(req, res, next){
     ep.fail(next);
 
     ep.all('good_detail', 'user_detail', 'comment_detail', function(goodDetail, userDetail, commentDetail){
-        res.render('goods/GoodDetail.html',{ user: userDetail, goodDetail: goodDetail, commentDetail: commentDetail });
+        res.render('goods/GoodDetail.html',{ user: userDetail, goodDetail: goodDetail, commentDetail: commentDetail, levels: levels });
     });
 
     Goods.getOneById(req.params.id, function(err,docs){
@@ -59,14 +59,27 @@ router.post("/",pageControl,function(req, res, next){
 
     ep.all('good_detail', 'user_detail',function(goodDetail, userDetail){
         //消费后的各种数值变动
-        var totalPrice = goodDetail.price * req.body.buyNum;
+        var totalPrice = Math.ceil(goodDetail.price * req.body.buyNum * userDetail.level.discount);
+        console.log(totalPrice);
         userDetail.wallet = userDetail.wallet - totalPrice;
         userDetail.cost += totalPrice;
         goodDetail.resNum = goodDetail.resNum - req.body.buyNum;
         goodDetail.sales += parseInt(req.body.buyNum);
 
         //检查一下是否可以升级
-        console.log(checkLevels(userDetail.cost));
+        var thisLevel = checkLevels(userDetail.cost);
+        if(thisLevel > userDetail.level.num){
+            userDetail.level.num = thisLevel;
+            userDetail.level.discount = levels[thisLevel].discount;
+            User.update(userDetail._id, userDetail, function(err, doc){});
+
+            News.createOne({
+                "username": userDetail.username,
+                "type": 1,
+                "content": userDetail.username+" 用户等级提升至 LV"+ userDetail.level,
+                "create_time": req.body.create_time
+            },function (err, doc) {});
+        };
 
         //余额不足||商品余量不足
         if (userDetail.wallet < 0 || goodDetail.resNum < 0){
