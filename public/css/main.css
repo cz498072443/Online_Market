@@ -83,6 +83,7 @@ li{
     /*width: 60%;*/
     /*min-width: 480px;*/
     /*height: 80%;*/
+    /*min-height:800px;*/
     position: relative;
     margin: 5px auto;
     background-color: white;
@@ -104,17 +105,27 @@ li{
     margin-top: 20px;
 }
 
+.goodDetailShow{
+    margin-top: 40px;
+    min-height: 500px;
+}
+
+.goodDetailShow img{
+    max-width: 100%;
+}
+
+.customerCommentShow .feed{
+    margin-top: 40px;
+    min-height: 500px;
+}
+
+.customerCommentShow h2{
+    min-height: 500px;
+}
+
 /*商品详情页*/
 .goodContent{
     display: inline-block;
-}
-
-.goodDetailShow{
-    margin-top: 20px;
-}
-
-.customerCommentShow{
-    margin-top: 20px;
 }
 
 .customerCommentShow .ui.feed{

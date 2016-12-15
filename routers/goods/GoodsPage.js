@@ -9,8 +9,17 @@ var User = require("./../../proxy").User;
 var Orders = require("./../../proxy").Orders;
 var News = require("./../../proxy").News;
 var Comments = require("./../../proxy").Comments;
+var levels = require("./../../public/json/levels");
 
 var eventproxy = require("eventproxy");
+
+var checkLevels = function(cost){
+    var i = 0;
+    while (i < levels.length && cost > levels[i].left){
+        i++
+    }
+    return i - 1;
+};
 
 //页面控制中间件
 var pageControl = function (req, res, next) {
@@ -52,9 +61,13 @@ router.post("/",pageControl,function(req, res, next){
         //消费后的各种数值变动
         var totalPrice = goodDetail.price * req.body.buyNum;
         userDetail.wallet = userDetail.wallet - totalPrice;
-        userDetail.cost = totalPrice;
+        userDetail.cost += totalPrice;
         goodDetail.resNum = goodDetail.resNum - req.body.buyNum;
         goodDetail.sales += parseInt(req.body.buyNum);
+
+        //检查一下是否可以升级
+        console.log(checkLevels(userDetail.cost));
+
         //余额不足||商品余量不足
         if (userDetail.wallet < 0 || goodDetail.resNum < 0){
             res.send(400);

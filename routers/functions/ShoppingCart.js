@@ -8,8 +8,17 @@ var User = require("./../../proxy").User;
 var Goods = require("./../../proxy").Goods;
 var Orders = require("./../../proxy").Orders;
 var News = require("./../../proxy").News;
+var levels = require("./../../public/json/levels");
 
 var eventproxy = require("eventproxy");
+
+var checkLevels = function(cost){
+    var i = 0;
+    while (i < levels.length && cost > levels[i].left){
+        i++
+    }
+    return i - 1;
+};
 
 //页面控制中间件
 var pageControl = function (req, res, next) {

@@ -154,7 +154,6 @@ router.put('/SetSecPass', pageControl, function(req, res, next){
                 res.send({code:-1000,res:"密码输入错误"})
             }
         }else {
-            console.log(docs.password+"="+req.body.passWord+":"+docs.secPassword+"="+req.body.oldSecPass)
             if(docs.password == req.body.passWord && docs.secPassword == req.body.oldSecPass){
                 ep.emit('user_finish',docs);
             }else{

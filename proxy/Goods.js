@@ -3,7 +3,7 @@
 var Goods = require("./../models/").Goods;
 
 exports.findAll = function (callback) {
-    Goods.find({}).sort({create_time: 1}).exec(function(err,docs){
+    Goods.find({}).sort({create_time: -1}).exec(function(err,docs){
         callback(err,docs);
     });
 };

@@ -23,7 +23,6 @@ exports.findOneByGoodAndOrder = function (goodId, orderId, callback) {
 };
 
 exports.createOne = function (params, callback) {
-    console.log(params);
     Comments.create(verifyParams(params),callback);
 };
 

@@ -65,8 +65,9 @@
                 <table class="ui table">
                     <thead>
                     <tr>
-                        <th class="three wide">种类</th>
-                        <th class="three wide">图片</th>
+                        <th class="two wide">销量</th>
+                        <th class="two wide">种类</th>
+                        <th class="two wide">图片</th>
                         <th class="three wide">商品名</th>
                         <th class="two wide">余量</th>
                         <th class="two wide">价格</th>
@@ -81,6 +82,7 @@
                     {{else}}
                     {{each goodList}}
                     <tr>
+                        <td class="global_text_warning">{{$value.sales || 0}}</td>
                         <td>{{$value.type}}</td>
                         <td><a href="/Goods/{{$value.id}}"><img style="width: 60px;height: 60px" src="{{$value.headSrc}}"></a></td>
                         <td class="global_text_danger">{{$value.name}}</td>

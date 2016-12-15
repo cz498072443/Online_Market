@@ -49,7 +49,11 @@
                                     </div>
                                 </div>
                             </div>
+                            {{if $value.sales > 100}}
                             <a class="ui corner red label"><i class="heart icon"></i></a>
+                            {{else}}
+                            <a class="ui corner label"><i class="heart icon"></i></a>
+                            {{/if}}
                             <img src="{{$value.headSrc}}">
                         </div>
                         <div class="content">
@@ -58,7 +62,7 @@
                         </div>
                         <div class="extra content">
                             <a class="right floated created" style="color: red;font-weight: bold">{{$value.price}}元</a>
-                            <div data-rating="3" class="ui star rating"><i class="icon active"></i><i class="icon active"></i><i class="icon active"></i><i class="icon"></i></div>
+                            <span style="">总销量:{{$value.sales || 0}}</span>
                         </div>
                     </div>
                 </div>
