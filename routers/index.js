@@ -16,6 +16,7 @@ var signUp = require("./signUp");
 var GoodsContr = require("./functions").GoodsContr;
 var OrdersContr = require("./functions").OrdersContr;
 var ShoppingCart = require("./functions").ShoppingCart;
+var Authority = require("./functions").Authority;
 var Comment = require("./functions").Comment;
 var GoodsPage = require("./goods").GoodsPage;
 var Personal = require("./users").Personal;
@@ -61,6 +62,7 @@ router.use('/GoodsContr', GoodsContr);
 router.use('/Orders', OrdersContr);
 router.use('/ShoppingCart', ShoppingCart);
 router.use('/Comment', Comment);
+router.use('/Authority', Authority);
 
 //商品
 router.use('/Goods',GoodsPage);

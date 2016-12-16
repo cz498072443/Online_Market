@@ -20,7 +20,12 @@ levels = [
     },
     {
         discount: 0.85,
-        left: 10000
+        left: 10000,
+        right: 20000
+    },
+    {
+        discount: 0.8,
+        left: 20000
     }
 ];
 

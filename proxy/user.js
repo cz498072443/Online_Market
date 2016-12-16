@@ -4,6 +4,12 @@
 
 var User = require("./../models/").User;
 
+exports.findAll = function (callback) {
+    User.find({}).sort({create_time: -1}).exec(function(err,docs){
+        callback(err,docs);
+    });
+};
+
 exports.getOneByUsername= function(username, callback) {
     User.findOne({username: username}).exec(callback);
 };
