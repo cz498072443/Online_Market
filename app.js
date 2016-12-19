@@ -62,7 +62,7 @@ app.use(session({
         db: config.session_db
     }),
     name:"market.uid",
-    resave:true,
+    resave:false,
     saveUninitialized:true,
     cookie:{
         maxAge:config.session_maxage

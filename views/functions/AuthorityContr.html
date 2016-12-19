@@ -42,9 +42,10 @@
                                 <div class="header">
                                     <span class="global_text_danger">{{$value.role}}</span>账号
                                 </div>
-                                <p>{{$value.username}}
+                                <p style="color:darkgrey;font-size:13px">LV.{{$value.level.num}}</p>
+                                <p style="font-weight: bold">{{$value.username}}
                                     {{if $value.apply != ""}}
-                                    <i class="icon green alarm"></i>
+                                    <i class="icon green alarm applyDetailBtn" data-html="<div class='header'>用户申请</div><div class='content'><p class='global_text_success'>请求用户权限提升为 {{$value.apply}}</p><button class='ui green button applyDetailComfirmBtn' data-id='{{$value.id}}' data-apply='{{$value.apply}}'>批准申请</button></div>"></i>
                                     {{/if}}
                                 </p>
                                 <div class="authorityBtns" data-id="{{$value.id}}">
@@ -62,8 +63,80 @@
     </div>
 </div>
 
-<script src="/tools/template-native.js"></script>
+<!--反馈遮罩-->
+<div class="ui modal basic answerPage">
+    <div class="header"></div>
+</div>
 
+<!--用户信息详情模态框-->
+<div class="ui long coupled modal authorityDetailShow">
+    <i class="close icon"></i>
+    <div class="content">
+        <div class="description"></div>
+    </div>
+    <div class="actions">
+        <button class="ui primary button authorityConfirmChange">确认修改</button>
+    </div>
+</div>
+
+<!--用户信息详情模板-->
+<script id="authorityDetailTmpl" type="text/html">
+    <h3 class="ui red header">
+        <i class="user icon"></i><div class="content"> <%=user.username %></div>
+        <div class="sub header">账户余额:
+            <span class="global_text_warning"><%=user.wallet %></span> 总计消费: <span class="global_text_warning"><%=user.cost %></span><br>
+            <span>
+                <% if(user.apply == ""){ %>
+                该用户没有提交申请
+                <% }else{ %>
+                该用户提出申请为:<span class="global_text_warning"><%=user.apply %></span>
+                <% } %>
+            </span>
+        </div>
+    </h3>
+    <div class="fourteen wide column">
+        <div class="ui form" style="padding: 5px">
+            <div class="four fields">
+                <div class="field">
+                    <label>用户身份</label>
+                    <select name="role" class="ui search dropdown">
+                        <option value="User">User</option>
+                        <option value="Admin">Admin</option>
+                        <option value="SuperAdmin">SuperAdmin</option>
+                    </select>
+                </div>
+            </div>
+            <div class="four fields">
+                <div class="field">
+                    <label>用户等级</label>
+                    <input name="level" type="number" max="4" min="0" value="<%=user.level.num%>">
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field">
+                    <label>昵称</label>
+                    <input name="nickname" type="text" value="<%=user.nickname %>">
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field">
+                    <label>签名</label>
+                    <input name="sign" type="text" value="<%=user.sign %>">
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field">
+                    <span class="global_text_success">账户创建时间 <%=user.create_time %></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+
+
+<script src="/tools/template-native.js"></script>
+<script src="/tools/moment.min.js"></script>
 <script type="text/javascript">
 
     $(document).ready(function(){
@@ -72,6 +145,80 @@
         })();
 
         var loadConfig = (function(){
+            $('.applyDetailBtn').popup({on: 'click'});
+            $(document).on('click', '.authorityDetailBtn', function(){
+                $.ajax({
+                    url: "Authority/GetOne",
+                    data: {
+                        userId: $(this).parent().attr("data-id")
+                    },
+                    type: "GET",
+                    success: function(data){
+                        var userDetail = data.res;
+
+                        userDetail.create_time =  moment(userDetail.create_time).format("YYYY-MM-DD HH:mm:ss");
+                        var authorityDetailTmpl = template("authorityDetailTmpl",{user: userDetail});
+                        $(".authorityDetailShow .authorityConfirmChange").attr("data-id", userDetail._id);
+                        $(".authorityDetailShow .description").html(authorityDetailTmpl);
+                        $(".authorityDetailShow .description select").val(userDetail.role);
+
+                        $(".authorityDetailShow").modal("show");
+
+                    },
+                    error: function(){
+                        alert("获取用户信息出错");
+                    }
+                });
+            });
+
+            $('.authorityDetailShow').on('click', '.authorityConfirmChange', function(){
+                $.ajax({
+                    url: "Authority/ChangeOne",
+                    type: "PUT",
+                    data: {
+                        userId: $(this).attr("data-id"),
+                        role: $(".authorityDetailShow select[name='role']").val(),
+                        level: $(".authorityDetailShow input[name='level']").val(),
+                        nickname: $(".authorityDetailShow input[name='nickname']").val(),
+                        sign: $(".authorityDetailShow input[name='sign']").val(),
+                        create_time: new Date()
+                    },
+                    success: function(){
+                        $('.answerPage .header').html("<h1 class='ui header green' style='text-align: center'>修改信息成功!!!</h1>");
+                        $('.answerPage').modal('show');
+                        setTimeout(function(){
+                            window.location.reload();
+                        },800);
+                    },
+                    error: function(){
+                        $('.answerPage .header').html("<h1 class='ui header red' style='text-align: center'>申请失败!!!</h1>");
+                        $('.answerPage').modal('show');
+                    }
+                });
+            });
+
+            $(document).on('click', '.applyDetailComfirmBtn', function(){
+                $.ajax({
+                    url: "Authority/ChangeOne",
+                    type: "PUT",
+                    data: {
+                        userId: $(this).attr("data-id"),
+                        role: $(this).attr("data-apply"),
+                        create_time: new Date()
+                    },
+                    success: function(){
+                        $('.answerPage .header').html("<h1 class='ui header green' style='text-align: center'>批准申请成功!!!</h1>");
+                        $('.answerPage').modal('show');
+                        setTimeout(function(){
+                            window.location.reload();
+                        },800);
+                    },
+                    error: function(){
+                        $('.answerPage .header').html("<h1 class='ui header red' style='text-align: center'>批准失败!!!</h1>");
+                        $('.answerPage').modal('show');
+                    }
+                });
+            });
 
         })();
     })

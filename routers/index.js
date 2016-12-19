@@ -24,7 +24,7 @@ var Personal = require("./users").Personal;
 var Goods = require("./../proxy").Goods;
 var User = require("./../proxy").User;
 
-router.get('/',middleware.checkAccess,function(req,res,next){
+router.get('/', middleware.checkAccess, function(req,res,next){
     var ep = new eventproxy();
     ep.fail(next);
 
@@ -36,7 +36,7 @@ router.get('/',middleware.checkAccess,function(req,res,next){
                 res.render('index.html',{ user:userDetail, goodList:goodList });
             });
         }else{
-            res.render('index.html',{ user:"未登录"});
+            res.render('index.html',{ user:"未登录", goodList:goodList});
         }
     });
 
@@ -46,15 +46,15 @@ router.get('/',middleware.checkAccess,function(req,res,next){
 });
 
 //登陆控制
-router.use('/login',login);
-router.use('/signUp',signUp);
-router.get('/lose',function(req,res){
+router.use('/login', login);
+router.use('/signUp', signUp);
+router.get('/lose', function(req,res){
     req.session.destroy(function(){
         res.redirect('/login');
     })
 });
-router.get('/logout',function(req,res){
-    res.render('index.html',{user:"未登录"})
+router.get('/logout', function(req,res){
+    res.render('index.html', {user:"未登录"})
 });
 
 //功能
@@ -65,10 +65,10 @@ router.use('/Comment', Comment);
 router.use('/Authority', Authority);
 
 //商品
-router.use('/Goods',GoodsPage);
+router.use('/Goods', GoodsPage);
 
 //用户
-router.use('/Personal',Personal);
+router.use('/Personal', Personal);
 
 
 module.exports = router;

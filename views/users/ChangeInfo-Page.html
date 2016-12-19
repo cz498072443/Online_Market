@@ -25,7 +25,7 @@
                     <label>用户身份</label>
                     <input name="totalNum" disabled type="text" value="{{user.role}}">
                     {{if user.apply == ""}}
-                        {{if user.role == "user"}}
+                        {{if user.role == "User"}}
                         <span href="#" class="apply_btn global_text_primary" data-type="apply_tobeAdmin">申请成为管理员<i class="icon rocket"></i></span>
                         {{else user.role == "Admin"}}
                         <span href="#" class="apply_btn global_text_primary" data-type="apply_tobeSuperAdmin">申请成为超级管理员<i class="icon rocket"></i></span>
@@ -82,10 +82,10 @@
 
         switch (applyType){
             case "apply_tobeAdmin":
-                data = "tobeAdmin";
+                data = "Admin";
                 break;
             case "apply_tobeSuperAdmin":
-                data = "tobeSuperAdmin";
+                data = "SuperAdmin";
                 break;
         }
 

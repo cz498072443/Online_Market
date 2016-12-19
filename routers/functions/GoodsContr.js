@@ -12,13 +12,17 @@ var eventproxy = require("eventproxy");
 
 //页面控制中间件
 var pageControl = function (req, res, next) {
-    if(!req.session.hasLogin){
-        res.render('login.html',{ error:"若要进行该操作,请先登录!"});
-    }else if(req.session.user.role == "User"){
-        res.redirect("/");
-    }else{
-        next();
-    }
+    User.getOneById(req.session.user._id, function(err, docs){
+        var userRole = docs.role;
+
+        if(!req.session.hasLogin){
+            res.render('login.html',{ error:"若要进行该操作,请先登录!"});
+        }else if(userRole == "User"){
+            res.redirect("/");
+        }else{
+            next();
+        }
+    });
 };
 
 router.get('/',pageControl,function(req, res, next){

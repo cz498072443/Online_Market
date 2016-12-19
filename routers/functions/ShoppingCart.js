@@ -78,7 +78,7 @@ router.post("/", pageControl, function(req, res, next){
             News.createOne({
                 "username": userDetail.username,
                 "type": 1,
-                "content": userDetail.username+" 用户等级提升至 LV"+ userDetail.level,
+                "content": userDetail.username+" 用户等级提升至 LV"+ userDetail.level.num,
                 "create_time": req.body.create_time
             },function (err, doc) {});
         };

@@ -3,7 +3,8 @@
         <i class="home icon"></i> 主页
     </a>
     <div class="right menu">
-        {{if user.shoppingCart.length !== 0}}
+
+        {{if user !="未登录" && user.shoppingCart.length !== 0}}
         <div class="ui floating dropdown item ShoppingCartBar" id="ShoppingCartBar" tabindex="0">
             <i class="shop icon shoppingCartDetail"></i>
             <div class="ui red circular label shoppingCartDetail">{{user.shoppingCart.length}}</div>
@@ -108,7 +109,13 @@
     </div>
 </div>
 
-{{include './functions/ShoppingCart'}}
+{{if user !="未登录"}}
+    {{include './functions/ShoppingCart'}}
+{{else}}
+    <script src="/tools/jquery-2.0.3.min.js"></script>
+    <script src="/tools/semanticUI/semantic.min.js"></script>
+{{/if}}
+
 
 <div class="ui page inverted dimmer loading_page"></div>
 
