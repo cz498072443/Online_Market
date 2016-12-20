@@ -34,6 +34,10 @@ exports.updateShoppingCart = function (id, shoppingCart, callback){
     });
 };
 
+exports.removeById = function(id, callback){
+    User.findOneAndRemove({_id: id}).exec(callback);
+};
+
 function verifyParams(params) {
     var result = {
         'username': params.username,

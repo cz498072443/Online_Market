@@ -28,7 +28,6 @@ router.get('/', pageControl, function(req, res, next){
     });
 
     User.getOneById(loc_user._id, function(err,docs){
-        console.log(docs.level);
         ep.emit('user_detail',docs)
     });
 

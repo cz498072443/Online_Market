@@ -20,6 +20,10 @@ exports.createOne = function (params, callback) {
     News.create(verifyParams(params),callback);
 };
 
+exports.removeByOwner = function(username, callback){
+    News.remove({username: username}).exec(callback);
+};
+
 function verifyParams(params) {
     var result = {
         'username': params.username || "",

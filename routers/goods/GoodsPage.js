@@ -60,7 +60,6 @@ router.post("/",pageControl,function(req, res, next){
     ep.all('good_detail', 'user_detail',function(goodDetail, userDetail){
         //消费后的各种数值变动
         var totalPrice = Math.ceil(goodDetail.price * req.body.buyNum * userDetail.level.discount);
-        console.log(totalPrice);
         userDetail.wallet = userDetail.wallet - totalPrice;
         userDetail.cost += totalPrice;
         goodDetail.resNum = goodDetail.resNum - req.body.buyNum;

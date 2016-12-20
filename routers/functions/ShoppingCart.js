@@ -50,7 +50,6 @@ router.post("/", pageControl, function(req, res, next){
     ep.fail(next);
     ep.all('user_detail', 'good_finish', function(userDetail){
         totalPrice = Math.ceil(totalPrice * userDetail.level.discount);
-        console.log(totalPrice);
 
         var ep2 = new eventproxy();
         ep2.all('user_finish','order_finish',function(){

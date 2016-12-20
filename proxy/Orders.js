@@ -34,6 +34,10 @@ exports.removeById = function(id, callback){
     Orders.findOneAndRemove({_id: id}).exec(callback);
 };
 
+exports.removeByCustomer = function(customer, callback){
+    Orders.remove({customer: customer}).exec(callback);
+};
+
 function verifyParams(params) {
     var result = {
         'customer': params.customer,

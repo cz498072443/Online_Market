@@ -50,7 +50,7 @@
                                 </p>
                                 <div class="authorityBtns" data-id="{{$value.id}}">
                                     <div class="ui button authorityDetailBtn">详情</div>
-                                    <div class="ui button authorityReloadBtn">重置</div>
+                                    <div class="ui button authorityResetBtn">重置</div>
                                     <div class="ui button authorityDeleteBtn">删除</div>
                                 </div>
                             </div>
@@ -78,6 +78,34 @@
         <button class="ui primary button authorityConfirmChange">确认修改</button>
     </div>
 </div>
+
+<!--删除确认控制模态框-->
+<div class="ui basic demo modal check_modal">
+    <div class="header">
+        <h1>警告</h1>
+    </div>
+    <div class="content">
+        <div class="image" style="float: left">
+            <i class="warning sign red icon"></i>
+        </div>
+        <div class="description">
+            <p>确认删除该用户吗？<span class="global_text_warning">( 删除该用户会同时删除其所有订单信息和用户消息! )</span> </p>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="two fluid ui inverted buttons">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                抱歉我点错了
+            </div>
+            <a data-id="" class="ui green ok basic inverted button deleteUser">
+                <i class="checkmark icon"></i>
+                确认删除
+            </a>
+        </div>
+    </div>
+</div>
+
 
 <!--用户信息详情模板-->
 <script id="authorityDetailTmpl" type="text/html">
@@ -219,6 +247,59 @@
                     }
                 });
             });
+
+            $(document).on('click', '.authorityResetBtn', function(){
+                $.ajax({
+                    url:"Authority/ChangeOne",
+                    type: "PUT",
+                    data: {
+                        userId: $(this).parent().attr("data-id"),
+                        password: "change",
+                        create_time: new Date()
+                    },
+                    success: function(){
+                        $('.answerPage .header').html("<h1 class='ui header green' style='text-align: center'>重置密码成功!!!</h1>");
+                        $('.answerPage').modal('show');
+                        setTimeout(function(){
+                            window.location.reload();
+                        },800);
+                    },
+                    error: function(){
+                        $('.answerPage .header').html("<h1 class='ui header red' style='text-align: center'>批准失败!!!</h1>");
+                        $('.answerPage').modal('show');
+                    }
+                });
+            });
+
+            $('.check_modal').modal('attach events', '.authorityDeleteBtn');
+            $(document).on('click','.authorityDeleteBtn',function(){
+                var id = $(this).parent().attr("data-id");
+                $(".check_modal a.ok").attr("data-id",id);
+            });
+
+            $(document).on('click', '.deleteUser', function(event){
+                event.stopPropagation();
+
+                $.ajax({
+                    url:"Authority/DeleteOne",
+                    type: "delete",
+                    data: {
+                        userId: $(this).attr("data-id"),
+                        create_time: new Date()
+                    },
+                    success: function(){
+                        $('.answerPage .header').html("<h1 class='ui header green' style='text-align: center'>删除用户成功!!!</h1>");
+                        $('.answerPage').modal('show');
+                        setTimeout(function(){
+                            window.location.reload();
+                        },800);
+                    },
+                    error: function(){
+                        $('.answerPage .header').html("<h1 class='ui header red' style='text-align: center'>删除失败!!!</h1>");
+                        $('.answerPage').modal('show');
+                    }
+                });
+            })
 
         })();
     })

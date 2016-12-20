@@ -7,6 +7,7 @@ var router = express.Router();
 
 var User = require("./../../proxy").User;
 var News = require("./../../proxy").News;
+var Orders = require("./../../proxy").Orders;
 var levels = require("./../../public/json/levels");
 
 var eventproxy = require("eventproxy");
@@ -104,12 +105,68 @@ router.put('/ChangeOne', pageControl, function(req, res, next){
         if(req.body.sign != undefined){
             docs.sign = req.body.sign;
         }
-        if(req.body.secPassword != undefined){
-            docs.secPassword = req.body.secPassword;
+        if(req.body.password != undefined && req.body.password == "change"){
+            docs.password = "111";
         }
 
         ep.emit('user_detail',docs);
     });
+});
+
+router.delete('/DeleteOne', function(req, res, next){
+    var userId = req.body.userId;
+    var loc_user = req.session.user;
+    var remove_user;
+    var ep = new eventproxy();
+
+    ep.fail(next);
+    ep.all('removeUser', 'removeNews', 'removeOrders', function(){
+        res.send(200);
+
+        News.createOne({
+            "username": loc_user.username,
+            "type": 1,
+            "content": "超级管理员 "+loc_user.username+" 删除了 "+remove_user.username+" 的账号! ",
+            "create_time": req.body.create_time
+        },function (err, doc) {});
+    });
+
+    User.getOneById(userId, function(err, docs){
+        if(err){
+            res.send(400);
+        }else{
+            remove_user = docs;
+
+            News.removeByOwner(docs.username, function(err, docs){
+                if(err){
+                    res.send(400);
+                } else {
+                    ep.emit('removeNews');
+                }
+            });
+
+            Orders.removeByCustomer(userId, function(err, docs){
+                if(err){
+                    res.send(400);
+                } else {
+                    ep.emit('removeOrders');
+                }
+            });
+
+            User.removeById(userId, function(err, docs){
+                if(err){
+                    res.send(400);
+                } else {
+                    ep.emit('removeUser');
+                }
+            });
+        }
+
+
+    });
+
+
+
 });
 
 module.exports = router;
