@@ -26,6 +26,28 @@ exports.removeById = function(id, callback){
     Goods.findOneAndRemove({_id: id}).exec(callback);
 };
 
+exports.autoCompleteSearch = function(params, callback){
+    Goods.find({
+        $or:[{name: new RegExp(params)}, {type: new RegExp(params)}]
+    }).exec(function(err, docs){
+        var result = [];
+        if(docs.length != 0){
+            for(var i=0; i<docs.length; i++){
+                result.push({
+                    "value" : docs[i].name,
+                    "title" : docs[i].name,
+                    "url"   :  '/Goods/'+docs[i]._id,
+                    "text"  : docs[i].type
+                })
+            }
+        } else {
+            result = [{"title":"没有找到哦","url":'/'}]
+        }
+
+        callback(err, result);
+    })
+};
+
 function verifyParams(params) {
     var result = {
         'name': params.name,

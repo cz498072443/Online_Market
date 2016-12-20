@@ -2,8 +2,27 @@
 
 {{include 'nav'}}
 
-
+<link rel="stylesheet" type="text/css" href="/tools/uikit-2.25.0/css/uikit.min.css">
+<link rel="stylesheet" type="text/css" href="/tools/uikit-2.25.0/css/components/autocomplete.css">
 <link rel="stylesheet" type="text/css" href="/tools/unslider/css/unslider.css">
+<style>
+    .uk-dropdown{
+        width: 100%;
+        top: 100%;
+        background-color: white;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        margin-top: 5px;
+        padding: 15px;
+        background: #fff;
+        color: #666;
+        font-size: 1rem;
+        vertical-align: top;
+        border: 1px solid #d3d3d3;
+        border-radius: 4px;
+        box-shadow: 0 2px 5px rgba(0,0,0,.1);
+    }
+</style>
 
 <div class="pusher">
     <div class="full height">
@@ -11,9 +30,12 @@
             <div class="container">
                 <div class="ui two column centered grid">
                     <div class="column search_bar">
-                        <div class="ui fluid action input">
-                            <input placeholder="输入宝贝名称..." type="text">
+                        <div class="ui fluid action input uk-autocomplete" id="autocomplete">
+                            <input placeholder="输入宝贝名称..." type="text" name="keyword">
                             <button class="ui button orange"><i class="search icon"></i>搜索</button>
+                            <script type="text/autocomplete">
+                            {{# autocompleteTemplate}}
+                            </script>
                         </div>
                         <div class="search_babel ui grid">
                             <span class="four wide column">食品</span>
@@ -81,6 +103,8 @@
 
 <script src="/tools/unslider/js/unslider.js"></script>
 <script src="/tools/template-native.js"></script>
+<script src="/tools/uikit-2.25.0/js/uikit.min.js"></script>
+<script src="/tools/uikit-2.25.0/js/components/autocomplete.min.js"></script>
 
 <script>
     $(document).ready(function(){
@@ -106,8 +130,6 @@
                 arrows: false,               //  是否显示左右箭头，用于slider切换
                 dots: true                  //  是否显示白色圆点，用于slider切换
             });
-
-
         })();
 
         var loadConfig = (function(){
@@ -143,6 +165,12 @@
                     }
                 });
             })
+
+            var autocomplete = $.UIkit.autocomplete('#autocomplete',{
+                source:'/search?',
+                flipDropdown: true,
+                minLength: 1,
+            });
         })();
     })
 </script>

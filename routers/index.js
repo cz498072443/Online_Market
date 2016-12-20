@@ -33,16 +33,23 @@ router.get('/', middleware.checkAccess, function(req,res,next){
             var loc_user = req.session.user;
 
             User.getOneById(loc_user._id, function(err,userDetail){
-                res.render('index.html',{ user:userDetail, goodList:goodList });
+                res.render('index.html',{ user:userDetail, goodList:goodList, autocompleteTemplate:'<ul class="uk-nav uk-nav-autocomplete uk-autocomplete-results">{{~items}}<li><a href="{{$item.url}}"> <b> {{$item.title}}</b><div class="uk-float-right">{{{$item.text}}}</div></a></li>{{/items}}</ul>'});
             });
         }else{
-            res.render('index.html',{ user:"未登录", goodList:goodList});
+            res.render('index.html',{ user:"未登录", goodList:goodList, autocompleteTemplate:'<ul class="uk-nav uk-nav-autocomplete uk-autocomplete-results">{{~items}}<li><a href="{{$item.url}}"> <b> {{$item.title}}</b><div class="uk-float-right">{{{$item.text}}}</div></a></li>{{/items}}</ul>'});
         }
     });
 
     Goods.findAll(function(err,docs){
         ep.emit('good_list', docs);
     });
+});
+
+//自动完成搜索
+router.use('/search', function(req, res){
+    Goods.autoCompleteSearch(req.body.search, function(err, docs){
+        res.send(docs);
+    })
 });
 
 //登陆控制

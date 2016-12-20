@@ -18,7 +18,7 @@ li{
     flex-direction: column;
 }
 .pusher .full.height{
-    height: inherit;
+    height: auto;
     background-color: #F1F1F1;
     position: relative;
 }
