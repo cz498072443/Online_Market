@@ -26,6 +26,7 @@ var User = require("./../proxy").User;
 
 router.get('/', middleware.checkAccess, function(req,res,next){
     var ep = new eventproxy();
+    var keyword = req.query.keyword;
     ep.fail(next);
 
     ep.all('good_list',function(goodList){
@@ -33,16 +34,32 @@ router.get('/', middleware.checkAccess, function(req,res,next){
             var loc_user = req.session.user;
 
             User.getOneById(loc_user._id, function(err,userDetail){
-                res.render('index.html',{ user:userDetail, goodList:goodList, autocompleteTemplate:'<ul class="uk-nav uk-nav-autocomplete uk-autocomplete-results">{{~items}}<li><a href="{{$item.url}}"> <b> {{$item.title}}</b><div class="uk-float-right">{{{$item.text}}}</div></a></li>{{/items}}</ul>'});
+                res.render('index.html',{
+                    user: userDetail,
+                    goodList: goodList,
+                    autocompleteTemplate: '<ul class="uk-nav uk-nav-autocomplete uk-autocomplete-results">{{~items}}<li><a href="{{$item.url}}"> <b> {{$item.title}}</b><div class="uk-float-right">{{{$item.text}}}</div></a></li>{{/items}}</ul>',
+                    keyword: keyword
+                });
             });
         }else{
-            res.render('index.html',{ user:"未登录", goodList:goodList, autocompleteTemplate:'<ul class="uk-nav uk-nav-autocomplete uk-autocomplete-results">{{~items}}<li><a href="{{$item.url}}"> <b> {{$item.title}}</b><div class="uk-float-right">{{{$item.text}}}</div></a></li>{{/items}}</ul>'});
+            res.render('index.html',{
+                user:"未登录",
+                goodList:goodList,
+                autocompleteTemplate:'<ul class="uk-nav uk-nav-autocomplete uk-autocomplete-results">{{~items}}<li><a href="{{$item.url}}"> <b> {{$item.title}}</b><div class="uk-float-right">{{{$item.text}}}</div></a></li>{{/items}}</ul>',
+                keyword: keyword
+            });
         }
     });
 
-    Goods.findAll(function(err,docs){
-        ep.emit('good_list', docs);
-    });
+    if(keyword && keyword != ""){
+        Goods.findByKeyword(keyword, function(err, docs){
+            ep.emit('good_list', docs);
+        });
+    } else {
+        Goods.findAll(function(err,docs){
+            ep.emit('good_list', docs);
+        });
+    }
 });
 
 //自动完成搜索

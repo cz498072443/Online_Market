@@ -8,6 +8,12 @@ exports.findAll = function (callback) {
     });
 };
 
+exports.findByKeyword = function (keyword, callback) {
+    Goods.find({ $or:[{name: new RegExp(keyword)}, {type: new RegExp(keyword)}, {content: new RegExp(keyword)}] }).sort({create_time: -1}).exec(function(err,docs){
+        callback(err,docs);
+    });
+};
+
 exports.createOne = function (params, callback) {
     Goods.create(verifyParams(params),callback);
 };
@@ -26,9 +32,9 @@ exports.removeById = function(id, callback){
     Goods.findOneAndRemove({_id: id}).exec(callback);
 };
 
-exports.autoCompleteSearch = function(params, callback){
+exports.autoCompleteSearch = function(keyword, callback){
     Goods.find({
-        $or:[{name: new RegExp(params)}, {type: new RegExp(params)}]
+        $or:[{name: new RegExp(keyword)}, {type: new RegExp(keyword)}]
     }).exec(function(err, docs){
         var result = [];
         if(docs.length != 0){
@@ -57,7 +63,7 @@ function verifyParams(params) {
         'totalNum': params.totalNum,
         'resNum': params.resNum,
         'price': params.price,
-        'sales': params.sales || 0,
+        'sales': params.sales || 0
     };
     if(params.create_time !== ""){
         result["create_time"] = new Date(params.create_time);

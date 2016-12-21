@@ -31,8 +31,8 @@
                 <div class="ui two column centered grid">
                     <div class="column search_bar">
                         <div class="ui fluid action input uk-autocomplete" id="autocomplete">
-                            <input placeholder="输入宝贝名称..." type="text" name="keyword">
-                            <button class="ui button orange"><i class="search icon"></i>搜索</button>
+                            <input placeholder="输入宝贝名称..." type="text" name="keyword" value="{{keyword}}">
+                            <a class="ui button orange searchGoodBtn"><i class="search icon"></i>搜索</a>
                             <script type="text/autocomplete">
                             {{# autocompleteTemplate}}
                             </script>
@@ -45,7 +45,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
         <div class="ui main container centered grid">
@@ -60,6 +59,7 @@
         </div>
         <div class="ui main container grid goodsShow" style="margin-top: 5px">
             <div class="doubling four column row">
+                {{if goodList.length != 0}}
                 {{each goodList}}
                 <div class="column">
                     <div class="ui card" style="margin-top: 10px" data-id="{{$value.id}}">
@@ -89,6 +89,9 @@
                     </div>
                 </div>
                 {{/each}}
+                {{else}}
+                <h2 class="ui orange header" style="width: 100%;text-align: center"><i class="frown icon"></i>很抱歉,没有搜索到宝贝</h2>
+                {{/if}}
             </div>
         </div>
     </div>
@@ -109,10 +112,13 @@
 <script>
     $(document).ready(function(){
         var loadPage = (function(){
+
+            {{if goodList.length !== 0}}
             //调整商品卡片高度
             var cardWidth = parseInt($(".card .image img").css("width").replace("px",""));
             var cardHeight = cardWidth * 1.1 +"px";
             $(".card .image img").css({"height":cardHeight});
+            {{/if}}
 
             //加载轮播图
             $('.banner').unslider({
@@ -122,10 +128,8 @@
                 fluid: false,              // 是否每次在容器大小改变的时候，修正slider的大小
                 pause:true,                 //鼠标以上去是否暂停播放
                 starting:function(){        //每次开始切换时回叫方法
-
                 },
                 complete:function(){         //每次完成切换时回叫方法
-
                 },
                 arrows: false,               //  是否显示左右箭头，用于slider切换
                 dots: true                  //  是否显示白色圆点，用于slider切换
@@ -134,6 +138,8 @@
 
         var loadConfig = (function(){
             $('.card .dimmer').dimmer({on: 'hover'});
+
+            //点击商品卡片跳转
             $(".goodsShow").on('click','.ui.card',function(){
                 $(".loading_page").html('<div class="ui text loader">玩命加载中...</div>');
                 $(".loading_page").dimmer('show');
@@ -142,8 +148,8 @@
                 window.location.href="/Goods/"+goodId;
             });
 
+            //主页中的加入购物车按钮
             $('.addSuccess').modal('attach events', '.addShopList' );
-
             $(".addShopList").on('click',function(event){
                 $('.addSuccess').modal('show');
                 setTimeout(function(){ $('.addSuccess').modal('hide'); },600);
@@ -164,13 +170,22 @@
                         $(".loading_page").dimmer('show');
                     }
                 });
-            })
+            });
 
             var autocomplete = $.UIkit.autocomplete('#autocomplete',{
                 source:'/search?',
                 flipDropdown: true,
                 minLength: 1,
             });
+
+            $(document).on('click', '.searchGoodBtn', function(event){
+                window.location.href = "?keyword=" + $("input[name='keyword']").val();
+            });
+            $(document).on('keyup', function(event){
+                if(event.keyCode == "13"){
+                    $('.searchGoodBtn').click();
+                }
+            })
         })();
     })
 </script>
