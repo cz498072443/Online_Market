@@ -41,7 +41,7 @@
                 </div>
             </div>
 
-            <div class="fourteen wide column">
+            <div class="fourteen wide column" id="orderMain">
                 <h1 class="ui red header"><i class="settings icon"></i><div class="content">订单管理<div class="sub header">管理你的订单</div></div></h1>
                 <h3 class="ui horizontal header divider">
                     <i class="bar chart icon"></i>
@@ -174,16 +174,102 @@
     </div>
 </script>
 
+<!--滚动加载模板-->
+<script id="scrollLoadingTmpl" type="text/html">
+    <% for(var i = 0;i < ordersList.length;i ++){ %>
+    <table class="ui table">
+        <button class="ui red right ribbon label delete_btn" data-id="<%=ordersList[i]._id %>">删除该订单</button>
+        <div class="ui pointing below label">
+            订单号: <span class="global_text_warning"><%=ordersList[i]._id %></span>
+        </div>
+        <div class="ui pointing below label">
+            总价: <span class="global_text_success"><%=ordersList[i].totalPrice %></span> 元
+        </div>
+        <div class="ui pointing below label">
+            创建日期: <span class="global_text_success"><%=ordersList[i].create_time %></span>
+        </div>
+        <thead>
+        <tr>
+            <th class="two wide">商品类型</th>
+            <th class="two wide">图片</th>
+            <th class="three wide">商品名</th>
+            <th class="two wide">购买数</th>
+            <th class="two wide">价格</th>
+            <th class="five wide">评论</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% for(var j = 0;j < ordersList[i].goodsList.length;j ++){ %>
+        <tr>
+            <td><%=ordersList[i].goodsList[j].type %></td>
+            <td><a href="/Goods/<%=ordersList[i].goodsList[j].id %>"><img style="width: 60px;height: 60px" src="<%=ordersList[i].goodsList[j].headSrc %>"></a></td>
+            <td class="global_text_danger"><%=ordersList[i].goodsList[j].name %></td>
+            <td><%=ordersList[i].goodsList[j].buyNum %></td>
+            <td class="global_text_success"><%=ordersList[i].goodsList[j].price %></td>
+            <td>
+                <% if(ordersList[i].goodsList[j].comment.grade == -1){ %>
+                <span class="global_text_warning">未评论 </span><a href="#" class="setComment createNewComment" data-orderId="<%=ordersList[i]._id %>" data-goodId="<%=ordersList[i].goodsList[j].id %>">点击评论<i class="icon comment outline"></i></a>
+                <% }else{ %>
+                    <% if(ordersList[i].goodsList[j].comment.grade == 0){ %>
+                    <div class="ui red horizontal label">差评</div>
+                    <% }else{ %>
+                    <div class="ui green horizontal label">好评</div>
+                    <% } %>
+                    <%=ordersList[i].goodsList[j].comment.content %>
+                    <a href="#" class="setComment updateComment" data-orderId="<%=ordersList[i]._id %>" data-goodId="<%=ordersList[i].goodsList[j].id %>" data-commentGrade="<%=ordersList[i].goodsList[j].comment.grade %>" data-commentContent="<%=ordersList[i].goodsList[j].comment.content %>">点击修改<i class="icon comment outline"></i></a>
+                <% } %>
+            </td>
+        </tr>
+        <% } %>
+        </tbody>
+    </table>
+    <% } %>
+</script>
 
 <script src="/tools/template-native.js"></script>
-
+<script src="/tools/moment.min.js"></script>
 <script type="text/javascript">
 
     $(document).ready(function(){
+        var loadPage = (function(){
+
+            scrollLoadingLock = false;
+            loadIndex = 1;
+            $(window).scroll(function(){
+                var scrollPos = $(window).scrollTop();
+                totalHeight = parseFloat($(window).height()) + parseFloat(scrollPos);
+                if( $(document).height() - 20 <= totalHeight && !scrollLoadingLock){
+                    scrollLoadingLock = true;
+                    $.ajax({
+                        url: "/Orders/loadMore",
+                        data: {
+                            loadIndex: loadIndex
+                        },
+                        type: "GET",
+                        success: function(data){
+                            var userDetail = data.res;
+                            for(var i = 0;i < userDetail.length;i ++){
+                                userDetail[i].create_time =  moment(userDetail.create_time).format("YYYY-MM-DD HH:mm:ss");
+                            }
+                            var scrollLoadingTmpl = template('scrollLoadingTmpl', {ordersList: userDetail});
+                            $("#orderMain").append(scrollLoadingTmpl);
+
+                            setTimeout(function(){
+                                scrollLoadingLock = false;
+                                loadIndex += 1;
+                            }, 1000);
+
+                        }
+                    });
+                }
+            })
+        })();
+
         var loadConfig = (function(){
             $('.demo.modal').modal();
             $('.basic.demo.modal').modal('attach events', '.delete_btn');
 
+            //删除订单
             $(document).on('click','.delete_btn',function(){
                 var href = $(this).attr("data-id");
                 $(".check_modal a.ok").attr("data-href",href);
@@ -207,8 +293,9 @@
                 })
             });
 
+//            设置评论
 //            $(".setCommentModal").modal({}).modal('attach events','.setComment');
-            $("table").on('click', '.setComment', function(event){
+            $("#orderMain").on('click', '.setComment', function(event){
                 event.stopPropagation();
                 switch ($(this).attr("class")){
                     case "setComment createNewComment":
