@@ -100,7 +100,7 @@
                 {{/each}}
                 {{/if}}
             </div>
-
+            <div class="fourteen wide column loadMoreOrders" style="display: none"></div>
         </div>
     </div>
 </div>
@@ -239,7 +239,10 @@
                 var scrollPos = $(window).scrollTop();
                 totalHeight = parseFloat($(window).height()) + parseFloat(scrollPos);
                 if( $(document).height() - 20 <= totalHeight && !scrollLoadingLock){
+                    $(".loadMoreOrders").html('<h1 class="ui center aligned header orange"><i class="notched circle loading icon"></i>加载更多...</h1>');
+                    $(".loadMoreOrders").show();
                     scrollLoadingLock = true;
+
                     $.ajax({
                         url: "/Orders/loadMore",
                         data: {
@@ -248,17 +251,23 @@
                         type: "GET",
                         success: function(data){
                             var userDetail = data.res;
-                            for(var i = 0;i < userDetail.length;i ++){
-                                userDetail[i].create_time =  moment(userDetail.create_time).format("YYYY-MM-DD HH:mm:ss");
+                            if(userDetail.length != 0){
+                                for(var i = 0;i < userDetail.length;i ++){
+                                    userDetail[i].create_time =  moment(userDetail[i].create_time).format("YYYY-MM-DD HH:mm:ss");
+                                }
+                                var scrollLoadingTmpl = template('scrollLoadingTmpl', {ordersList: userDetail});
+
+                                $(".loadMoreOrders").hide();
+                                $("#orderMain").append(scrollLoadingTmpl);
+
+                                setTimeout(function(){
+                                    scrollLoadingLock = false;
+                                    loadIndex += 1;
+                                }, 500);
+                            } else {
+                                $(".loadMoreOrders").html('<h1 class="ui center aligned header orange"><i class="frown icon"></i>已无更多数据啦</h1>');
+                                $(".loadMoreOrders").show();
                             }
-                            var scrollLoadingTmpl = template('scrollLoadingTmpl', {ordersList: userDetail});
-                            $("#orderMain").append(scrollLoadingTmpl);
-
-                            setTimeout(function(){
-                                scrollLoadingLock = false;
-                                loadIndex += 1;
-                            }, 1000);
-
                         }
                     });
                 }

@@ -25,11 +25,14 @@ var Goods = require("./../proxy").Goods;
 var User = require("./../proxy").User;
 
 router.get('/', middleware.checkAccess, function(req,res,next){
+    var keyword = req.query.keyword || "";
+    var findNum = 4;
+    var skipIndex = req.query.skipIndex || 0;
+
     var ep = new eventproxy();
-    var keyword = req.query.keyword;
     ep.fail(next);
 
-    ep.all('good_list',function(goodList){
+    ep.all('good_list', 'page_num', function(goodList, pageNum){
         if(req.session.hasLogin){
             var loc_user = req.session.user;
 
@@ -38,7 +41,9 @@ router.get('/', middleware.checkAccess, function(req,res,next){
                     user: userDetail,
                     goodList: goodList,
                     autocompleteTemplate: '<ul class="uk-nav uk-nav-autocomplete uk-autocomplete-results">{{~items}}<li><a href="{{$item.url}}"> <b> {{$item.title}}</b><div class="uk-float-right">{{{$item.text}}}</div></a></li>{{/items}}</ul>',
-                    keyword: keyword
+                    keyword: keyword,
+                    pageNum: pageNum,
+                    skipIndex: skipIndex
                 });
             });
         }else{
@@ -46,19 +51,31 @@ router.get('/', middleware.checkAccess, function(req,res,next){
                 user:"未登录",
                 goodList:goodList,
                 autocompleteTemplate:'<ul class="uk-nav uk-nav-autocomplete uk-autocomplete-results">{{~items}}<li><a href="{{$item.url}}"> <b> {{$item.title}}</b><div class="uk-float-right">{{{$item.text}}}</div></a></li>{{/items}}</ul>',
-                keyword: keyword
+                keyword: keyword,
+                pageNum: pageNum,
+                skipIndex: skipIndex
             });
         }
     });
 
     if(keyword && keyword != ""){
-        Goods.findByKeyword(keyword, function(err, docs){
+        Goods.findByKeyword(keyword, findNum, skipIndex, function(err, docs){
             ep.emit('good_list', docs);
         });
+
+        Goods.getPageNum(keyword, findNum, function(err, docs){
+            console.log(docs);
+            ep.emit('page_num', docs);
+        })
     } else {
-        Goods.findAll(function(err,docs){
+        Goods.findAll(findNum, skipIndex, function(err,docs){
             ep.emit('good_list', docs);
         });
+
+        Goods.getPageNum(keyword, findNum, function(err, docs){
+            console.log(docs);
+            ep.emit('page_num', docs);
+        })
     }
 });
 
@@ -67,6 +84,31 @@ router.use('/search', function(req, res){
     Goods.autoCompleteSearch(req.body.search, function(err, docs){
         res.send(docs);
     })
+});
+
+//主页中的页面控制
+router.use('/MoreGoodsPage', function(req, res, next){
+    var keyword = req.query.keyword;
+    var skipIndex = req.query.pageIndex;
+    var findNum = 4;
+
+    var ep = new eventproxy();
+    ep.fail(next);
+
+    ep.all('good_list', function(goodList){
+        res.send({res: goodList});
+    });
+
+    if(keyword && keyword != ""){
+        Goods.findByKeyword(keyword, findNum, skipIndex, function(err, docs){
+            ep.emit('good_list', docs);
+        });
+
+    } else {
+        Goods.findAll(findNum, skipIndex, function(err,docs){
+            ep.emit('good_list', docs);
+        });
+    }
 });
 
 //登陆控制

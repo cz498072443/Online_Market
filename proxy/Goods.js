@@ -2,16 +2,28 @@
 
 var Goods = require("./../models/").Goods;
 
-exports.findAll = function (callback) {
-    Goods.find({}).sort({create_time: -1}).exec(function(err,docs){
+exports.findAll = function (findNum, skipIndex, callback) {
+    Goods.find({}).sort({create_time: -1}).limit(findNum).skip(skipIndex * findNum).exec(function(err,docs){
         callback(err,docs);
     });
 };
 
-exports.findByKeyword = function (keyword, callback) {
-    Goods.find({ $or:[{name: new RegExp(keyword)}, {type: new RegExp(keyword)}, {content: new RegExp(keyword)}] }).sort({create_time: -1}).exec(function(err,docs){
+exports.findByKeyword = function (keyword, findNum, skipIndex, callback) {
+    Goods.find({ $or:[{name: new RegExp(keyword)}, {type: new RegExp(keyword)}, {content: new RegExp(keyword)}] }).limit(findNum).skip(skipIndex * findNum).sort({create_time: -1}).exec(function(err,docs){
         callback(err,docs);
     });
+};
+
+exports.getPageNum = function(keyword, findNum, callback){
+    if(keyword != ""){
+        Goods.count({ $or:[{name: new RegExp(keyword)}, {type: new RegExp(keyword)}, {content: new RegExp(keyword)}] }).exec(function(err, docs){
+            callback(err, Math.ceil(docs/findNum));
+        })
+    }else{
+        Goods.count().exec(function(err, docs){
+            callback(err, Math.ceil(docs/findNum));
+        })
+    }
 };
 
 exports.createOne = function (params, callback) {

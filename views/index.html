@@ -6,6 +6,8 @@
 <link rel="stylesheet" type="text/css" href="/tools/uikit-2.25.0/css/searchBar.css">
 <link rel="stylesheet" type="text/css" href="/tools/uikit-2.25.0/css/components/autocomplete.css">
 <link rel="stylesheet" type="text/css" href="/tools/unslider/css/unslider.css">
+<link rel="stylesheet" type="text/css" href="/tools/MricodePagination/mricode.pagination.css">
+
 <style>
     .uk-dropdown{
         width: 100%;
@@ -94,9 +96,51 @@
                 <h2 class="ui orange header" style="width: 100%;text-align: center"><i class="frown icon"></i>很抱歉,没有搜索到宝贝</h2>
                 {{/if}}
             </div>
+            {{if pageNum > 1}}
+            <div class="sixteen wide doubling two column centered row">
+                <div id="page" class="m-pagination column"></div>
+            </div>
+            {{/if}}
         </div>
     </div>
 </div>
+
+<!--商品分页展示模板-->
+<script id="GoodsShowTmpl" type="text/html">
+    <% if(goodList.length != 0){ %>
+    <% for(var i = 0;i < goodList.length;i ++){ %>
+    <div class="column">
+        <div class="ui card" style="margin-top: 10px" data-id="<%=goodList[i]._id %>">
+            <div class="image dimmable">
+                <div class="ui dimmer">
+                    <div class="content">
+                        <div class="center">
+                            <div class="ui inverted orange button addShopList" data-id="<%=goodList[i]._id %>"><i class="shop icon"></i>加入购物车</div>
+                        </div>
+                    </div>
+                </div>
+                <% if(goodList[i].sales > 100){ %>
+                <a class="ui corner red label"><i class="heart icon"></i></a>
+                <% }else{ %>
+                <a class="ui corner label"><i class="heart icon"></i></a>
+                <% } %>
+                <img src="<%=goodList[i].headSrc %>">
+            </div>
+            <div class="content">
+                <div class="header"><%=goodList[i].name %></div>
+                <div class="description" style="color: orange"><%=goodList[i].type %></div>
+            </div>
+            <div class="extra content">
+                <a class="right floated created" style="color: red;font-weight: bold"><%=goodList[i].price %>元</a>
+                <span style="">总销量:<%=goodList[i].sales || 0 %></span>
+            </div>
+        </div>
+    </div>
+    <% } %>
+    <% }else{ %>
+    <h2 class="ui orange header" style="width: 100%;text-align: center"><i class="frown icon"></i>很抱歉,没有搜索到宝贝</h2>
+    <% } %>
+</script>
 
 <!--清空购物车确认控制-->
 <div class="ui modal basic addSuccess">
@@ -109,11 +153,11 @@
 <script src="/tools/template-native.js"></script>
 <script src="/tools/uikit-2.25.0/js/uikit.min.js"></script>
 <script src="/tools/uikit-2.25.0/js/components/autocomplete.min.js"></script>
+<script src="/tools/MricodePagination/mricode.pagination.js"></script>
 
 <script>
     $(document).ready(function(){
         var loadPage = (function(){
-
             {{if goodList.length !== 0}}
             //调整商品卡片高度
             var cardWidth = parseInt($(".card .image img").css("width").replace("px",""));
@@ -135,6 +179,49 @@
                 arrows: false,               //  是否显示左右箭头，用于slider切换
                 dots: true                  //  是否显示白色圆点，用于slider切换
             });
+
+            var renderNewPage = function(pageIndex){
+                {{if keyword && keyword != ""}}
+                var keyword = "{{keyword}}";
+                {{else}}
+                var keyword = "";
+                {{/if}}
+
+                $.ajax({
+                    url:"MoreGoodsPage",
+                    type:"GET",
+                    data:{
+                        pageIndex: pageIndex,
+                        keyword: keyword
+                    },
+                    success: function(data){
+                        var GoodsShowTmpl = template('GoodsShowTmpl', {goodList: data.res});
+                        //如果有获取到数据则进行下一步
+                        if(data.res.length != 0){
+                            $(".goodsShow .doubling.four.column.row").empty();
+                            $(".goodsShow .doubling.four.column.row").html(GoodsShowTmpl);
+
+                            //额这东西要怎么委托啊卧槽
+                            $('.card .dimmer').dimmer({on: 'hover'});
+
+                            var cardWidth = parseInt($(".card .image img").css("width").replace("px",""));
+                            var cardHeight = cardWidth * 1.1 +"px";
+                            $(".card .image img").css({"height":cardHeight});
+                        }
+                    }
+                })
+            };
+
+            $("#page").pagination({
+                pageIndex:{{skipIndex}},
+                total:{{pageNum}},
+                pageSize: 1,
+                showJump: true
+            }).on("pageClicked", function (event, data) {
+                renderNewPage(data.pageIndex);
+            }).on('jumpClicked', function (event, data) {
+                renderNewPage(data.pageIndex)
+            })
         })();
 
         var loadConfig = (function(){
@@ -151,7 +238,7 @@
 
             //主页中的加入购物车按钮
             $('.addSuccess').modal('attach events', '.addShopList' );
-            $(".addShopList").on('click',function(event){
+            $(".goodsShow").on('click', ".addShopList", function(event){
                 $('.addSuccess').modal('show');
                 setTimeout(function(){ $('.addSuccess').modal('hide'); },600);
 

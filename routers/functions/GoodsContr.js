@@ -34,7 +34,7 @@ router.get('/',pageControl,function(req, res, next){
         res.render('functions/GoodsContr.html',{ user:userDetail,goodList:goodList });
     });
 
-    Goods.findAll(function(err,docs){
+    Goods.findAll(100, 0, function(err,docs){
         ep.emit('good_list',docs);
     });
 
