@@ -26,8 +26,8 @@ var User = require("./../proxy").User;
 
 router.get('/', middleware.checkAccess, function(req,res,next){
     var keyword = req.query.keyword || "";
-    var findNum = 4;
-    var skipIndex = req.query.skipIndex || 0;
+    var findNum = 8;
+    var skipIndex = req.query.pageIndex || 0;
 
     var ep = new eventproxy();
     ep.fail(next);
@@ -64,7 +64,6 @@ router.get('/', middleware.checkAccess, function(req,res,next){
         });
 
         Goods.getPageNum(keyword, findNum, function(err, docs){
-            console.log(docs);
             ep.emit('page_num', docs);
         })
     } else {
@@ -73,7 +72,6 @@ router.get('/', middleware.checkAccess, function(req,res,next){
         });
 
         Goods.getPageNum(keyword, findNum, function(err, docs){
-            console.log(docs);
             ep.emit('page_num', docs);
         })
     }
@@ -90,7 +88,7 @@ router.use('/search', function(req, res){
 router.use('/MoreGoodsPage', function(req, res, next){
     var keyword = req.query.keyword;
     var skipIndex = req.query.pageIndex;
-    var findNum = 4;
+    var findNum = 8;
 
     var ep = new eventproxy();
     ep.fail(next);

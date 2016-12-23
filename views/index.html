@@ -218,8 +218,14 @@
                 pageSize: 1,
                 showJump: true
             }).on("pageClicked", function (event, data) {
+                if(history.pushState){
+                    history.pushState({title:"无刷新更新url"}, "无刷新更新url", location.href.split("?")[0] + "?" + "keyword=" + "{{keyword}}" + "&pageIndex=" + data.pageIndex);
+                }
                 renderNewPage(data.pageIndex);
             }).on('jumpClicked', function (event, data) {
+                if(history.pushState){
+                    history.pushState({title:"无刷新更新url"}, "无刷新更新url", location.href.split("?")[0] + "?" + "keyword=" + "{{keyword}}" + "&pageIndex=" + data.pageIndex);
+                }
                 renderNewPage(data.pageIndex)
             })
         })();
