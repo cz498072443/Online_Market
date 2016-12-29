@@ -2,6 +2,7 @@
  * Created by YUK on 16/10/13.
  */
 
+var multer = require('multer');
 var User = require('./../proxy').User;
 
 module.exports={
@@ -62,5 +63,7 @@ module.exports={
                 next();
             }
         });
-    }
+    },
+    Multer: multer({dest: './public/upload/index/slider_banner'}) //上传中间件
+
 }

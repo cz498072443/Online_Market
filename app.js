@@ -10,7 +10,6 @@ var config = require("./config/config");
 var template = require("./common/artTemplate");
 var bodyParser = require("body-parser");
 var routers = require('./routers/index');
-var multer = require('multer');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var MongoStore = require("connect-mongo")(session);
@@ -51,19 +50,6 @@ app.use("/tools/ueditor/ue", ueditor(path.join(__dirname, 'public'), function (r
     }
 
 }));
-
-//文件上传中间件
-var Multer = multer({dest: './public/upload/index/slider_banner'});
-
-app.post('/upload', Multer, function(req, res) {
-    try {
-        console.log(req.body.myfile);
-        console.log(req.files);
-        res.json(200);
-    } catch (e) {
-        console.log(e);
-    }
-});
 
 app.use(session({
     secret:'onlineMarket',

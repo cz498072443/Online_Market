@@ -4,6 +4,7 @@
 
 var express = require("express");
 var router = express.Router();
+var middleware = require('./../../middleware');
 
 var User = require("./../../proxy/index").User;
 var News = require("./../../proxy/index").News;
@@ -39,6 +40,19 @@ router.get('/', pageControl, function(req, res, next){
     User.getOneById(loc_user._id, function(err, docs){
         ep.emit('admin_detail',docs)
     });
+
+
+});
+
+//文件上传
+router.post('/upload', middleware.Multer, function(req, res) {
+    try {
+        console.log(req.body.myfile);
+        console.log(req.files);
+        res.json(200);
+    } catch (e) {
+        console.log(e);
+    }
 });
 
 module.exports = router;

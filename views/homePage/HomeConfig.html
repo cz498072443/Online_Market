@@ -2,6 +2,9 @@
 
 {{include './../nav'}}
 
+<link rel="stylesheet" type="text/css" href="/tools/webuploader-master/css/webuploader.css" />
+<link rel="stylesheet" type="text/css" href="/tools/webuploader-master/examples/image-upload/style.css" />
+
 <div class="pusher">
     <div class="full height">
         {{include './../headBar'}}
@@ -44,7 +47,18 @@
                 <div class="ui sixteen wide grid">
                     <h3 class="ui horizontal header divider" style="margin-bottom: 30px"><i class="tag icon"></i>所有轮播图</h3>
                     <div class="doubling three column row">
-
+                        <div class="column" style="margin-bottom: 15px">
+                            <div class="ui message">
+                                <div class="header">
+                                    <span class="global_text_danger">添加新banner</span>
+                                </div>
+                                <div class="authorityBtns">
+                                    <div class="ui button authorityDetailBtn">详情</div>
+                                    <div class="ui button authorityResetBtn">重置</div>
+                                    <div class="ui button authorityDeleteBtn">删除</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -52,6 +66,33 @@
     </div>
 </div>
 
+<!--<div id="wrapper">-->
+    <!--<div id="container">-->
+        <!--&lt;!&ndash;头部，相册选择和格式选择&ndash;&gt;-->
+
+        <!--<div id="uploader">-->
+            <!--<div class="queueList">-->
+                <!--<div id="dndArea" class="placeholder">-->
+                    <!--<div id="filePicker"></div>-->
+                    <!--<p>或将照片拖到这里，单次最多可选300张</p>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="statusBar" style="display:none;">-->
+                <!--<div class="progress">-->
+                    <!--<span class="text">0%</span>-->
+                    <!--<span class="percentage"></span>-->
+                <!--</div><div class="info"></div>-->
+                <!--<div class="btns">-->
+                    <!--<div id="filePicker2"></div><div class="uploadBtn">开始上传</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+
+<script src="/tools/template-native.js"></script>
+<script type="text/javascript" src="/tools/webuploader-master/dist/webuploader.js"></script>
+<script type="text/javascript" src="/tools/webuploader-master/examples/image-upload/upload.js"></script>
 
 <script type="text/javascript">
 
