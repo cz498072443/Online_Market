@@ -47,12 +47,23 @@ app.use("/tools/ueditor/ue", ueditor(path.join(__dirname, 'public'), function (r
     // 客户端发起其它请求
     else {
         res.setHeader('Content-Type', 'application/json');
-        res.redirect('/tools/ueditor/nodejs/config.json')
+        res.redirect('/tools/ueditor/nodejs/config.json');
     }
 
 }));
 
-app.use(multer());
+//文件上传中间件
+var Multer = multer({dest: './public/upload/index/slider_banner'});
+
+app.post('/upload', Multer, function(req, res) {
+    try {
+        console.log(req.body.myfile);
+        console.log(req.files);
+        res.json(200);
+    } catch (e) {
+        console.log(e);
+    }
+});
 
 app.use(session({
     secret:'onlineMarket',

@@ -18,6 +18,7 @@ var OrdersContr = require("./functions").OrdersContr;
 var ShoppingCart = require("./functions").ShoppingCart;
 var Authority = require("./functions").Authority;
 var Comment = require("./functions").Comment;
+var HomeConfig = require("./homePage").HomeConfig;
 var GoodsPage = require("./goods").GoodsPage;
 var Personal = require("./users").Personal;
 
@@ -134,5 +135,7 @@ router.use('/Goods', GoodsPage);
 //用户
 router.use('/Personal', Personal);
 
+//主页
+router.use('/HomeConfig', HomeConfig);
 
 module.exports = router;
