@@ -8,6 +8,7 @@ var middleware = require('./../../middleware');
 
 var User = require("./../../proxy/index").User;
 var News = require("./../../proxy/index").News;
+var Banners = require("./../../proxy/index").Banners;
 
 var levels = require("./../../public/json/levels");
 
@@ -47,12 +48,47 @@ router.get('/', pageControl, function(req, res, next){
 //文件上传
 router.post('/upload', middleware.Multer, function(req, res) {
     try {
-        console.log(req.body.myfile);
         console.log(req.files);
+
+        res.send({data:"wocao"})
         res.json(200);
     } catch (e) {
         console.log(e);
     }
+});
+
+//文件上传成功
+router.post('/uploadSecceed', function(req, res, next){
+    var loc_user = req.session.user;
+    var title = req.body.title;
+
+    var ep = new eventproxy();
+
+    ep.fail(next);
+    ep.all('create_banner', function(){
+        res.send(200);
+
+        News.createOne({
+            "username": loc_user.username,
+            "type": 6,
+            "content": "超级管理员 "+loc_user.username+" 添加了主页banner: "+ title +"！" ,
+            "create_time": req.body.create_time
+        },function (err, doc) {});
+    });
+
+    Banners.createOne({
+        "title": title,
+        "description": req.body.description,
+        "image": req.body.image ,
+        "url": "/upload/index/slider_banner/" + req.body.image,
+        "create_time": req.body.create_time
+    },function (err, doc) {
+        if(err){
+            res.send(400);
+        } else {
+            ep.emit('create_banner');
+        }
+    });
 });
 
 module.exports = router;

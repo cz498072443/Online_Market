@@ -33,7 +33,7 @@ exports.removeById = function(id, callback){
 function verifyParams(params) {
     var result = {
         "title": params.title,
-        "intro": params.intro,
+        "description": params.description,
         "image": params.image,
         "url": params.url
     };

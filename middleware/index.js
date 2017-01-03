@@ -64,6 +64,11 @@ module.exports={
             }
         });
     },
-    Multer: multer({dest: './public/upload/index/slider_banner'}) //上传中间件
+    Multer: multer({
+        dest: './public/upload/index/slider_banner',
+        rename: function(fieldname, filename){
+            return filename;
+        }
+    }) //上传中间件
 
 }

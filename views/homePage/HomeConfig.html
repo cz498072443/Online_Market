@@ -43,19 +43,20 @@
                     <a class="item" id="changePassTab">预留3</a>
                 </div>
             </div>
-            <div class="doubling two column row fourteen wide authorityShowPage">
+            <div class="doubling two column row fourteen wide homeConfigShowPage slideBannerPage">
                 <div class="ui sixteen wide grid">
-                    <h3 class="ui horizontal header divider" style="margin-bottom: 30px"><i class="tag icon"></i>所有轮播图</h3>
-                    <div class="doubling three column row">
+                    <h3 class="ui horizontal header divider" style="margin-bottom: 30px;margin-top: 14px"><i class="tag icon"></i>所有轮播图</h3>
+                    <div class="doubling two column row">
                         <div class="column" style="margin-bottom: 15px">
                             <div class="ui message">
                                 <div class="header">
-                                    <span class="global_text_danger">添加新banner</span>
+                                    <span class="global_text_success">添加新banner</span>
                                 </div>
-                                <div class="authorityBtns">
-                                    <div class="ui button authorityDetailBtn">详情</div>
-                                    <div class="ui button authorityResetBtn">重置</div>
-                                    <div class="ui button authorityDeleteBtn">删除</div>
+                                <div class="ui animated fade button addBannerBtn" style="margin-top: 5px">
+                                    <div class="visible content">添加</div>
+                                    <div class="hidden content">
+                                        <i class="plus icon"></i>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -66,29 +67,56 @@
     </div>
 </div>
 
-<!--<div id="wrapper">-->
-    <!--<div id="container">-->
-        <!--&lt;!&ndash;头部，相册选择和格式选择&ndash;&gt;-->
+<!--用户信息详情模态框-->
+<div class="ui modal addBannerShow">
+    <i class="close icon"></i>
+    <div class="content">
+        <h3 class="ui blue header"><i class="icon cloud upload"></i> 选择图片并上传</h3>
+        <div class="ui form" style="padding: 5px">
+            <div class="two fields">
+                <div class="field">
+                    <label>标题</label>
+                    <input name="title" type="text">
+                </div>
+            </div>
+            <div class="field">
+                <label>描述</label>
+                <textarea name="description" rows="4"></textarea>
+            </div>
+            <div class="field">
+                <label>图片上传</label>
+                <div id="wrapper">
+                    <div id="container">
+                        <!--头部，相册选择和格式选择-->
+                        <div id="uploader">
+                            <div class="queueList">
+                                <div id="dndArea" class="placeholder">
+                                    <!--<div id="filePicker"></div>-->
+                                    <br>
+                                    <p>将照片拖到此处上传</p>
+                                </div>
+                            </div>
+                            <div class="statusBar" style="display:none;">
+                                <div class="progress">
+                                    <span class="text">0%</span>
+                                    <span class="percentage"></span>
+                                </div><div class="info"></div>
+                                <div class="btns">
+                                    <div id="filePicker2"></div><div class="uploadBtn">开始上传</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-        <!--<div id="uploader">-->
-            <!--<div class="queueList">-->
-                <!--<div id="dndArea" class="placeholder">-->
-                    <!--<div id="filePicker"></div>-->
-                    <!--<p>或将照片拖到这里，单次最多可选300张</p>-->
-                <!--</div>-->
-            <!--</div>-->
-            <!--<div class="statusBar" style="display:none;">-->
-                <!--<div class="progress">-->
-                    <!--<span class="text">0%</span>-->
-                    <!--<span class="percentage"></span>-->
-                <!--</div><div class="info"></div>-->
-                <!--<div class="btns">-->
-                    <!--<div id="filePicker2"></div><div class="uploadBtn">开始上传</div>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</div>-->
-<!--</div>-->
+<!--反馈遮罩-->
+<div class="ui modal basic answerPage">
+    <div class="header"></div>
+</div>
 
 <script src="/tools/template-native.js"></script>
 <script type="text/javascript" src="/tools/webuploader-master/dist/webuploader.js"></script>
@@ -102,9 +130,8 @@
         })();
 
         var loadConfig = (function(){
-            $('select.dropdown').dropdown();
 
-            $(".controlTab").on("click","a",function(event){
+            $(".controlTab").on("click", "a", function(event){
                 event.stopPropagation();
                 var tabType = $(this).attr("id");
 
@@ -116,20 +143,12 @@
                         $(".homeConfigShowPage").hide();
                         $(".homeConfigShowPage.slideBannerPage").show();
                         break;
-                    case "changeInfoTab":
-                        $(".personalShowPage").hide();
-                        $(".personalShowPage.changeInfoPage").show();
-                        break;
-                    case "rechargeTab":
-                        $(".personalShowPage").hide();
-                        $(".personalShowPage.rechargePage").show();
-                        break;
-                    case "changePassTab":
-                        $(".personalShowPage").hide();
-                        $(".personalShowPage.changePassPage").show();
-                        break;
                 }
-            })
+            });
+
+            $(".slideBannerPage").on("click", ".addBannerBtn", function(){
+                $(".addBannerShow").modal("show");
+            });
 
         })();
     })

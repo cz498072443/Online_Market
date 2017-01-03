@@ -190,6 +190,31 @@
             console.log('here');
         });
 
+        uploader.on( 'uploadSuccess', function( file ) {
+            $.ajax({
+                url: "/HomeConfig/uploadSecceed",
+                type: "POST",
+                data: {
+                    title: $(".addBannerShow input[name='title']").val(),
+                    description: $(".addBannerShow textarea[name='description']").val(),
+                    image: file.name,
+                    create_time: new Date()
+                },
+                success: function(){
+                    $('.answerPage .header').html("<h1 class='ui header green' style='text-align: center'>上传Banner成功!!!</h1>");
+                    $('.answerPage').modal('show');
+
+                    setTimeout(function(){
+                        window.location.reload();
+                    },700);
+                },
+                error: function(){
+                    $('.answerPage .header').html("<h1 class='ui header red' style='text-align: center'>上传Banner失败!!!</h1>");
+                    $('.answerPage').modal('show');
+                }
+            })
+        });
+
         // uploader.on('filesQueued', function() {
         //     uploader.sort(function( a, b ) {
         //         if ( a.name < b.name )
@@ -201,10 +226,10 @@
         // });
 
         // 添加“添加文件”的按钮，
-        uploader.addButton({
-            id: '#filePicker2',
-            label: '继续添加'
-        });
+        //uploader.addButton({
+        //    id: '#filePicker2',
+        //    label: '继续添加'
+        //});
 
         uploader.on('ready', function() {
             window.uploader = uploader;
@@ -477,7 +502,7 @@
                 case 'finish':
                     stats = uploader.getStats();
                     if ( stats.successNum ) {
-                        alert( '上传成功' );
+
                     } else {
                         // 没有成功的图片，重设
                         state = 'done';

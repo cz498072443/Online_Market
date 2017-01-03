@@ -183,6 +183,15 @@
                                         <p>{{$value.content}}</p>
                                     </div>
                                 </div>
+                                {{else if $value.type == 6}}
+                                <div class="column" style="margin-bottom: 15px">
+                                    <div class="ui purple message">
+                                        <div class="header">
+                                            主页操作
+                                        </div>
+                                        <p>{{$value.content}}</p>
+                                    </div>
+                                </div>
                                 {{/if}}
                             {{/each}}
                         {{else}}

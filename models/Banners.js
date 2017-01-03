@@ -7,14 +7,14 @@ var Schema = mongoose.Schema;
 var conn = require('./database_market').connection;
 var ObjectId = Schema.Types.ObjectId;
 
-var NewsSchema = new Schema({
-    "title": {title: String},
-    "intro": {title: String},
-    "image": {title: String},
-    "url": {title: String},
+var BannersSchema = new Schema({
+    "title": {type: String},
+    "description": {type: String},
+    "image": {type: String},
+    "url": {type: String},
     "create_time": { type: Date, default: Date.parse(new Date()) },
     "modify_time": { type: Date, default: Date.parse(new Date()) }
 },{collection:'banners',versionKey:false});
 
-conn.model('banners',NewsSchema);
+conn.model('banners',BannersSchema);
 module.exports = conn.model('banners');

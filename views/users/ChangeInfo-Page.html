@@ -27,8 +27,10 @@
                     {{if user.apply == ""}}
                         {{if user.role == "User"}}
                         <span href="#" class="apply_btn global_text_primary" data-type="apply_tobeAdmin">申请成为管理员<i class="icon rocket"></i></span>
-                        {{else user.role == "Admin"}}
+                        {{else if user.role == "Admin"}}
                         <span href="#" class="apply_btn global_text_primary" data-type="apply_tobeSuperAdmin">申请成为超级管理员<i class="icon rocket"></i></span>
+                        {{else if user.role == "SuperAdmin"}}
+                        <span class="global_text_success">您已是最高权限,没得提升啦!<i class="icon smile"></i></span>
                         {{/if}}
                     {{else}}
                         <span class="global_text_warning"><i class="icon wait"></i>权限提升申请等待审核中...</span>
