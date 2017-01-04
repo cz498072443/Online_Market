@@ -13,6 +13,8 @@ var Banners = require("./../../proxy/index").Banners;
 var levels = require("./../../public/json/levels");
 
 var eventproxy = require("eventproxy");
+var fs = require("fs");
+var path = require("path");
 
 //页面控制中间件
 var pageControl = function (req, res, next) {
@@ -34,15 +36,17 @@ router.get('/', pageControl, function(req, res, next){
     var ep = new eventproxy();
 
     ep.fail(next);
-    ep.all('admin_detail', function(adminDetail){
-        res.render('homePage/HomeConfig.html',{ user: adminDetail });
+    ep.all('admin_detail', 'banner_list', function(adminDetail, bannerList){
+        res.render('homePage/HomeConfig.html',{ user: adminDetail, banners: bannerList});
     });
 
     User.getOneById(loc_user._id, function(err, docs){
         ep.emit('admin_detail',docs)
     });
 
-
+    Banners.findAll(function(err, docs){
+        ep.emit('banner_list', docs);
+    });
 });
 
 //文件上传
@@ -87,6 +91,41 @@ router.post('/uploadSecceed', function(req, res, next){
             res.send(400);
         } else {
             ep.emit('create_banner');
+        }
+    });
+});
+
+router.delete('/delete', function(req, res, next){
+    var loc_user = req.session.user;
+    var title = req.body.title;
+
+    var ep = new eventproxy();
+
+    ep.fail(next);
+    ep.all('delete_img', 'delete_banner', function(){
+        res.send(200);
+
+        News.createOne({
+            "username": loc_user.username,
+            "type": 6,
+            "content": "超级管理员 "+loc_user.username+" 删除了主页banner: "+ title +"！" ,
+            "create_time": new Date()
+        },function (err, doc) {});
+    });
+
+    fs.unlink(path.join("public", req.body.href), function(err){
+        if(err){
+            res.send(400);
+        } else {
+            ep.emit('delete_img');
+        }
+    });
+
+    Banners.removeById(req.body.id, function(err){
+        if(err){
+            res.send(400);
+        } else {
+            ep.emit('delete_banner');
         }
     });
 });

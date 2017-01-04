@@ -21,16 +21,17 @@ var Personal = require("./users").Personal;
 
 var Goods = require("./../proxy").Goods;
 var User = require("./../proxy").User;
+var Banners = require("./../proxy").Banners;
 
 router.get('/', middleware.checkAccess, function(req,res,next){
     var keyword = req.query.keyword || "";
-    var findNum = 8;
+    var findNum = 12;
     var skipIndex = req.query.pageIndex || 0;
 
     var ep = new eventproxy();
     ep.fail(next);
 
-    ep.all('good_list', 'page_num', function(goodList, pageNum){
+    ep.all('good_list', 'page_num', 'banner_list', function(goodList, pageNum, bannerList){
         if(req.session.hasLogin){
             var loc_user = req.session.user;
 
@@ -41,7 +42,8 @@ router.get('/', middleware.checkAccess, function(req,res,next){
                     autocompleteTemplate: '<ul class="uk-nav uk-nav-autocomplete uk-autocomplete-results">{{~items}}<li><a href="{{$item.url}}"> <b> {{$item.title}}</b><div class="uk-float-right">{{{$item.text}}}</div></a></li>{{/items}}</ul>',
                     keyword: keyword,
                     pageNum: pageNum,
-                    skipIndex: skipIndex
+                    skipIndex: skipIndex,
+                    bannerList: bannerList
                 });
             });
         }else{
@@ -51,7 +53,8 @@ router.get('/', middleware.checkAccess, function(req,res,next){
                 autocompleteTemplate:'<ul class="uk-nav uk-nav-autocomplete uk-autocomplete-results">{{~items}}<li><a href="{{$item.url}}"> <b> {{$item.title}}</b><div class="uk-float-right">{{{$item.text}}}</div></a></li>{{/items}}</ul>',
                 keyword: keyword,
                 pageNum: pageNum,
-                skipIndex: skipIndex
+                skipIndex: skipIndex,
+                bannerList: bannerList
             });
         }
     });
@@ -63,7 +66,7 @@ router.get('/', middleware.checkAccess, function(req,res,next){
 
         Goods.getPageNum(keyword, findNum, function(err, docs){
             ep.emit('page_num', docs);
-        })
+        });
     } else {
         Goods.findAll(findNum, skipIndex, function(err,docs){
             ep.emit('good_list', docs);
@@ -71,8 +74,13 @@ router.get('/', middleware.checkAccess, function(req,res,next){
 
         Goods.getPageNum(keyword, findNum, function(err, docs){
             ep.emit('page_num', docs);
-        })
+        });
     }
+
+    Banners.findAll(function(err, docs){
+        ep.emit('banner_list', docs);
+    });
+
 });
 
 //自动完成搜索
@@ -86,7 +94,7 @@ router.use('/search', function(req, res){
 router.use('/MoreGoodsPage', function(req, res, next){
     var keyword = req.query.keyword;
     var skipIndex = req.query.pageIndex;
-    var findNum = 8;
+    var findNum = 12;
 
     var ep = new eventproxy();
     ep.fail(next);

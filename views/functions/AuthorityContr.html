@@ -277,7 +277,7 @@
                 $(".check_modal a.ok").attr("data-id",id);
             });
 
-            $(document).on('click', '.deleteUser', function(event){
+            $(".check_modal").on('click', '.deleteUser', function(event){
                 event.stopPropagation();
 
                 $.ajax({

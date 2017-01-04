@@ -47,15 +47,30 @@
                 <div class="ui sixteen wide grid">
                     <h3 class="ui horizontal header divider" style="margin-bottom: 30px;margin-top: 14px"><i class="tag icon"></i>所有轮播图</h3>
                     <div class="doubling two column row">
+                        {{each banners}}
                         <div class="column" style="margin-bottom: 15px">
                             <div class="ui message">
                                 <div class="header">
-                                    <span class="global_text_success">添加新banner</span>
+                                    <span>{{$value.title}}</span>
                                 </div>
-                                <div class="ui animated fade button addBannerBtn" style="margin-top: 5px">
-                                    <div class="visible content">添加</div>
+                                <div class="bannerShow" style="margin:10px 0px">
+                                    <img style="width: 100%" src="{{$value.url}}">
+                                </div>
+                                <div class="ui tiny buttons bannerShowBtns" style="float: right" data-id="{{$value.id}}" data-href="{{$value.url}}" data-title="{{$value.title}}">
+                                    <div class="ui button updateBannerBtn">修改</div>
+                                    <div class="or"></div>
+                                    <div class="ui button deleteBannerBtn">删除</div>
+                                </div>
+                                <div style="clear: right"></div>
+                            </div>
+                        </div>
+                        {{/each}}
+                        <div class="column" style="margin-bottom: 15px">
+                            <div class="ui message">
+                                <div class="column ui animated fade button addBannerBtn" style="margin-top: 5px">
+                                    <div class="visible content"><i class="plus icon"></i></div>
                                     <div class="hidden content">
-                                        <i class="plus icon"></i>
+                                        添加
                                     </div>
                                 </div>
                             </div>
@@ -67,7 +82,7 @@
     </div>
 </div>
 
-<!--用户信息详情模态框-->
+<!--图片上传模态框-->
 <div class="ui modal addBannerShow">
     <i class="close icon"></i>
     <div class="content">
@@ -113,6 +128,33 @@
     </div>
 </div>
 
+<!--删除确认控制模态框-->
+<div class="ui basic demo modal check_modal">
+    <div class="header">
+        <h1>警告</h1>
+    </div>
+    <div class="content">
+        <div class="image" style="float: left">
+            <i class="warning sign red icon"></i>
+        </div>
+        <div class="description">
+            <p>确认删除该Banner吗？<span class="global_text_warning">( 删除该Banner会同时删除该图片! )</span> </p>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="two fluid ui inverted buttons">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                抱歉我点错了
+            </div>
+            <a data-id="" class="ui green ok basic inverted button deleteBannerConfirm">
+                <i class="checkmark icon"></i>
+                我没点错
+            </a>
+        </div>
+    </div>
+</div>
+
 <!--反馈遮罩-->
 <div class="ui modal basic answerPage">
     <div class="header"></div>
@@ -150,6 +192,42 @@
                 $(".addBannerShow").modal("show");
             });
 
+            $(document).on('click','.deleteBannerBtn',function(){
+                $(".check_modal a.ok").attr("data-id", $(this).parent().attr("data-id"));
+                $(".check_modal a.ok").attr("data-href", $(this).parent().attr("data-href"));
+                $(".check_modal a.ok").attr("data-title", $(this).parent().attr("data-title"));
+                $('.check_modal').modal("show");
+            });
+
+            $(".check_modal").on("click", ".deleteBannerConfirm", function(event){
+                event.stopPropagation();
+
+                $.ajax({
+                    url: "/HomeConfig/delete",
+                    type: "delete",
+                    data: {
+                        id: $(this).attr("data-id"),
+                        href: $(this).attr("data-href"),
+                        title: $(this).attr("data-title")
+                    },
+                    success: function(){
+                        $('.answerPage .header').html("<h1 class='ui header green' style='text-align: center'>删除Banner成功!!!</h1>");
+                        $('.answerPage').modal('show');
+
+                        setTimeout(function(){
+                            window.location.reload();
+                        },700);
+                    },
+                    error: function(){
+                        $('.answerPage .header').html("<h1 class='ui header red' style='text-align: center'>删除Banner失败!!!</h1>");
+                        $('.answerPage').modal('show');
+
+                        setTimeout(function(){
+                            window.location.reload();
+                        },700);
+                    }
+                })
+            });
         })();
     })
 
