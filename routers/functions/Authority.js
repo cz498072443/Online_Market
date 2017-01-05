@@ -50,7 +50,13 @@ router.get('/GetOne', pageControl, function(req, res, next){
 
     ep.fail(next);
     ep.all('user_detail', function(userDetail){
-        res.send({res: userDetail});
+        Orders.findAllByCustomer(userDetail._id, function(err, docs){
+            if(err){
+                res.send(400);
+            } else {
+                res.send({res: { user:userDetail, orders: docs}});
+            }
+        });
     });
 
     User.getOneById(req.query.userId, function(err, docs){

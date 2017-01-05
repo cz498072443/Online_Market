@@ -56,7 +56,10 @@
                                 <div class="bannerShow" style="margin:10px 0px">
                                     <img style="width: 100%" src="{{$value.url}}">
                                 </div>
-                                <div class="ui tiny buttons bannerShowBtns" style="float: right" data-id="{{$value.id}}" data-href="{{$value.url}}" data-title="{{$value.title}}">
+                                <div class="bannerDescription">
+                                    <p>{{$value.description}}</p>
+                                </div>
+                                <div class="ui tiny buttons bannerShowBtns" style="float: right" data-id="{{$value.id}}" data-href="{{$value.url}}" data-title="{{$value.title}}" data-des="{{$value.description}}">
                                     <div class="ui button updateBannerBtn">修改</div>
                                     <div class="or"></div>
                                     <div class="ui button deleteBannerBtn">删除</div>
@@ -128,6 +131,35 @@
     </div>
 </div>
 
+<!--修改banner模态框-->
+<div class="ui modal updateBannerShow">
+    <i class="close icon"></i>
+    <div class="content">
+    </div>
+</div>
+
+<!--修改banner模板-->
+<script id="updateBannerTmpl" type="text/html">
+    <h3 class="ui blue header"><i class="icon cloud upload"></i> 修改banner</h3>
+    <div class="ui form" style="padding: 5px">
+        <div class="two fields">
+            <div class="field">
+                <label>标题</label>
+                <input name="title" type="text" value="<%=title %>">
+            </div>
+        </div>
+        <div class="field">
+            <label>描述</label>
+            <textarea name="description" rows="4"><%=des %></textarea>
+        </div>
+    </div>
+    <div class="actions" style="margin-top: 10px">
+        <button class="ui primary button updateBannerConfirm" data-id="<%=id %>">
+            保存修改
+        </button>
+    </div>
+</script>
+
 <!--删除确认控制模态框-->
 <div class="ui basic demo modal check_modal">
     <div class="header">
@@ -177,7 +209,7 @@
                 event.stopPropagation();
                 var tabType = $(this).attr("id");
 
-                $(".controlTab a").removeClass("active")
+                $(".controlTab a").removeClass("active");
                 $(this).addClass("active");
 
                 switch (tabType){
@@ -192,11 +224,47 @@
                 $(".addBannerShow").modal("show");
             });
 
-            $(document).on('click','.deleteBannerBtn',function(){
+            $(document).on('click', '.deleteBannerBtn', function(){
                 $(".check_modal a.ok").attr("data-id", $(this).parent().attr("data-id"));
                 $(".check_modal a.ok").attr("data-href", $(this).parent().attr("data-href"));
                 $(".check_modal a.ok").attr("data-title", $(this).parent().attr("data-title"));
                 $('.check_modal').modal("show");
+            });
+
+            $(document).on('click', '.updateBannerBtn', function(){
+                console.log($(this).parent().attr("data-title"));
+                var updateBannerTmpl = template('updateBannerTmpl', {id: $(this).parent().attr("data-id"), title: $(this).parent().attr("data-title"), des: $(this).parent().attr("data-des")});
+                $(".updateBannerShow .content").empty();
+                $(".updateBannerShow .content").append(updateBannerTmpl);
+                $('.updateBannerShow').modal("show");
+            });
+
+            $(".updateBannerShow").on("click", ".updateBannerConfirm", function(){
+                $.ajax({
+                    url: "/HomeConfig/update",
+                    type: "PUT",
+                    data: {
+                        id: $(this).attr("data-id"),
+                        title: $(".updateBannerShow input[name='title']").val(),
+                        des: $(".updateBannerShow textarea[name='description']").val()
+                    },
+                    success: function(){
+                        $('.answerPage .header').html("<h1 class='ui header green' style='text-align: center'>修改Banner成功!!!</h1>");
+                        $('.answerPage').modal('show');
+
+                        setTimeout(function(){
+                            window.location.reload();
+                        },700);
+                    },
+                    error: function(){
+                        $('.answerPage .header').html("<h1 class='ui header red' style='text-align: center'>修改Banner失败!!!</h1>");
+                        $('.answerPage').modal('show');
+
+                        setTimeout(function(){
+                            window.location.reload();
+                        },700);
+                    }
+                });
             });
 
             $(".check_modal").on("click", ".deleteBannerConfirm", function(event){
@@ -226,7 +294,7 @@
                             window.location.reload();
                         },700);
                     }
-                })
+                });
             });
         })();
     })

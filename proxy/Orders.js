@@ -10,8 +10,14 @@ exports.findAll = function (callback) {
     });
 };
 
-exports.findAllByCustomer = function (customer, loadIndex, callback) {
+exports.findSomeByCustomer = function (customer, loadIndex, callback) {
     Orders.find({customer: customer}).sort({create_time: -1}).limit(4).skip(loadIndex * 4).exec(function(err,docs){
+        callback(err,docs);
+    });
+};
+
+exports.findAllByCustomer = function (customer, callback) {
+    Orders.find({customer: customer}).sort({create_time: -1}).exec(function(err,docs){
         callback(err,docs);
     });
 };

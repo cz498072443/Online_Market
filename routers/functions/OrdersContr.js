@@ -32,7 +32,7 @@ router.get("/", pageControl, function(req, res, next){
         ep.emit('user_detail', docs);
     });
 
-    Orders.findAllByCustomer(loc_user._id, 0, function(err, docs){
+    Orders.findSomeByCustomer(loc_user._id, 0, function(err, docs){
         ep.emit('orders_list', docs);
     });
 });
@@ -59,7 +59,7 @@ router.delete('/delete',pageControl,function(req, res){
 router.get('/loadMore', pageControl, function(req, res){
     var loc_user = req.session.user;
 
-    Orders.findAllByCustomer(loc_user._id, req.query.loadIndex, function(err, docs){
+    Orders.findSomeByCustomer(loc_user._id, req.query.loadIndex, function(err, docs){
         if(err){
             res.send({code:-100, res:"没有更多数据了..."});
         } else {

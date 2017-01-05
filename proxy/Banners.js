@@ -17,6 +17,7 @@ exports.findOneById = function (id, callback) {
 };
 
 exports.createOne = function (params, callback) {
+    console.log(params);
     Banners.create(verifyParams(params),callback);
 };
 

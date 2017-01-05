@@ -159,6 +159,32 @@
             </div>
         </div>
     </div>
+    <div class="fourteen wide column">
+        <table class="ui table">
+            <thead>
+            <tr>
+                <th>日期</th>
+                <th>订单号</th>
+                <th>总价</th>
+                <th>商品</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% for(var i = 0;i < orders.length;i ++){ %>
+            <tr>
+                <td><%=orders[i].create_time %></td>
+                <td><%=orders[i]._id %></td>
+                <td class="global_text_warning"><%=orders[i].totalPrice %></td>
+                <td class="global_text_primary">
+                    <% for(var j = 0;j < orders[i]["goodsList"].length;j ++){ %>
+                        <%=orders[i]["goodsList"][j]["name"] %>
+                    <% } %>
+                </td>
+            </tr>
+            <% } %>
+            </tbody>
+        </table>
+    </div>
 </script>
 
 
@@ -182,10 +208,17 @@
                     },
                     type: "GET",
                     success: function(data){
-                        var userDetail = data.res;
+                        var userDetail = data.res.user;
+                        var orders = data.res.orders;
 
+                        //时间格式转换
                         userDetail.create_time =  moment(userDetail.create_time).format("YYYY-MM-DD HH:mm:ss");
-                        var authorityDetailTmpl = template("authorityDetailTmpl",{user: userDetail});
+
+                        for(var i = 0;i < orders.length;i ++){
+                            orders[i].create_time = moment(orders[i].create_time).format("YYYY-MM-DD HH:mm:ss");
+                        }
+
+                        var authorityDetailTmpl = template("authorityDetailTmpl",{user: userDetail, orders: orders});
                         $(".authorityDetailShow .authorityConfirmChange").attr("data-id", userDetail._id);
                         $(".authorityDetailShow .description").html(authorityDetailTmpl);
                         $(".authorityDetailShow .description select").val(userDetail.role);

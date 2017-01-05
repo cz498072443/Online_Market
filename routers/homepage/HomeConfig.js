@@ -95,7 +95,8 @@ router.post('/uploadSecceed', function(req, res, next){
     });
 });
 
-router.delete('/delete', function(req, res, next){
+//删除banner
+router.delete('/delete', pageControl, function(req, res, next){
     var loc_user = req.session.user;
     var title = req.body.title;
 
@@ -126,6 +127,44 @@ router.delete('/delete', function(req, res, next){
             res.send(400);
         } else {
             ep.emit('delete_banner');
+        }
+    });
+});
+
+//修改banner
+router.put('/update', pageControl, function(req, res, next){
+    var loc_user = req.session.user;
+    var title = req.body.title;
+
+    var ep = new eventproxy();
+
+    ep.fail(next);
+    ep.all('banner_detail', function(bannerDetail){
+
+        bannerDetail["title"] = req.body.title;
+        bannerDetail["description"] = req.body.des;
+
+        Banners.update(req.body.id, bannerDetail, function(err, docs){
+            if(err){
+                res.send(400);
+            } else {
+                res.send(200);
+            }
+        });
+
+        News.createOne({
+            "username": loc_user.username,
+            "type": 6,
+            "content": "超级管理员 "+loc_user.username+" 修改了主页banner: "+ title +"！" ,
+            "create_time": new Date()
+        },function (err, doc) {});
+    });
+
+    Banners.findOneById(req.body.id, function(err, docs){
+        if(err){
+            res.send(400);
+        } else {
+            ep.emit('banner_detail', docs);
         }
     });
 });
