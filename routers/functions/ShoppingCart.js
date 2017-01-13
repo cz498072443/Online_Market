@@ -48,111 +48,140 @@ router.post("/", pageControl, function(req, res, next){
     var orderObj = { customer:"",goodsList:[],totalPrice:0,create_time:req.body.create_time };
 
     ep.fail(next);
-    ep.all('user_detail', 'good_finish', function(userDetail){
-        totalPrice = Math.ceil(totalPrice * userDetail.level.discount);
 
+    //支付准备阶段(获取用户信息和计算购物车总价)
+    ep.all('user_detail', 'price_finish', function(userDetail){
         var ep2 = new eventproxy();
-        ep2.all('user_finish','order_finish',function(){
-            News.createOne({
-                "username": loc_user.username,
-                "type": 2,
-                "content": loc_user.username+" 清空了购物车,总计"+totalPrice+"元" ,
-                "create_time": req.body.create_time
-            },function (err, doc) {});
 
-            res.send(200);
+        //支付许可阶段(判断用户余额是否足够,若足够则对商品数量进行变动)
+        ep2.all('good_finish',function(userDetail){
+            var ep3 = new eventproxy();
+
+            //支付完成阶段(更新支付过后的用户信息,并生成订单)
+            ep3.all('user_finish','order_finish',function(){
+                News.createOne({
+                    "username": loc_user.username,
+                    "type": 2,
+                    "content": loc_user.username+" 清空了购物车,总计"+totalPrice+"元" ,
+                    "create_time": req.body.create_time
+                },function (err, doc) {});
+
+                res.send(200);
+            });
+
+            //支付成功后清空购物车
+            userDetail.shoppingCart = [];
+
+            //检查一下是否可以升级
+            var thisLevel = checkLevels(userDetail.cost);
+            if (thisLevel > userDetail.level.num) {
+                userDetail.level.num      = thisLevel;
+                userDetail.level.discount = levels[thisLevel].discount;
+
+                News.createOne({
+                    "username": userDetail.username,
+                    "type": 1,
+                    "content": userDetail.username + " 用户等级提升至 LV" + userDetail.level.num,
+                    "create_time": req.body.create_time
+                }, function (err, doc) {
+                });
+            }
+
+            //更新用户信息
+            User.update(userDetail._id, userDetail, function (err, doc) {
+                if (err) {
+                    res.send(400);
+                } else {
+                    ep3.emit("user_finish");
+                }
+            });
+
+            //生成订单
+            orderObj["customer"]   = userDetail._id;
+            orderObj["totalPrice"] = totalPrice;
+
+            Orders.createOne(orderObj, function (err, doc) {
+                if (err) {
+                    res.send(400);
+                } else {
+                    ep3.emit("order_finish");
+                }
+            });
         });
+
+        //价格算上折扣
+        totalPrice = Math.ceil(totalPrice * userDetail.level.discount);
 
         //更新个人信息(钱包)
         userDetail.wallet -= totalPrice;
         userDetail.cost += totalPrice;
 
-        //检查一下是否可以升级
-        var thisLevel = checkLevels(userDetail.cost);
-        if(thisLevel > userDetail.level.num){
-            userDetail.level.num = thisLevel;
-            userDetail.level.discount = levels[thisLevel].discount;
-            User.update(userDetail._id, userDetail, function(err, doc){});
-
-            News.createOne({
-                "username": userDetail.username,
-                "type": 1,
-                "content": userDetail.username+" 用户等级提升至 LV"+ userDetail.level.num,
-                "create_time": req.body.create_time
-            },function (err, doc) {});
-        };
-
+        //如果钱不够就别闹了
         if(userDetail.wallet < 0){
             res.send(400);
         }else {
-            //支付成功后清空购物车
-            userDetail.shoppingCart = [];
-            User.update(userDetail._id, userDetail, function(err, doc){
-                if(err){
-                    res.send(400);
-                }else{
-                    ep2.emit("user_finish");
+            //够钱买啦,然后处理一下商品余量问题顺便构建一下订单
+            for(var x in ShoppingCartObj){
+                Goods.getOneById(x, test(x));
+                //呵呵作用域链,如果不这样的话,下面那个x在使用时,for循环早就结束了...
+                function test(x){
+                    return (function(err,docs){
+                        var getOne = docs;
+                        getOne.resNum -= ShoppingCartObj[x].buyNum;
+                        getOne.sales += ShoppingCartObj[x].buyNum;
+
+                        if(getOne.resNum < 0){
+                            res.send(400)
+                        }else{
+                            //构建订单的商品一栏(简直乱得一逼,其实是懒得再写了)
+                            var goodObj = {};
+                            goodObj["id"] = String(getOne._id);
+                            goodObj["name"] = getOne.name;
+                            goodObj["type"] = getOne.type;
+                            goodObj["headSrc"] = getOne.headSrc;
+                            goodObj["price"] = getOne.price;
+                            goodObj["buyNum"] = ShoppingCartObj[x].buyNum;
+                            goodObj["comment"] = { grade:-1, content:"" };
+                            orderObj["goodsList"].push(goodObj);
+
+                            Goods.update(getOne._id, getOne, function(err, doc){
+                                if(err){
+                                    res.send(400);
+                                }else{
+                                    ShoppingCartIndex ++;
+                                    if(ShoppingCartIndex == Object.getOwnPropertyNames(ShoppingCartObj).length){
+                                        ep2.emit('good_finish', userDetail);
+                                    }
+                                }
+                            });
+                        }
+                    });
                 }
-            });
-        }
-
-        //生成订单
-        orderObj["customer"] = userDetail._id;
-        orderObj["totalPrice"] = totalPrice;
-
-        Orders.createOne( orderObj, function(err, doc){
-            if(err){
-                res.send(400);
-            }else{
-                ep2.emit("order_finish");
             }
-        })
+        }
     });
 
-    //处理一下个人信息问题顺便构建一下订单
+    //处理一下个人信息问题
     User.getOneById(loc_user._id, function(err,docs){
         ep.emit('user_detail',docs);
     });
 
-    //处理一下商品余量问题顺便构建一下订单
+    //算总价看看够不够钱买
     for(var x in ShoppingCartObj){
         Goods.getOneById(x, test(x));
         //呵呵作用域链,如果不这样的话,下面那个x在使用时,for循环早就结束了...
         function test(x){
             return (function(err,docs){
-                var getOne = docs;
-                getOne.resNum -= ShoppingCartObj[x].buyNum;
-                getOne.sales += ShoppingCartObj[x].buyNum;
-                totalPrice += ShoppingCartObj[x].buyNum * getOne.price;
-
-                if(getOne.resNum < 0){
-                    res.send(400)
-                }else{
-                    //构建订单的商品一栏(简直乱得一逼,其实是懒得再写了)
-                    var goodObj = {};
-                    goodObj["id"] = String(getOne._id);
-                    goodObj["name"] = getOne.name;
-                    goodObj["type"] = getOne.type;
-                    goodObj["headSrc"] = getOne.headSrc;
-                    goodObj["price"] = getOne.price;
-                    goodObj["buyNum"] = ShoppingCartObj[x].buyNum;
-                    goodObj["comment"] = { grade:-1, content:"" };
-                    orderObj["goodsList"].push(goodObj);
-
-                    Goods.update(getOne._id, getOne, function(err, doc){
-                        if(err){
-                            res.send(400);
-                        }else{
-                            ShoppingCartIndex ++;
-                            if(ShoppingCartIndex == Object.getOwnPropertyNames(ShoppingCartObj).length){
-                                ep.emit('good_finish');
-                            }
-                        }
-                    });
+                totalPrice += ShoppingCartObj[x].buyNum * docs.price;
+                ShoppingCartIndex ++;
+                if(ShoppingCartIndex == Object.getOwnPropertyNames(ShoppingCartObj).length){
+                    ShoppingCartIndex = 0;
+                    ep.emit('price_finish');
                 }
             });
         }
     }
+
 });
 
 router.put('/add',pageControl,function(req, res, next){

@@ -123,6 +123,13 @@
         </div>
     </h3>
     <div class="fourteen wide column">
+        <div class="ui three item red menu controlTab" style="margin-bottom: 20px">
+            <a class="item active" id="personalInfoTab">个人信息</a>
+            <a class="item" id="orderInfoTab">订单信息</a>
+            <a class="item" id="newInfoTab">最近消息</a>
+        </div>
+    </div>
+    <div class="fourteen wide column authorityDetailMoudle personalInfoMoudle">
         <div class="ui form" style="padding: 5px">
             <div class="four fields">
                 <div class="field">
@@ -138,6 +145,12 @@
                 <div class="field">
                     <label>用户等级</label>
                     <input name="level" type="number" max="4" min="0" value="<%=user.level.num%>">
+                </div>
+            </div>
+            <div class="four fields">
+                <div class="field">
+                    <label>账户余额</label>
+                    <input name="wallet" type="number" min="0" value="<%=user.wallet %>">
                 </div>
             </div>
             <div class="two fields">
@@ -159,7 +172,7 @@
             </div>
         </div>
     </div>
-    <div class="fourteen wide column">
+    <div class="fourteen wide column authorityDetailMoudle orderInfoMoudle" style="display:none">
         <table class="ui table">
             <thead>
             <tr>
@@ -185,6 +198,65 @@
             </tbody>
         </table>
     </div>
+    <div class="ui fourteen wide centered grid authorityDetailMoudle newInfoMoudle" style="display: none">
+        <div class="doubling three column row">
+            <% if(news.length != 0){ %>
+            <% for(var i = 0;i < news.length;i ++){ %>
+            <% if(news[i].type == 1){ %>
+            <div class="column" style="margin-bottom: 15px">
+                <div class="ui blue message">
+                    <div class="header">账号</div>
+                    <p><%=news[i].create_time %></p>
+                    <p><%=news[i].content %></p>
+                </div>
+            </div>
+            <% } else if (news[i].type == 2) { %>
+            <div class="column" style="margin-bottom: 15px">
+                <div class="ui green message">
+                    <div class="header">消费</div>
+                    <p><%=news[i].create_time %></p>
+                    <p><%=news[i].content %></p>
+                </div>
+            </div>
+            <% } else if (news[i].type == 3) { %>
+            <div class="column" style="margin-bottom: 15px">
+                <div class="ui red message">
+                    <div class="header">商品操作</div>
+                    <p><%=news[i].create_time %></p>
+                    <p><%=news[i].content %></p>
+                </div>
+            </div>
+            <% } else if (news[i].type == 4) { %>
+            <div class="column" style="margin-bottom: 15px">
+                <div class="ui orange message">
+                    <div class="header">订单操作</div>
+                    <p><%=news[i].create_time %></p>
+                    <p><%=news[i].content %></p>
+                </div>
+            </div>
+            <% } else if (news[i].type == 5) { %>
+            <div class="column" style="margin-bottom: 15px">
+                <div class="ui teal message">
+                    <div class="header">评价操作</div>
+                    <p><%=news[i].create_time %></p>
+                    <p><%=news[i].content %></p>
+                </div>
+            </div>
+            <% } else if (news[i].type == 6) { %>
+            <div class="column" style="margin-bottom: 15px">
+                <div class="ui purple message">
+                    <div class="header">主页操作</div>
+                    <p><%=news[i].create_time %></p>
+                    <p><%=news[i].content %></p>
+                </div>
+            </div>
+            <% } %>
+            <% } %>
+            <% } else { %>
+            <h3 class="global_text_danger">暂时没有新消息哟</h3>
+            <% } %>
+        </div>
+    </div>
 </script>
 
 
@@ -200,6 +272,8 @@
 
         var loadConfig = (function(){
             $('.applyDetailBtn').popup({on: 'click'});
+
+            //详情按钮
             $(document).on('click', '.authorityDetailBtn', function(){
                 $.ajax({
                     url: "Authority/GetOne",
@@ -210,6 +284,7 @@
                     success: function(data){
                         var userDetail = data.res.user;
                         var orders = data.res.orders;
+                        var news = data.res.news;
 
                         //时间格式转换
                         userDetail.create_time =  moment(userDetail.create_time).format("YYYY-MM-DD HH:mm:ss");
@@ -218,7 +293,11 @@
                             orders[i].create_time = moment(orders[i].create_time).format("YYYY-MM-DD HH:mm:ss");
                         }
 
-                        var authorityDetailTmpl = template("authorityDetailTmpl",{user: userDetail, orders: orders});
+                        for(var i = 0;i < news.length;i ++){
+                            news[i].create_time = moment(news[i].create_time).format("YYYY-MM-DD HH:mm:ss");
+                        }
+
+                        var authorityDetailTmpl = template("authorityDetailTmpl",{user: userDetail, orders: orders, news: news});
                         $(".authorityDetailShow .authorityConfirmChange").attr("data-id", userDetail._id);
                         $(".authorityDetailShow .description").html(authorityDetailTmpl);
                         $(".authorityDetailShow .description select").val(userDetail.role);
@@ -232,6 +311,7 @@
                 });
             });
 
+            //确认修改
             $('.authorityDetailShow').on('click', '.authorityConfirmChange', function(){
                 $.ajax({
                     url: "Authority/ChangeOne",
@@ -239,6 +319,7 @@
                     data: {
                         userId: $(this).attr("data-id"),
                         role: $(".authorityDetailShow select[name='role']").val(),
+                        wallet: $(".authorityDetailShow input[name='wallet']").val(),
                         level: $(".authorityDetailShow input[name='level']").val(),
                         nickname: $(".authorityDetailShow input[name='nickname']").val(),
                         sign: $(".authorityDetailShow input[name='sign']").val(),
@@ -258,6 +339,7 @@
                 });
             });
 
+            //允许申请按钮
             $(document).on('click', '.applyDetailComfirmBtn', function(){
                 $.ajax({
                     url: "Authority/ChangeOne",
@@ -281,6 +363,7 @@
                 });
             });
 
+            //重置按钮
             $(document).on('click', '.authorityResetBtn', function(){
                 $.ajax({
                     url:"Authority/ChangeOne",
@@ -304,6 +387,7 @@
                 });
             });
 
+            //删除用户按钮
             $('.check_modal').modal('attach events', '.authorityDeleteBtn');
             $(document).on('click','.authorityDeleteBtn',function(){
                 var id = $(this).parent().attr("data-id");
@@ -333,6 +417,28 @@
                     }
                 });
             })
+
+            $(".authorityDetailShow").on("click", ".controlTab .item", function(event){
+                event.stopPropagation();
+
+                $(".controlTab a").removeClass("active")
+                $(this).addClass("active");
+
+                switch ($(this).attr("id")){
+                    case "personalInfoTab":
+                        $(".authorityDetailMoudle").hide();
+                        $(".personalInfoMoudle").show();
+                        break;
+                    case "orderInfoTab":
+                        $(".authorityDetailMoudle").hide();
+                        $(".orderInfoMoudle").show();
+                        break;
+                    case "newInfoTab":
+                        $(".authorityDetailMoudle").hide();
+                        $(".newInfoMoudle").show();
+                        break;
+                }
+            });
 
         })();
     })

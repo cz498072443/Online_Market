@@ -50,13 +50,26 @@ router.get('/GetOne', pageControl, function(req, res, next){
 
     ep.fail(next);
     ep.all('user_detail', function(userDetail){
+        var ep2 = new eventproxy();
+        ep2.all('order_detail', 'new_detail', function(orderDetail, newDetail){
+            res.send({res: { user:userDetail, orders: orderDetail, news: newDetail}});
+        });
+
         Orders.findAllByCustomer(userDetail._id, function(err, docs){
             if(err){
                 res.send(400);
             } else {
-                res.send({res: { user:userDetail, orders: docs}});
+                ep2.emit('order_detail', docs);
             }
         });
+
+        News.findAllByUserName(userDetail.username, function(err, docs){
+            if(err){
+                res.send(400);
+            } else {
+                ep2.emit('new_detail', docs);
+            }
+        })
     });
 
     User.getOneById(req.query.userId, function(err, docs){
@@ -101,6 +114,9 @@ router.put('/ChangeOne', pageControl, function(req, res, next){
         }
         docs.role = req.body.role || docs.role;
 
+        if(req.body.wallet != undefined){
+            docs.wallet = req.body.wallet;
+        }
         if(req.body.level != undefined){
             docs.level.discount = levels[parseInt(req.body.level)].discount;
             docs.level.num = parseInt(req.body.level);
