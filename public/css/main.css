@@ -72,6 +72,8 @@ li{
 }
 .search_bar .search_babel span{
     text-align: center;
+}
+.search_bar .search_babel a{
     color: orange;
 }
 .banner{

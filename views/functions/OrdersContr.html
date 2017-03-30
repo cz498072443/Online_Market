@@ -5,42 +5,25 @@
 <div class="pusher">
     <div class="full height">
         {{include './../headBar'}}
-
         <div class="ui centered grid main container">
             <div class="ui left very close rail">
-                <!--<div class="ui segment">-->
                 <div class="ui vertical steps">
-                    <a class="completed step">
-                        <i class="truck icon"></i>
+                    <a class="active step">
+                        <i class="star icon"></i>
                         <div class="content">
-                            <div class="title">上一步</div>
-                            <div class="description">描述</div>
+                            <div class="title">等级</div>
+                            <div class="description">LV.{{user.level.num}}</div>
                         </div>
                     </a>
-                    <a class="active step">
+                    <a class="step">
                         <i class="payment icon"></i>
                         <div class="content">
-                            <div class="title">当前步骤</div>
-                            <div class="description">描述</div>
-                        </div>
-                    </a>
-                    <a class="disabled step">
-                        <i class="info icon"></i>
-                        <div class="content">
-                            <div class="title">禁用步骤</div>
-                            <div class="description">描述</div>
+                            <div class="title">账户余额</div>
+                            <div class="description">￥{{user.wallet}}</div>
                         </div>
                     </a>
                 </div>
-                <!--</div>-->
             </div>
-
-            <div class="ui right very close rail">
-                <div class="ui segment">
-                    右侧轨道
-                </div>
-            </div>
-
             <div class="fourteen wide column" id="orderMain">
                 <h1 class="ui red header"><i class="settings icon"></i><div class="content">订单管理<div class="sub header">管理你的订单</div></div></h1>
                 <h3 class="ui horizontal header divider">

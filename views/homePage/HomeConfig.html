@@ -8,29 +8,21 @@
 <div class="pusher">
     <div class="full height">
         {{include './../headBar'}}
-
         <div class="ui centered grid main container">
             <div class="ui left very close rail">
                 <div class="ui vertical steps">
                     <a class="active step">
-                        <i class="truck icon"></i>
+                        <i class="star icon"></i>
                         <div class="content">
-                            <div class="title">上一步</div>
-                            <div class="description">描述</div>
-                        </div>
-                    </a>
-                    <a class="completed step">
-                        <i class="payment icon"></i>
-                        <div class="content">
-                            <div class="title">当前步骤</div>
-                            <div class="description">描述</div>
+                            <div class="title">等级</div>
+                            <div class="description">LV.{{user.level.num}}</div>
                         </div>
                     </a>
                     <a class="step">
-                        <i class="info icon"></i>
+                        <i class="payment icon"></i>
                         <div class="content">
-                            <div class="title">禁用步骤</div>
-                            <div class="description">描述</div>
+                            <div class="title">账户余额</div>
+                            <div class="description">￥{{user.wallet}}</div>
                         </div>
                     </a>
                 </div>
