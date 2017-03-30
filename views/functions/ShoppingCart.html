@@ -88,6 +88,33 @@
     </div>
 </div>
 
+<!--未填写收货地址-->
+<div class="ui basic modal address_modal">
+    <div class="header">
+        <h1>抱歉</h1>
+    </div>
+    <div class="content">
+        <div class="image" style="float: left">
+            <i class="frown sign red icon"></i>
+        </div>
+        <div class="description" style="margin-left: 150px;margin-top: 50px">
+            <p class="global_text_warning" style="font-size: 20px">您尚未填写收货地址，请前去完善您的信息</p>
+        </div>
+    </div>
+    <div class="actions" style="margin-top: 50px">
+        <div class="two fluid ui inverted buttons">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                取消
+            </div>
+            <a class="ui green ok basic inverted button" href="/Personal">
+                <i class="checkmark icon"></i>
+                前往
+            </a>
+        </div>
+    </div>
+</div>
+
 <script src="/tools/jquery-2.0.3.min.js"></script>
 <script src="/tools/semanticUI/semantic.min.js"></script>
 
@@ -120,7 +147,12 @@
                 })();
 
                 $('.ui.menu .dropdown').dropdown({on: 'hover'});
+
+                {{if user.address!= ""}}
                 $('.second.modal').modal('attach events', '.buyShoppingCartShow' );
+                {{else}}
+                $('.address_modal').modal('attach events', '.buyShoppingCartShow' );
+                {{/if}}
             }
         });
     };
@@ -155,7 +187,11 @@
 
     //模态框相关
     $('.coupled.modal').modal({allowMultiple: false});
+    {{if user.address!= ""}}
     $('.second.modal').modal('attach events', '.buyShoppingCartShow' );
+    {{else}}
+    $('.address_modal').modal('attach events', '.buyShoppingCartShow' );
+    {{/if}}
     $(".shoppingCartDetailShow").modal({
         onHide:function () {
             setTimeout(function () {

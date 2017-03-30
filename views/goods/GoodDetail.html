@@ -7,11 +7,6 @@
         {{include './../headBar'}}
 
         <div class="ui grid main container buyControl" style="padding: 0">
-            <div class="ui right very close rail">
-                <div class="ui segment">
-                    右侧轨道
-                </div>
-            </div>
             <h3 class="ui horizontal header divider"><i class="tag icon"></i></h3>
             <div class="doubling two column row relaxed">
                 <div class="column">
@@ -107,7 +102,35 @@
     </div>
 </div>
 
-<!--删除确认控制-->
+<!--未填写收货地址-->
+<div class="ui basic modal address_modal">
+    <div class="header">
+        <h1>抱歉</h1>
+    </div>
+    <div class="content">
+        <div class="image" style="float: left">
+            <i class="frown sign red icon"></i>
+        </div>
+        <div class="description" style="margin-left: 150px;margin-top: 50px">
+            <p class="global_text_warning" style="font-size: 20px">您尚未填写收货地址，请前去完善您的信息</p>
+        </div>
+    </div>
+    <div class="actions" style="margin-top: 50px">
+        <div class="two fluid ui inverted buttons">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                取消
+            </div>
+            <a class="ui green ok basic inverted button" href="/Personal">
+                <i class="checkmark icon"></i>
+                前往
+            </a>
+        </div>
+    </div>
+</div>
+
+
+<!--购买确认控制-->
 <div class="ui basic modal check_modal">
     <div class="header">
         <h1>购买确认</h1>
@@ -166,8 +189,12 @@
 
             $('.check_modal').modal();
 
-            $('.check_modal').modal('attach events', '.buyNow');
-
+            var address = "{{user.address}}"
+            if(address != ""){
+                $('.check_modal').modal('attach events', '.buyNow');
+            } else {
+                $('.address_modal').modal('attach events', '.buyNow');
+            }
             //控制购买数量
             $(document).on('keyup',"input[name='buyNum']",function(){
                 if($(this).val() > parseInt($(this).attr("max"))){

@@ -31,53 +31,64 @@
                     所有物流列表
                 </h3>
                 {{if logisticsArray.length == 0}}
-                <h3 class="global_text_danger">还没有订单信息,快去买买买吧!</h3>
+                <h3 class="global_text_danger">还没有物流消息!</h3>
                 {{else}}
                 {{each logisticsArray}}
                 <table class="ui table">
-                    <button class="ui red right ribbon label delete_btn" data-id="{{$value.id}}">删除该订单</button>
                     <div class="ui pointing below label">
-                        订单号: <span class="global_text_warning">{{$value.id}}</span>
+                        订单号: <span class="global_text_warning">{{$value.orderId}}</span>
                     </div>
                     <div class="ui pointing below label">
-                        总价: <span class="global_text_success">{{$value.totalPrice}}</span> 元
+                        总价: <span class="global_text_success">{{$value.order.totalPrice}} 元</span>
                     </div>
                     <div class="ui pointing below label">
-                        创建日期: <span class="global_text_success">{{$value.create_time | obj2date :"YYYY-MM-DD HH:mm:ss"}}</span>
+                        创建日期: <span class="global_text_success">{{$value.order.create_time | obj2date :"YYYY-MM-DD HH:mm:ss"}}</span>
                     </div>
                     <thead>
                     <tr>
-                        <th class="two wide">商品类型</th>
+                        <th class="two wide">订单详情</th>
                         <th class="two wide">图片</th>
                         <th class="three wide">商品名</th>
                         <th class="two wide">购买数</th>
                         <th class="two wide">价格</th>
-                        <th class="five wide">评论</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {{each $value.goodsList as good index}}
+                    {{each $value.order.goodsList as good index}}
                     <tr>
                         <td>{{good.type}}</td>
                         <td><a href="/Goods/{{good.id}}"><img style="width: 60px;height: 60px" src="{{good.headSrc}}"></a></td>
                         <td class="global_text_danger">{{good.name}}</td>
                         <td>{{good.buyNum}}</td>
                         <td class="global_text_success">{{good.price}}</td>
-                        <td>
-                            {{if good.comment.grade == -1}}
-                            <span class="global_text_warning">未评论 </span><a href="#" class="setComment createNewComment" data-orderId="{{$value.id}}" data-goodId="{{good.id}}">点击评论<i class="icon comment outline"></i></a>
-                            {{else}}
-                            {{if good.comment.grade == 0}}
-                            <div class="ui red horizontal label">差评</div>
-                            {{else}}
-                            <div class="ui green horizontal label">好评</div>
-                            {{/if}}
-                            {{good.comment.content}}
-                            <a href="#" class="setComment updateComment" data-orderId="{{$value.id}}" data-goodId="{{good.id}}" data-commentGrade="{{good.comment.grade}}" data-commentContent="{{good.comment.content}}">点击修改<i class="icon comment outline"></i></a>
-                            {{/if}}
-                        </td>
                     </tr>
                     {{/each}}
+                    {{if $value.content.length== 0}}
+                    <tr class="error">
+                        <td colspan="5">该订单还没有物流消息!</td>
+                    </tr>
+                    {{else}}
+                        {{each $value.content as content x}}
+                        <tr class="warning">
+                            <td>{{content.main}}</td>
+                            <td>{{content.date}}</td>
+                        </tr>
+                        {{/each}}
+                    {{/if}}
+                    <tr>
+                        <td colspan="1">下单用户: <span class="global_text_primary">{{$value.user.username}}</span></td>
+                        <td colspan="1">收货地址: <span class="global_text_primary">{{$value.user.address}}</span></td>
+                        <td colspan="2">
+                            <div class="ui input" style="width: 100%">
+                                <input name="name" type="logistics" style="width: 100%">
+                            </div>
+                        </td>
+                        <td colspan="1">
+                            <div class="ui basic button" data-id="{{$value._id}}">
+                                添加物流信息
+                            </div>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
                 {{/each}}
@@ -88,126 +99,10 @@
     </div>
 </div>
 
-<!--删除确认控制-->
-<div class="ui basic demo modal check_modal">
-    <div class="header">
-        <h1>警告</h1>
-    </div>
-    <div class="content">
-        <div class="image" style="float: left">
-            <i class="warning sign icon"></i>
-        </div>
-        <div class="description">
-            <p>确认删除该订单吗？</p>
-        </div>
-    </div>
-    <div class="actions">
-        <div class="two fluid ui inverted buttons">
-            <div class="ui red basic cancel inverted button">
-                <i class="remove icon"></i>
-                不
-            </div>
-            <a data-href="" class="ui green ok basic inverted button deleteGood">
-                <i class="checkmark icon"></i>
-                是
-            </a>
-        </div>
-    </div>
-</div>
-
 <!--反馈遮罩-->
 <div class="ui modal basic answerPage">
     <div class="header"></div>
 </div>
-
-<!--评论详情模态框-->
-<div class="ui long coupled modal setCommentModal"></div>
-
-<!--评论详情模板-->
-<script id="setCommentTmpl" type="text/html">
-    <i class="close icon"></i>
-    <div class="content">
-        <div class="description">
-            <h3 class="ui horizontal header divider">
-                <i class="comment outline icon"></i>
-                评论
-            </h3>
-            <div class="ui form" style="margin-top: 20px">
-                <div class="two fields">
-                    <div class="field">
-                        <label>评价</label>
-                        <div class="ui toggle checkbox">
-                            <input name="isLike" type="checkbox">
-                            <label>好评</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="commentContent">
-                    <label>评论内容</label>
-                    <textarea></textarea>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="actions">
-        <button class="ui green button setCommentConfirmBtn" data-orderId="<%=orderId %>" data-goodId="<%=goodId %>" id="<%=btnId %>">
-            保存
-            <i class="right save icon"></i>
-        </button>
-    </div>
-</script>
-
-<!--滚动加载模板-->
-<script id="scrollLoadingTmpl" type="text/html">
-    <% for(var i = 0;i < ordersList.length;i ++){ %>
-    <table class="ui table">
-        <button class="ui red right ribbon label delete_btn" data-id="<%=ordersList[i]._id %>">删除该订单</button>
-        <div class="ui pointing below label">
-            订单号: <span class="global_text_warning"><%=ordersList[i]._id %></span>
-        </div>
-        <div class="ui pointing below label">
-            总价: <span class="global_text_success"><%=ordersList[i].totalPrice %></span> 元
-        </div>
-        <div class="ui pointing below label">
-            创建日期: <span class="global_text_success"><%=ordersList[i].create_time %></span>
-        </div>
-        <thead>
-        <tr>
-            <th class="two wide">商品类型</th>
-            <th class="two wide">图片</th>
-            <th class="three wide">商品名</th>
-            <th class="two wide">购买数</th>
-            <th class="two wide">价格</th>
-            <th class="five wide">评论</th>
-        </tr>
-        </thead>
-        <tbody>
-        <% for(var j = 0;j < ordersList[i].goodsList.length;j ++){ %>
-        <tr>
-            <td><%=ordersList[i].goodsList[j].type %></td>
-            <td><a href="/Goods/<%=ordersList[i].goodsList[j].id %>"><img style="width: 60px;height: 60px" src="<%=ordersList[i].goodsList[j].headSrc %>"></a></td>
-            <td class="global_text_danger"><%=ordersList[i].goodsList[j].name %></td>
-            <td><%=ordersList[i].goodsList[j].buyNum %></td>
-            <td class="global_text_success"><%=ordersList[i].goodsList[j].price %></td>
-            <td>
-                <% if(ordersList[i].goodsList[j].comment.grade == -1){ %>
-                <span class="global_text_warning">未评论 </span><a href="#" class="setComment createNewComment" data-orderId="<%=ordersList[i]._id %>" data-goodId="<%=ordersList[i].goodsList[j].id %>">点击评论<i class="icon comment outline"></i></a>
-                <% }else{ %>
-                <% if(ordersList[i].goodsList[j].comment.grade == 0){ %>
-                <div class="ui red horizontal label">差评</div>
-                <% }else{ %>
-                <div class="ui green horizontal label">好评</div>
-                <% } %>
-                <%=ordersList[i].goodsList[j].comment.content %>
-                <a href="#" class="setComment updateComment" data-orderId="<%=ordersList[i]._id %>" data-goodId="<%=ordersList[i].goodsList[j].id %>" data-commentGrade="<%=ordersList[i].goodsList[j].comment.grade %>" data-commentContent="<%=ordersList[i].goodsList[j].comment.content %>">点击修改<i class="icon comment outline"></i></a>
-                <% } %>
-            </td>
-        </tr>
-        <% } %>
-        </tbody>
-    </table>
-    <% } %>
-</script>
 
 <script src="/tools/template-native.js"></script>
 <script src="/tools/moment.min.js"></script>
@@ -216,156 +111,12 @@
     $(document).ready(function(){
         var loadPage = (function(){
 
-            scrollLoadingLock = false;
-            loadIndex = 1;
-            $(window).scroll(function(){
-                var scrollPos = $(window).scrollTop();
-                totalHeight = parseFloat($(window).height()) + parseFloat(scrollPos);
-                if( $(document).height() - 20 <= totalHeight && !scrollLoadingLock){
-                    $(".loadMoreOrders").html('<h1 class="ui center aligned header orange"><i class="notched circle loading icon"></i>加载更多...</h1>');
-                    $(".loadMoreOrders").show();
-                    scrollLoadingLock = true;
 
-                    $.ajax({
-                        url: "/Orders/loadMore",
-                        data: {
-                            loadIndex: loadIndex
-                        },
-                        type: "GET",
-                        success: function(data){
-                            var userDetail = data.res;
-                            if(userDetail.length != 0){
-                                for(var i = 0;i < userDetail.length;i ++){
-                                    userDetail[i].create_time =  moment(userDetail[i].create_time).format("YYYY-MM-DD HH:mm:ss");
-                                }
-                                var scrollLoadingTmpl = template('scrollLoadingTmpl', {ordersList: userDetail});
-
-                                $(".loadMoreOrders").hide();
-                                $("#orderMain").append(scrollLoadingTmpl);
-
-                                setTimeout(function(){
-                                    scrollLoadingLock = false;
-                                    loadIndex += 1;
-                                }, 500);
-                            } else {
-                                $(".loadMoreOrders").html('<h1 class="ui center aligned header orange"><i class="frown icon"></i>已无更多数据啦</h1>');
-                                $(".loadMoreOrders").show();
-                            }
-                        }
-                    });
-                }
-            })
         })();
 
         var loadConfig = (function(){
-            $('.demo.modal').modal();
-            $('.basic.demo.modal').modal('attach events', '.delete_btn');
 
-            //删除订单
-            $(document).on('click','.delete_btn',function(){
-                var href = $(this).attr("data-id");
-                $(".check_modal a.ok").attr("data-href",href);
-            });
 
-            $(".check_modal .deleteGood").on('click',function(){
-                $.ajax({
-                    url: '/Orders/delete',
-                    type: 'delete',
-                    data:{
-                        id:  $(".check_modal .deleteGood").attr("data-href"),
-                        create_time: new Date()
-                    },
-                    success:function(){
-                        window.location.reload();
-                    },
-                    error:function(){
-                        alert("删除出错请重试!!");
-                        window.location.reload();
-                    }
-                })
-            });
-
-//            设置评论
-//            $(".setCommentModal").modal({}).modal('attach events','.setComment');
-            $("#orderMain").on('click', '.setComment', function(event){
-                event.stopPropagation();
-                switch ($(this).attr("class")){
-                    case "setComment createNewComment":
-                        var setCommentTmpl = template("setCommentTmpl",{orderId:$(this).attr("data-orderId"), goodId:$(this).attr("data-goodId"), btnId:"setComment"});
-                        $(".setCommentModal").html(setCommentTmpl);
-                        $(".setCommentModal").modal("show");
-                        break;
-                    case "setComment updateComment":
-                        var setCommentTmpl = template("setCommentTmpl",{orderId:$(this).attr("data-orderId"), goodId:$(this).attr("data-goodId"), btnId:"updateComment"});
-                        $(".setCommentModal").html(setCommentTmpl);
-                        if(parseInt($(this).attr("data-commentGrade")) == 1){
-                            $(".setCommentModal input").attr("checked",true)
-                        }
-                        $(".setCommentModal textarea").val($(this).attr("data-commentContent"));
-                        $(".setCommentModal").modal("show");
-                        break;
-                }
-            });
-
-            $(".setCommentModal").on("click","#setComment",function(){
-                var isLike = 0;
-                if($(".setCommentModal input[name='isLike']").is(":checked")){
-                    isLike = 1;
-                }
-
-                $.ajax({
-                    url: "/Comment/add",
-                    type: "POST",
-                    data: {
-                        orderId: $(this).attr("data-orderId"),
-                        goodId: $(this).attr("data-goodId"),
-                        grade: isLike,
-                        content: $(".setCommentModal textarea").val(),
-                        create_time: new Date()
-                    },
-                    success: function(){
-                        $('.answerPage .header').html("<h1 class='ui header green' style='text-align: center'>评论成功</h1>");
-                        $('.answerPage').modal('show');
-                        setTimeout(function(){
-                            window.location.reload();
-                        },700);
-                    },
-                    error: function(){
-                        $('.answerPage .header').html("<h1 class='ui header red' style='text-align: center'>评论失败</h1>");
-                        $('.answerPage').modal('show');
-                    }
-                });
-            });
-
-            $(".setCommentModal").on("click","#updateComment",function(){
-                var isLike = 0;
-                if($(".setCommentModal input[name='isLike']").is(":checked")){
-                    isLike = 1;
-                }
-
-                $.ajax({
-                    url: "/Comment/update",
-                    type: "PUT",
-                    data: {
-                        orderId: $(this).attr("data-orderId"),
-                        goodId: $(this).attr("data-goodId"),
-                        grade: isLike,
-                        content: $(".setCommentModal textarea").val(),
-                        modify_time: new Date()
-                    },
-                    success: function(){
-                        $('.answerPage .header').html("<h1 class='ui header green' style='text-align: center'>评论成功</h1>");
-                        $('.answerPage').modal('show');
-                        setTimeout(function(){
-                            window.location.reload();
-                        },700);
-                    },
-                    error: function(){
-                        $('.answerPage .header').html("<h1 class='ui header red' style='text-align: center'>评论失败</h1>");
-                        $('.answerPage').modal('show');
-                    }
-                });
-            });
         })();
     })
 

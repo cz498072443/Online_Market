@@ -44,29 +44,37 @@ router.get('/',pageControl,function(req, res, next){
                 res.render('functions/LogisticsContr.html',{ user:userDetail,logisticsArray:logisticsArray });
             });
             for(var i = 0;i < logisticsList.length;i ++){
-                User.getOneById(logisticsList[i].userId,function(err, docs){
-                    if(err){
-                        res.send(400);
-                    } else {
-                        logisticsArray[i-1].user = docs;
-                        ep3.emit('all_customer');
-                    }
-                });
+                User.getOneById(logisticsList[i].userId,test(i));
+
+                function test(i){
+                    return (function(err, docs){
+                        if(err){
+                            res.send(400);
+                        } else {
+                            logisticsArray[i].user = docs;
+                            ep3.emit('all_customer');
+                        }
+                    })
+                }
             }
         });
 
         for(var i = 0;i < logisticsList.length;i ++){
-            var Obj = {id:logisticsList[i]._id,orderId:logisticsList[i].orderId,userId:logisticsList[i].userId,state:logisticsList[i].state,order:"",user:{}};
+            var Obj = {_id:""+logisticsList[i]._id,orderId:logisticsList[i].orderId,userId:logisticsList[i].userId,content:logisticsList[i].content,state:logisticsList[i].state,order:"",user:{}};
             logisticsArray.push(Obj);
 
-            Orders.getOneById(logisticsList[i].orderId,function(err, docs){
-                if(err){
-                    res.send(400);
-                } else {
-                    logisticsArray[i-1].order = docs;
-                    ep2.emit('all_order');
-                }
-            });
+            Orders.getOneById(logisticsList[i].orderId,test(i));
+            //作用域链....不是这样的话i找不到值
+            function test(i){
+                return (function (err, docs){
+                    if(err){
+                        res.send(400);
+                    } else {
+                        logisticsArray[i].order = docs;
+                        ep2.emit('all_order');
+                    }
+                })
+            }
         }
     });
 
