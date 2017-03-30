@@ -8,3 +8,4 @@ exports.Orders = require("./Orders");
 exports.News = require("./News");
 exports.Comments = require("./Comments");
 exports.Banners = require("./Banners");
+exports.Logistics = require("./Logistics");

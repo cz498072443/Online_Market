@@ -47,6 +47,7 @@ function verifyParams(params) {
         "wallet": params.wallet || 0,
         "favorite": params.favorite || [],
         "shoppingCart": params.shoppingCart || [],
+        "address": params.address || "",
         "level": params.level || { num: 0, discount: 1 },
         "cost": params.cost || 0,
         "nickname": params.nickname || "",

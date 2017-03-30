@@ -8,6 +8,7 @@ var User = require("./../../proxy").User;
 var Goods = require("./../../proxy").Goods;
 var Orders = require("./../../proxy").Orders;
 var News = require("./../../proxy").News;
+var Logistics = require("./../../proxy").Logistics;
 var levels = require("./../../public/json/levels");
 
 var eventproxy = require("eventproxy");
@@ -57,8 +58,8 @@ router.post("/", pageControl, function(req, res, next){
         ep2.all('good_finish',function(userDetail){
             var ep3 = new eventproxy();
 
-            //支付完成阶段(更新支付过后的用户信息,并生成订单)
-            ep3.all('user_finish','order_finish',function(){
+            //支付完成阶段(更新支付过后的用户信息,并生成订单和物流信息)
+            ep3.all('user_finish','order_Logistics_finish',function(){
                 News.createOne({
                     "username": loc_user.username,
                     "type": 2,
@@ -104,7 +105,18 @@ router.post("/", pageControl, function(req, res, next){
                 if (err) {
                     res.send(400);
                 } else {
-                    ep3.emit("order_finish");
+                    ////生成物流信息
+                    Logistics.createOne({
+                        orderId: doc._id,
+                        userId:  userDetail._id,
+                        state: false,
+                    },function(err, doc){
+                        if(err){
+                            res.send(400);
+                        } else {
+                            ep3.emit("order_Logistics_finish");
+                        }
+                    });
                 }
             });
         });

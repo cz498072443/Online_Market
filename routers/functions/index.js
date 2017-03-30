@@ -7,3 +7,4 @@ exports.OrdersContr = require("./OrdersContr");
 exports.ShoppingCart = require("./ShoppingCart");
 exports.Comment = require("./Comment");
 exports.Authority = require("./Authority");
+exports.LogisticsContr = require("./LogisticsContr");

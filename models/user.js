@@ -15,6 +15,7 @@ var UserSchema = new Schema({
     "wallet": { type: Number },
     "favorite": { type: Array },
     "shoppingCart": { type: Array },
+    "address": {type: String},
     "level": { type: Object },
     "cost": {type: Number},
     "nickname": {type: String},

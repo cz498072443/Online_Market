@@ -45,6 +45,7 @@ router.put('/ChangeInfo', pageControl, function(req, res, next){
         userDetail.nickname = req.body.nickname;
         userDetail.sign = req.body.sign;
         userDetail.modify_time = req.body.modify_time;
+        userDetail.address = req.body.address;
 
         User.update(loc_user._id, userDetail, function(err, docs){
             if(err){

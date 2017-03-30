@@ -197,6 +197,7 @@
                 data: {
                     title: $(".addBannerShow input[name='title']").val(),
                     description: $(".addBannerShow textarea[name='description']").val(),
+                    url: $(".addBannerShow input[name='url']").val(),
                     image: file.name,
                     create_time: new Date()
                 },

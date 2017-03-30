@@ -54,7 +54,11 @@
             <div class="banner">
                 <ul>
                     {{each bannerList}}
-                    <li style=" background-image: url('{{$value.url}}');"></li>
+                    <li style=" background-image: url('{{$value.image}}');position: relative">
+                        {{if $value.url !== ""}}
+                        <a href="{{$value.url}}" style="width: 100%;height: 100%;position: absolute;left: 0;top: 0"></a>
+                        {{/if}}
+                    </li>
                     {{/each}}
                 </ul>
             </div>

@@ -48,7 +48,13 @@
                             <img src="/upload/Users/head/test.png">
                         </div>
                         <div class="content">
-                            <div class="header">陈卓</div>
+                            <div class="header">
+                                {{if user.nickname !=""}}
+                                    {{user.nickname}}
+                                {{else}}
+                                    {{user.username}}
+                                {{/if}}
+                            </div>
                             <div class="description">
                                 {{if user.sign != ""}}
                                     {{user.sign}}
@@ -91,6 +97,16 @@
                                         <span class="global_text_success" >已设置二级密码 <a href="#" class="secPassLink pageLink">前往修改<i class="icon share"></i></a></span>
                                         {{else}}
                                         <span class="global_text_danger">尚未设置二级密码,请尽快<a href="#" class="secPassLink pageLink">前往设置<i class="icon share"></i></a></span>
+                                        {{/if}}
+                                    </div>
+                                </div>
+                                <div class="discription ui sixteen wide grid">
+                                    <div class="six wide column">收货地址</div>
+                                    <div class="ten wide column inputInfo personal_username">
+                                        {{if user.address != ""}}
+                                        {{user.address}}
+                                        {{else}}
+                                        未设置地址 <a href="#" class="changeInfoLink pageLink">前往设置<i class="icon share"></i></a>
                                         {{/if}}
                                     </div>
                                 </div>

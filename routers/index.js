@@ -18,6 +18,7 @@ var Comment = require("./functions").Comment;
 var HomeConfig = require("./homePage").HomeConfig;
 var GoodsPage = require("./goods").GoodsPage;
 var Personal = require("./users").Personal;
+var LogisticsContr = require("./functions").LogisticsContr;
 
 var Goods = require("./../proxy").Goods;
 var User = require("./../proxy").User;
@@ -133,6 +134,7 @@ router.use('/Orders', OrdersContr);
 router.use('/ShoppingCart', ShoppingCart);
 router.use('/Comment', Comment);
 router.use('/Authority', Authority);
+router.use('/LogisticsContr', LogisticsContr);
 
 //商品
 router.use('/Goods', GoodsPage);

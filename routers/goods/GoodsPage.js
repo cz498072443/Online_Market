@@ -10,6 +10,7 @@ var Orders = require("./../../proxy").Orders;
 var News = require("./../../proxy").News;
 var Comments = require("./../../proxy").Comments;
 var levels = require("./../../public/json/levels");
+var Logistics = require("./../../proxy").Logistics;
 
 var eventproxy = require("eventproxy");
 
@@ -119,7 +120,18 @@ router.post("/",pageControl,function(req, res, next){
                 if(err){
                     res.send(400);
                 }else{
-                    res.send(200);
+                    ////生成物流信息
+                    Logistics.createOne({
+                        orderId: doc._id,
+                        userId: userDetail._id,
+                        state: false,
+                    },function(err, doc){
+                        if(err){
+                            res.send(400);
+                        } else {
+                            res.send(200);
+                        }
+                    });
                 }
             });
 
@@ -129,7 +141,6 @@ router.post("/",pageControl,function(req, res, next){
                 "content": loc_user.username+" 购买了"+req.body.buyNum+"个"+goodDetail.name+",总计"+totalPrice+"元" ,
                 "create_time": req.body.create_time
             },function (err, doc) {
-
             });
         }
     });

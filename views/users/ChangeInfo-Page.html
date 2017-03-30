@@ -20,6 +20,10 @@
                     <input name="sign" type="text" value="{{user.sign}}">
                 </div>
             </div>
+            <div class="field">
+                <label>收货地址</label>
+                <input name="address" type="text" value="{{user.address}}">
+            </div>
             <div class="four fields">
                 <div class="field">
                     <label>用户身份</label>
@@ -62,6 +66,7 @@
             data: {
                 nickname: $("input[name='nickname']").val(),
                 sign: $("input[name='sign']").val(),
+                address: $("input[name='address']").val(),
                 modify_time: new Date()
             },
             success: function(){

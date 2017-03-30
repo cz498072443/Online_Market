@@ -46,12 +46,12 @@
                                     <span>{{$value.title}}</span>
                                 </div>
                                 <div class="bannerShow" style="margin:10px 0px">
-                                    <img style="width: 100%" src="{{$value.url}}">
+                                    <img style="width: 100%" src="{{$value.image}}">
                                 </div>
                                 <div class="bannerDescription">
                                     <p>{{$value.description}}</p>
                                 </div>
-                                <div class="ui tiny buttons bannerShowBtns" style="float: right" data-id="{{$value.id}}" data-href="{{$value.url}}" data-title="{{$value.title}}" data-des="{{$value.description}}">
+                                <div class="ui tiny buttons bannerShowBtns" style="float: right" data-url="{{$value.url}}" data-id="{{$value.id}}" data-href="{{$value.image}}" data-title="{{$value.title}}" data-des="{{$value.description}}">
                                     <div class="ui button updateBannerBtn">修改</div>
                                     <div class="or"></div>
                                     <div class="ui button deleteBannerBtn">删除</div>
@@ -92,6 +92,10 @@
             <div class="field">
                 <label>描述</label>
                 <textarea name="description" rows="4"></textarea>
+            </div>
+            <div class="field">
+                <label>跳转URL</label>
+                <input name="url" type="text" placeholder="http://">
             </div>
             <div class="field">
                 <label>图片上传</label>
@@ -143,6 +147,10 @@
         <div class="field">
             <label>描述</label>
             <textarea name="description" rows="4"><%=des %></textarea>
+        </div>
+        <div class="field">
+            <label>跳转URL</label>
+            <input name="url" type="text" value="<%=url %>">
         </div>
     </div>
     <div class="actions" style="margin-top: 10px">
@@ -225,7 +233,7 @@
 
             $(document).on('click', '.updateBannerBtn', function(){
                 console.log($(this).parent().attr("data-title"));
-                var updateBannerTmpl = template('updateBannerTmpl', {id: $(this).parent().attr("data-id"), title: $(this).parent().attr("data-title"), des: $(this).parent().attr("data-des")});
+                var updateBannerTmpl = template('updateBannerTmpl', {id: $(this).parent().attr("data-id"), title: $(this).parent().attr("data-title"), des: $(this).parent().attr("data-des"), url: $(this).parent().attr("data-url")});
                 $(".updateBannerShow .content").empty();
                 $(".updateBannerShow .content").append(updateBannerTmpl);
                 $('.updateBannerShow').modal("show");
@@ -238,7 +246,8 @@
                     data: {
                         id: $(this).attr("data-id"),
                         title: $(".updateBannerShow input[name='title']").val(),
-                        des: $(".updateBannerShow textarea[name='description']").val()
+                        des: $(".updateBannerShow textarea[name='description']").val(),
+                        url: $(".updateBannerShow input[name='url']").val(),
                     },
                     success: function(){
                         $('.answerPage .header').html("<h1 class='ui header green' style='text-align: center'>修改Banner成功!!!</h1>");

@@ -83,8 +83,8 @@ router.post('/uploadSecceed', function(req, res, next){
     Banners.createOne({
         "title": title,
         "description": req.body.description,
-        "image": req.body.image ,
-        "url": "/upload/index/slider_banner/" + req.body.image,
+        "image": "/upload/index/slider_banner/" + req.body.image ,
+        "url": req.body.url,
         "create_time": req.body.create_time
     },function (err, doc) {
         if(err){
@@ -143,6 +143,7 @@ router.put('/update', pageControl, function(req, res, next){
 
         bannerDetail["title"] = req.body.title;
         bannerDetail["description"] = req.body.des;
+        bannerDetail["url"] = req.body.url;
 
         Banners.update(req.body.id, bannerDetail, function(err, docs){
             if(err){
