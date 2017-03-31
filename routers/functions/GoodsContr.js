@@ -52,12 +52,16 @@ router.get('/add',pageControl,function(req, res, next){
     var ep = new eventproxy();
 
     ep.fail(next);
-    ep.all('user_detail',function(userDetail){
-        res.render('functions/GoodsContrAdd.html',{ user:userDetail });
+    ep.all('user_detail','headerBarNews',function(userDetail,headerBarNews){
+        res.render('functions/GoodsContrAdd.html',{ user:userDetail, headerBarNews:headerBarNews });
     });
 
     User.getOneById(loc_user._id, function(err, docs){
         ep.emit('user_detail',docs)
+    });
+
+    News.findNewOne(function(err,docs){
+        ep.emit('headerBarNews',docs)
     });
 });
 
@@ -85,8 +89,8 @@ router.get('/edit/:id',pageControl,function(req, res, next){
     var ep = new eventproxy();
     ep.fail(next);
 
-    ep.all('good_detail','user_detail', function(goodDetail, userDetail){
-        res.render('functions/GoodsContrEdit.html',{ user:userDetail,goodDetail:goodDetail });
+    ep.all('good_detail','user_detail','headerBarNews', function(goodDetail, userDetail, headerBarNews){
+        res.render('functions/GoodsContrEdit.html',{ user:userDetail,goodDetail:goodDetail, headerBarNews: headerBarNews });
     });
 
     Goods.getOneById(req.params.id, function(err,docs){
@@ -95,6 +99,10 @@ router.get('/edit/:id',pageControl,function(req, res, next){
 
     User.getOneById(loc_user._id, function(err, docs){
         ep.emit('user_detail',docs)
+    });
+
+    News.findNewOne(function(err,docs){
+        ep.emit('headerBarNews',docs)
     });
 });
 
