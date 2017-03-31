@@ -142,6 +142,9 @@
         {{if user.secPassword == ""}}
         <div class="description">
             <p>确认购买该商品吗？</p>
+            {{if user.level.num > 0}}
+            <span class="global_text_success">( {{user.level.num}} 级用户可享受 <span class="global_text_danger">{{user.level.discount * 10}}</span> 折优惠哦 )</span>
+            {{/if}}
             <p class="global_text_warning"><i class="warning red sign icon"></i>警告:您尚未设置二级密码,为保证用户安全请尽快<a href="/personalInfo" style="color: orangered">前往设置</a></p>
         </div>
         {{else}}

@@ -44,6 +44,7 @@ function verifyParams(params) {
         'password': params.password,
         'role': params.role || "User",
         "secPassword": params.secPassword || "",
+        "tel": params.tel || "",
         "wallet": params.wallet || 0,
         "favorite": params.favorite || [],
         "shoppingCart": params.shoppingCart || [],

@@ -64,9 +64,14 @@
                             </div>
                         </div>
                         <div class="extra content">
-                            <a class="right floated created">随机</a>
-                            <a class="friends">
-                                随机</a>
+
+                            <a class="friends">tel:
+                                {{if user.tel != ""}}
+                                {{user.tel}}
+                                {{else}}
+                                未设置
+                                {{/if}}
+                            </a>
                         </div>
                     </div>
                 </div>

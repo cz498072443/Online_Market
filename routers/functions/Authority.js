@@ -32,8 +32,8 @@ router.get('/', pageControl, function(req, res, next){
     var ep = new eventproxy();
 
     ep.fail(next);
-    ep.all('user_list','admin_detail', function(userList, adminDetail){
-        res.render('functions/AuthorityContr.html',{ userList: userList, user: adminDetail });
+    ep.all('user_list','admin_detail','headerBarNews', function(userList, adminDetail, headerBarNews){
+        res.render('functions/AuthorityContr.html',{ userList: userList, user: adminDetail, headerBarNews:headerBarNews });
     });
 
     User.findAll(function(err, docs){
@@ -42,6 +42,10 @@ router.get('/', pageControl, function(req, res, next){
 
     User.getOneById(loc_user._id, function(err, docs){
         ep.emit('admin_detail',docs)
+    });
+
+    News.findNewOne(function(err,docs){
+        ep.emit('headerBarNews',docs)
     });
 });
 

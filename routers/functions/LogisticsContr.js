@@ -33,7 +33,7 @@ router.get('/',pageControl,function(req, res, next){
 
     ep.fail(next);
     //先找出所有的物流信息
-    ep.all('logistics_list','user_detail', function(logisticsList, userDetail){
+    ep.all('logistics_list','user_detail','headerBarNews', function(logisticsList, userDetail, headerBarNews){
         var ep2 = new eventproxy();
         //根据物流信息上的订单号找到所有订单
         ep2.after('all_order',logisticsList.length,function(){
@@ -41,7 +41,7 @@ router.get('/',pageControl,function(req, res, next){
             //根据物流信息上的userId找到所有消费者
             ep3.after('all_customer',logisticsList.length,function(){
                 console.log(logisticsArray)
-                res.render('functions/LogisticsContr.html',{ user:userDetail,logisticsArray:logisticsArray });
+                res.render('functions/LogisticsContr.html',{ user:userDetail,logisticsArray:logisticsArray,headerBarNews:headerBarNews });
             });
             for(var i = 0;i < logisticsList.length;i ++){
                 User.getOneById(logisticsList[i].userId,test(i));
@@ -84,8 +84,60 @@ router.get('/',pageControl,function(req, res, next){
 
     Logistics.findAll(function(err,docs){
         ep.emit('logistics_list',docs);
-    })
+    });
 
+    News.findNewOne(function(err,docs){
+        ep.emit('headerBarNews',docs)
+    });
+});
+
+router.put('/update',function(req, res){
+    var ep = new eventproxy();
+    ep.all('findLogistics', function(newLogistics){
+        var newLogisticsObj = {main: req.body.newLogistics, create_date: req.body.date}
+        newLogistics.content.push(newLogisticsObj);
+
+        Logistics.update(req.body.id,newLogistics,function(err, doc){
+            if(err){
+                res.send(400);
+            } else {
+                res.send(doc);
+            }
+        })
+    });
+
+    Logistics.getOneById(req.body.id,function(err, doc){
+        if(err){
+            res.send(400);
+        } else {
+            ep.emit('findLogistics',doc)
+        }
+    })
+});
+
+router.get('/ConfirmReceive',function(req,res){
+    var ep = new eventproxy();
+    ep.all('findLogistics', function(newLogistics){
+        var newLogisticsObj = {main: "已确认收货", create_date: req.query.create_time}
+        newLogistics.content.push(newLogisticsObj);
+        newLogistics.state = true;
+
+        Logistics.update(req.query.id,newLogistics,function(err, doc){
+            if(err){
+                res.send(400);
+            } else {
+                res.send(200);
+            }
+        })
+    });
+
+    Logistics.getOneById(req.query.id,function(err, doc){
+        if(err){
+            res.send(400);
+        } else {
+            ep.emit('findLogistics',doc)
+        }
+    })
 });
 
 module.exports = router;

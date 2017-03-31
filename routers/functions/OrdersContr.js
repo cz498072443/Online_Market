@@ -8,6 +8,7 @@ var router = express.Router();
 var User = require("./../../proxy").User;
 var Orders = require("./../../proxy").Orders;
 var News = require("./../../proxy").News;
+var Logistics = require("./../../proxy").Logistics;
 var eventproxy = require("eventproxy");
 
 //页面控制中间件
@@ -24,8 +25,32 @@ router.get("/", pageControl, function(req, res, next){
     var ep = new eventproxy();
 
     ep.fail(next);
-    ep.all('user_detail', 'orders_list', function(userDetail, ordersList){
-        res.render('functions/OrdersContr.html',{ user: userDetail, ordersList: ordersList });
+    ep.all('user_detail', 'orders_list', 'headerBarNews', function(userDetail, ordersList, headerBarNews){
+        var ordersArray = [];
+        var ep2 = new eventproxy();
+        ep2.after('find_logistics', ordersList.length, function(){
+            console.log(ordersArray)
+            res.render('functions/OrdersContr.html',{ user: userDetail, ordersList: ordersArray, headerBarNews:headerBarNews });
+        });
+
+        for(var i = 0;i < ordersList.length;i ++){
+            var Obj = {_id:""+ordersList[i]._id,customer:ordersList[i].customer,totalPrice:ordersList[i].totalPrice,create_time:ordersList[i].create_time,goodsList:ordersList[i].goodsList,logistics:{}}
+            ordersArray.push(Obj);
+
+            Logistics.getOneByOrder(ordersList[i]._id,test(i));
+            //万恶的作用域链
+            function test(i){
+                return (function(err, doc){
+                    if(err){
+                        res.res(400);
+                    } else {
+                        ordersArray[i].logistics = doc;
+                        ep2.emit('find_logistics')
+                    }
+                })
+            }
+        }
+
     });
 
     User.getOneById(loc_user._id, function(err, docs){
@@ -34,6 +59,10 @@ router.get("/", pageControl, function(req, res, next){
 
     Orders.findSomeByCustomer(loc_user._id, 0, function(err, docs){
         ep.emit('orders_list', docs);
+    });
+
+    News.findNewOne(function(err,docs){
+        ep.emit('headerBarNews',docs)
     });
 });
 
@@ -63,7 +92,27 @@ router.get('/loadMore', pageControl, function(req, res){
         if(err){
             res.send({code:-100, res:"没有更多数据了..."});
         } else {
-            res.send({code:100, res:docs});
+
+            var ep = new eventproxy();
+            ep.after('find_logistics', docs.length, function(){
+                console.log(docs);
+                res.send({code:100, res:docs});
+            });
+
+            for(var i = 0;i < docs.length;i ++){
+                Logistics.getOneByOrder(docs[i]._id,test(i));
+                //万恶的作用域链
+                function test(i){
+                    return (function(err, doc){
+                        if(err){
+                            res.res(400);
+                        } else {
+                            docs[i].logistics = doc;
+                            ep.emit('find_logistics')
+                        }
+                    })
+                }
+            }
         }
     });
 });

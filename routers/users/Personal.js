@@ -24,7 +24,7 @@ router.get('/', pageControl, function(req, res, next){
     ep.fail(next);
 
     ep.all('user_detail', 'news_list', function(userDetail, newsList){
-        res.render('users/personal.html',{ user:userDetail, news:newsList });
+        res.render('users/personal.html',{ user:userDetail, news:newsList,headerBarNews:newsList[0] });
     });
 
     User.getOneById(loc_user._id, function(err,docs){
@@ -46,6 +46,7 @@ router.put('/ChangeInfo', pageControl, function(req, res, next){
         userDetail.sign = req.body.sign;
         userDetail.modify_time = req.body.modify_time;
         userDetail.address = req.body.address;
+        userDetail.tel = req.body.tel;
 
         User.update(loc_user._id, userDetail, function(err, docs){
             if(err){

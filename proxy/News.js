@@ -16,6 +16,12 @@ exports.findAllByUserName = function (username, callback) {
     });
 };
 
+exports.findNewOne = function(callback){
+    News.findOne({}).sort({create_time:-1}).exec(function(err,docs){
+        callback(err,docs);
+    })
+};
+
 exports.createOne = function (params, callback) {
     News.create(verifyParams(params),callback);
 };

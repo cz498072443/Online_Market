@@ -34,10 +34,10 @@
                 <h3 class="global_text_danger">还没有订单信息,快去买买买吧!</h3>
                 {{else}}
                 {{each ordersList}}
-                <table class="ui table">
-                    <button class="ui red right ribbon label delete_btn" data-id="{{$value.id}}">删除该订单</button>
+                <table class="ui table id_{{$value._id}}">
+                    <button class="ui red right ribbon label delete_btn" data-id="{{$value._id}}">删除该订单</button>
                     <div class="ui pointing below label">
-                        订单号: <span class="global_text_warning">{{$value.id}}</span>
+                        订单号: <span class="global_text_warning">{{$value._id}}</span>
                     </div>
                     <div class="ui pointing below label">
                         总价: <span class="global_text_success">{{$value.totalPrice}}</span> 元
@@ -64,20 +64,53 @@
                         <td>{{good.buyNum}}</td>
                         <td class="global_text_success">{{good.price}}</td>
                         <td>
-                            {{if good.comment.grade == -1}}
-                            <span class="global_text_warning">未评论 </span><a href="#" class="setComment createNewComment" data-orderId="{{$value.id}}" data-goodId="{{good.id}}">点击评论<i class="icon comment outline"></i></a>
-                            {{else}}
-                                {{if good.comment.grade == 0}}
-                                <div class="ui red horizontal label">差评</div>
+                            {{if $value.logistics.state != false}}
+                                {{if good.comment.grade == -1}}
+                                <span class="global_text_warning">未评论 </span><a href="#" class="setComment createNewComment" data-orderId="{{$value._id}}" data-goodId="{{good.id}}">点击评论<i class="icon comment outline"></i></a>
                                 {{else}}
-                                <div class="ui green horizontal label">好评</div>
+                                    {{if good.comment.grade == 0}}
+                                    <div class="ui red horizontal label">差评</div>
+                                    {{else}}
+                                    <div class="ui green horizontal label">好评</div>
+                                    {{/if}}
+                                    {{good.comment.content}}
+                                    <a href="#" class="setComment updateComment" data-orderId="{{$value._id}}" data-goodId="{{good.id}}" data-commentGrade="{{good.comment.grade}}" data-commentContent="{{good.comment.content}}">点击修改<i class="icon comment outline"></i></a>
                                 {{/if}}
-                                {{good.comment.content}}
-                                <a href="#" class="setComment updateComment" data-orderId="{{$value.id}}" data-goodId="{{good.id}}" data-commentGrade="{{good.comment.grade}}" data-commentContent="{{good.comment.content}}">点击修改<i class="icon comment outline"></i></a>
+                            {{else}}
+                            <span style="color: darkgray">未确认收货不能评论</span>
                             {{/if}}
                         </td>
                     </tr>
                     {{/each}}
+                    {{if $value.logistics.content.length != 0}}
+                        {{each $value.logistics.content as content index}}
+                        <tr class="positive" style="display: none;background-color: rgb(249,250,251) !important;">
+                            <td colspan="5" class="global_text_primary" style="border: 0px">{{content.main}}</td>
+                            <td colspan="1" style="border: 0px">{{content.create_date | obj2date :"YYYY-MM-DD HH:mm:ss"}}</td>
+                        </tr>
+                        {{/each}}
+                        <tr class="active" style="background-color: rgb(249,250,251) !important;">
+                            <td colspan="2" class="global_text_primary">{{$value.logistics.content[$value.logistics.content.length-1].main}}</td>
+                            <td colspan="1">{{$value.logistics.content[$value.logistics.content.length-1].create_date | obj2date :"YYYY-MM-DD HH:mm:ss"}}</td>
+                            {{if $value.logistics.state == false}}
+                            <td colspan="2">
+                                <div class="ui basic button logisticsContr" data-id="{{$value._id}}">物流详情</div>
+                            </td>
+                            <td colspan="1">
+                                <div class="ui red button confirmReceive" data-id="{{$value.logistics.id}}">确认收货</div>
+                            </td>
+                            {{else}}
+                            <td colspan="2"></td>
+                            <td colspan="1">
+                                <div class="ui basic button logisticsContr" data-id="{{$value._id}}">物流详情</div>
+                            </td>
+                            {{/if}}
+                        </tr>
+                    {{else}}
+                    <tr class="error">
+                        <td colspan="6">该订单还没有物流消息!</td>
+                    </tr>
+                    {{/if}}
                     </tbody>
                 </table>
                 {{/each}}
@@ -204,6 +237,7 @@
             </td>
         </tr>
         <% } %>
+
         </tbody>
     </table>
     <% } %>
@@ -215,7 +249,6 @@
 
     $(document).ready(function(){
         var loadPage = (function(){
-
             scrollLoadingLock = false;
             loadIndex = 1;
             $(window).scroll(function(){
@@ -367,6 +400,37 @@
                 });
             });
         })();
+
+        $(document).on('click', '.logisticsContr', function(){
+            console.log($(this).html())
+            var tableLocation = ".table.id_"+$(this).data("id");
+
+            if($(this).html() == "物流详情"){
+                $(tableLocation+" tr.positive").show();
+                $(this).html("收起");
+            } else {
+                $(tableLocation+" tr.positive").hide();
+                $(this).html("物流详情");
+            }
+        });
+
+        $(document).on('click','.confirmReceive',function(){
+            $.ajax({
+                url:"/LogisticsContr/ConfirmReceive",
+                type:"GET",
+                data:{
+                    id:$(this).data("id"),
+                    create_time:new Date()
+                },
+                success:function(){
+                    window.location.reload()
+                },
+                error:function(){
+                    $('.answerPage .header').html("<h1 class='ui header red' style='text-align: center'>确认失败</h1>");
+                    $('.answerPage').modal('show');
+                }
+            })
+        })
     })
 
 </script>

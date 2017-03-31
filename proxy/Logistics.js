@@ -14,6 +14,19 @@ exports.createOne = function (params, callback) {
     Logistics.create(verifyParams(params),callback);
 };
 
+exports.getOneById = function(id, callback){
+    Logistics.findOne({_id: id}).exec(callback);
+};
+
+exports.getOneByOrder = function(orderId, callback){
+    Logistics.findOne({orderId: orderId}).exec(callback);
+};
+
+exports.update = function (id, params, callback) {
+    Logistics.findOneAndUpdate({_id:id}, verifyParams(params)).exec(function(err,doc){
+        callback(err,doc);
+    });
+};
 
 function verifyParams(params) {
     var result = {

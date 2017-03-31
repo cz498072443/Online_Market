@@ -36,8 +36,8 @@ router.get('/', pageControl, function(req, res, next){
     var ep = new eventproxy();
 
     ep.fail(next);
-    ep.all('admin_detail', 'banner_list', function(adminDetail, bannerList){
-        res.render('homePage/HomeConfig.html',{ user: adminDetail, banners: bannerList});
+    ep.all('admin_detail', 'banner_list', 'headerBarNews', function(adminDetail, bannerList, headerBarNews){
+        res.render('homePage/HomeConfig.html',{ user: adminDetail, banners: bannerList, headerBarNews:headerBarNews});
     });
 
     User.getOneById(loc_user._id, function(err, docs){
@@ -47,13 +47,15 @@ router.get('/', pageControl, function(req, res, next){
     Banners.findAll(function(err, docs){
         ep.emit('banner_list', docs);
     });
+
+    News.findNewOne(function(err,docs){
+        ep.emit('headerBarNews',docs)
+    });
 });
 
 //文件上传
 router.post('/upload', middleware.Multer, function(req, res) {
     try {
-        console.log(req.files);
-
         res.send({data:"wocao"})
         res.json(200);
     } catch (e) {

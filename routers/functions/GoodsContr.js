@@ -30,8 +30,8 @@ router.get('/',pageControl,function(req, res, next){
     var ep = new eventproxy();
 
     ep.fail(next);
-    ep.all('good_list','user_detail', function(goodList, userDetail){
-        res.render('functions/GoodsContr.html',{ user:userDetail,goodList:goodList });
+    ep.all('good_list','user_detail', 'headerBarNews',function(goodList, userDetail, headerBarNews){
+        res.render('functions/GoodsContr.html',{ user:userDetail,goodList:goodList ,headerBarNews:headerBarNews});
     });
 
     Goods.findAll(100, 0, function(err,docs){
@@ -42,6 +42,9 @@ router.get('/',pageControl,function(req, res, next){
         ep.emit('user_detail',docs)
     });
 
+    News.findNewOne(function(err,docs){
+        ep.emit('headerBarNews',docs)
+    });
 });
 
 router.get('/add',pageControl,function(req, res, next){
