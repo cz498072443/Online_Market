@@ -24,7 +24,7 @@ router.get('/', pageControl, function(req, res, next){
     ep.fail(next);
 
     ep.all('user_detail', 'news_list', function(userDetail, newsList){
-        res.render('users/personal.html',{ user:userDetail, news:newsList,headerBarNews:newsList[0] });
+        res.render('users/Personal.html',{ user:userDetail, news:newsList,headerBarNews:newsList[0] });
     });
 
     User.getOneById(loc_user._id, function(err,docs){
