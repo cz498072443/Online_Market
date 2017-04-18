@@ -42,7 +42,7 @@ router.get('/',pageControl,function(req, res, next){
         ep.emit('user_detail',docs)
     });
 
-    News.findNewOne(function(err,docs){
+    News.findNewOne(loc_user.username, function(err,docs){
         ep.emit('headerBarNews',docs)
     });
 });
@@ -60,7 +60,7 @@ router.get('/add',pageControl,function(req, res, next){
         ep.emit('user_detail',docs)
     });
 
-    News.findNewOne(function(err,docs){
+    News.findNewOne(loc_user.username,function(err,docs){
         ep.emit('headerBarNews',docs)
     });
 });
@@ -78,7 +78,6 @@ router.post('/add',pageControl,function(req, res){
                 "content": loc_user.username+" 添加了商品:" + req.body.name ,
                 "create_time": req.body.create_time
             },function (err, doc) {});
-
             res.send(200);
         }
     })
@@ -101,7 +100,7 @@ router.get('/edit/:id',pageControl,function(req, res, next){
         ep.emit('user_detail',docs)
     });
 
-    News.findNewOne(function(err,docs){
+    News.findNewOne(loc_user.username, function(err,docs){
         ep.emit('headerBarNews',docs)
     });
 });

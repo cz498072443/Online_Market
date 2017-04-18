@@ -82,11 +82,12 @@ router.get('/',pageControl,function(req, res, next){
         ep.emit('user_detail',docs)
     });
 
-    Logistics.findAll(function(err,docs){
+    Logistics.findSome(0,function(err,docs){
         ep.emit('logistics_list',docs);
     });
 
-    News.findNewOne(function(err,docs){
+
+    News.findNewOne(loc_user.username, function(err,docs){
         ep.emit('headerBarNews',docs)
     });
 });
@@ -138,6 +139,62 @@ router.get('/ConfirmReceive',function(req,res){
             ep.emit('findLogistics',doc)
         }
     })
+});
+
+router.get('/loadMore', pageControl, function(req, res){
+
+    Logistics.findSome(req.query.loadIndex, function(err, docs){
+        if(err){
+            res.send({code:-100, res:"没有更多数据了..."});
+        } else {
+            var logisticsArray = [];
+            var ep = new eventproxy();
+            ep.after('find_orders', docs.length, function(){
+                console.log("wocao")
+                var ep2 = new eventproxy();
+
+                ep2.after('find_customers', logisticsArray.length, function(){
+                    console.log("finish")
+                    res.send({code:100, res:logisticsArray});
+                });
+
+                for(var i = 0;i < logisticsArray.length;i ++){
+                    console.log("aaa")
+                    User.getOneById(logisticsArray[i].userId,test(i));
+
+                    function test(i){
+                        return (function(err, docs){
+                            if(err){
+                                res.send(400);
+                            } else {
+                                logisticsArray[i].user = docs;
+                                ep2.emit('find_customers');
+                                console.log(logisticsArray);
+                            }
+                        })
+                    }
+                }
+            });
+
+            for(var i = 0;i < docs.length;i ++){
+                var Obj = {_id:""+docs[i]._id,orderId:docs[i].orderId,userId:docs[i].userId,content:docs[i].content,state:docs[i].state,order:"",user:{}};
+                logisticsArray.push(Obj);
+
+                Orders.getOneById(docs[i].orderId,test(i));
+                //作用域链....不是这样的话i找不到值
+                function test(i){
+                    return (function (err, docs){
+                        if(err){
+                            res.send(400);
+                        } else {
+                            logisticsArray[i].order = docs;
+                            ep.emit('find_orders');
+                        }
+                    })
+                }
+            }
+        }
+    });
 });
 
 module.exports = router;

@@ -52,7 +52,7 @@ router.get("/:id",pageControl,function(req, res, next){
         ep.emit('comment_detail', docs)
     });
 
-    News.findNewOne(function(err,docs){
+    News.findNewOne(loc_user.username, function(err,docs){
         ep.emit('headerBarNews',docs)
     });
 });

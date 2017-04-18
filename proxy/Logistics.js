@@ -14,6 +14,12 @@ exports.createOne = function (params, callback) {
     Logistics.create(verifyParams(params),callback);
 };
 
+exports.findSome = function (loadIndex, callback) {
+    Logistics.find({"state":false}).sort({create_time: -1}).limit(4).skip(loadIndex * 4).exec(function(err,docs){
+        callback(err,docs);
+    });
+};
+
 exports.getOneById = function(id, callback){
     Logistics.findOne({_id: id}).exec(callback);
 };

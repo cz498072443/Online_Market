@@ -16,8 +16,8 @@ exports.findAllByUserName = function (username, callback) {
     });
 };
 
-exports.findNewOne = function(callback){
-    News.findOne({}).sort({create_time:-1}).exec(function(err,docs){
+exports.findNewOne = function(username, callback){
+    News.findOne({username: username}).sort({create_time:-1}).exec(function(err,docs){
         callback(err,docs);
     })
 };

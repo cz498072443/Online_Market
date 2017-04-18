@@ -34,7 +34,7 @@
                 <h3 class="global_text_danger">还没有物流消息!</h3>
                 {{else}}
                 {{each logisticsArray}}
-                <div class="logistics_table">
+                <div class="logistics_table" style="margin-bottom: 25px">
                     <table class="ui table">
                         <div class="ui pointing below label">
                             订单号: <span class="global_text_warning">{{$value.orderId}}</span>
@@ -77,7 +77,7 @@
                         {{/each}}
                         {{/if}}
                         <tr>
-                            <td colspan="1">下单用户: <span class="global_text_primary">{{$value.user.username}}</span></td>
+                            <td colspan="1">下单用户: <span class="global_text_primary">{{$value.user.username}}</span><br><span style="font-size: 13px">联系方式: <span class="global_text_primary">{{$value.user.tel}}</span></span></td>
                             <td colspan="1">收货地址: <span class="global_text_primary">{{$value.user.address}}</span></td>
                             <td colspan="2">
                                 <div class="ui input" style="width: 100%">
@@ -96,12 +96,74 @@
                 {{/each}}
                 {{/if}}
             </div>
+            <div class="fourteen wide column loadMoreOrders" style="display: none"></div>
         </div>
     </div>
 </div>
 
 <script id="logisticsTableTmpl" type="text/html">
-
+    <%for (var i = 0;i < logisticsList.length;i ++) {%>
+    <div class="logistics_table" style="margin-bottom: 25px">
+        <table class="ui table">
+            <div class="ui pointing below label">
+                订单号: <span class="global_text_warning"><%=logisticsList[i].orderId %></span>
+            </div>
+            <div class="ui pointing below label">
+                总价: <span class="global_text_success"><%=logisticsList[i].order.totalPrice %> 元</span>
+            </div>
+            <div class="ui pointing below label">
+                创建日期: <span class="global_text_success"><%=logisticsList[i].order.create_time %></span>
+            </div>
+            <thead>
+            <tr>
+                <th class="two wide">订单详情</th>
+                <th class="two wide">图片</th>
+                <th class="three wide">商品名</th>
+                <th class="two wide">购买数</th>
+                <th class="two wide">价格</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% for(var j = 0;j < logisticsList[i].goodsList.length;i ++){ %>
+            {{each $value.order.goodsList as good index}}
+            <tr>
+                <td>{{good.type}}</td>
+                <td><a href="/Goods/{{good.id}}"><img style="width: 60px;height: 60px" src="{{good.headSrc}}"></a></td>
+                <td class="global_text_danger">{{good.name}}</td>
+                <td>{{good.buyNum}}</td>
+                <td class="global_text_success">{{good.price}}</td>
+            </tr>
+            <% } %>
+            {{if $value.content.length== 0}}
+            <tr class="error">
+                <td colspan="5">该订单还没有物流消息!</td>
+            </tr>
+            {{else}}
+            {{each $value.content as content x}}
+            <tr class="warning">
+                <td colspan="4" style="border: 0px">{{content.main}}</td>
+                <td colspan="1" style="border: 0px">{{content.create_date | obj2date :"YYYY-MM-DD HH:mm:ss"}}</td>
+            </tr>
+            {{/each}}
+            {{/if}}
+            <tr>
+                <td colspan="1">下单用户: <span class="global_text_primary">{{$value.user.username}}</span><br><span style="font-size: 13px">联系方式: <span class="global_text_primary">{{$value.user.tel}}</span></span></td>
+                <td colspan="1">收货地址: <span class="global_text_primary">{{$value.user.address}}</span></td>
+                <td colspan="2">
+                    <div class="ui input" style="width: 100%">
+                        <input name="logistics" type="text" style="width: 100%">
+                    </div>
+                </td>
+                <td colspan="1">
+                    <div class="ui basic button attachLogisticsBtn" data-id="{{$value._id}}">
+                        添加物流信息
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <% } %>
 </script>
 
 <!--反馈遮罩-->
@@ -115,6 +177,49 @@
 
     $(document).ready(function(){
         var loadPage = (function(){
+            scrollLoadingLock = false;
+            loadIndex = 1;
+            $(window).scroll(function(){
+                var scrollPos = $(window).scrollTop();
+                totalHeight = parseFloat($(window).height()) + parseFloat(scrollPos);
+                if( $(document).height() - 20 <= totalHeight && !scrollLoadingLock){
+                    $(".loadMoreOrders").html('<h1 class="ui center aligned header orange"><i class="notched circle loading icon"></i>加载更多...</h1>');
+                    $(".loadMoreOrders").show();
+                    scrollLoadingLock = true;
+
+                    $.ajax({
+                        url: "/LogisticsContr/loadMore",
+                        data: {
+                            loadIndex: loadIndex
+                        },
+                        type: "GET",
+                        success: function(data){
+                            var logisticsList = data.res;
+                            if(logisticsList.length != 0){
+                                for(var i = 0;i < logisticsList.length;i ++){
+                                    logisticsList[i].order.create_time =  moment(logisticsList[i].order.create_time).format("YYYY-MM-DD HH:mm:ss");
+                                }
+                                var logisticsTableTmpl = template('logisticsTableTmpl', {logisticsList: logisticsList});
+
+                                $(".loadMoreOrders").hide();
+                                $("#orderMain").append(logisticsTableTmpl);
+
+                                setTimeout(function(){
+                                    scrollLoadingLock = false;
+                                    loadIndex += 1;
+                                }, 500);
+                            } else {
+                                $(".loadMoreOrders").html('<h1 class="ui center aligned header orange"><i class="frown icon"></i>已无更多数据啦</h1>');
+                                $(".loadMoreOrders").show();
+                            }
+                        },
+                        error: function(){
+                            $(".loadMoreOrders").html('<h1 class="ui center aligned header orange"><i class="frown icon"></i>加载失败,请检查一下网络</h1>');
+                            $(".loadMoreOrders").show();
+                        }
+                    });
+                }
+            })
         })();
 
         var loadConfig = (function(){

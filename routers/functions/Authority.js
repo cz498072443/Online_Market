@@ -44,7 +44,7 @@ router.get('/', pageControl, function(req, res, next){
         ep.emit('admin_detail',docs)
     });
 
-    News.findNewOne(function(err,docs){
+    News.findNewOne(loc_user.username, function(err,docs){
         ep.emit('headerBarNews',docs)
     });
 });
