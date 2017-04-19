@@ -12,6 +12,7 @@ var LogisticsSchema = new Schema({
     'userId': {type: String},
     'state': {type: Boolean},
     'content': {type: Array},
+    "create_time": { type: Date, default: Date.parse(new Date()) }
 },{collection:'Logistics',versionKey:false});
 
 conn.model('Logistics',LogisticsSchema);

@@ -129,6 +129,7 @@ router.post("/",pageControl,function(req, res, next){
                         orderId: doc._id,
                         userId: userDetail._id,
                         state: false,
+                        create_time: req.body.create_time
                     },function(err, doc){
                         if(err){
                             res.send(400);

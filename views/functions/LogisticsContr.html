@@ -102,7 +102,7 @@
 </div>
 
 <script id="logisticsTableTmpl" type="text/html">
-    <%for (var i = 0;i < logisticsList.length;i ++) {%>
+    <% for(var i = 0;i < logisticsList.length;i ++){ %>
     <div class="logistics_table" style="margin-bottom: 25px">
         <table class="ui table">
             <div class="ui pointing below label">
@@ -112,7 +112,7 @@
                 总价: <span class="global_text_success"><%=logisticsList[i].order.totalPrice %> 元</span>
             </div>
             <div class="ui pointing below label">
-                创建日期: <span class="global_text_success"><%=logisticsList[i].order.create_time %></span>
+                创建日期: <span class="global_text_success"><%=obj2date(logisticsList[i].order.create_time,"YYYY-MM-DD HH:mm:ss") %></span>
             </div>
             <thead>
             <tr>
@@ -124,38 +124,37 @@
             </tr>
             </thead>
             <tbody>
-            <% for(var j = 0;j < logisticsList[i].goodsList.length;i ++){ %>
-            {{each $value.order.goodsList as good index}}
+            <% for(var j = 0;j < logisticsList[i].order.goodsList.length;j ++){ %>
             <tr>
-                <td>{{good.type}}</td>
-                <td><a href="/Goods/{{good.id}}"><img style="width: 60px;height: 60px" src="{{good.headSrc}}"></a></td>
-                <td class="global_text_danger">{{good.name}}</td>
-                <td>{{good.buyNum}}</td>
-                <td class="global_text_success">{{good.price}}</td>
+                <td><%=logisticsList[i].order.goodsList[j].type %></td>
+                <td><a href="/Goods/<%=logisticsList[i].order.goodsList[j].id %>"><img style="width: 60px;height: 60px" src="<%=logisticsList[i].order.goodsList[j].headSrc%>"></a></td>
+                <td class="global_text_danger"><%=logisticsList[i].order.goodsList[j].name %></td>
+                <td><%=logisticsList[i].order.goodsList[j].buyNum %></td>
+                <td class="global_text_success"><%=logisticsList[i].order.goodsList[j].price %></td>
             </tr>
             <% } %>
-            {{if $value.content.length== 0}}
+            <% if(logisticsList[i].content.length == 0){ %>
             <tr class="error">
                 <td colspan="5">该订单还没有物流消息!</td>
             </tr>
-            {{else}}
-            {{each $value.content as content x}}
+            <% }else{ %>
+            <% for(var j = 0;j < logisticsList[i].content.length;j ++){ %>
             <tr class="warning">
-                <td colspan="4" style="border: 0px">{{content.main}}</td>
-                <td colspan="1" style="border: 0px">{{content.create_date | obj2date :"YYYY-MM-DD HH:mm:ss"}}</td>
+                <td colspan="4" style="border: 0px"><%=logisticsList[i].content[j].main %></td>
+                <td colspan="1" style="border: 0px"><%=obj2date(logisticsList[i].content[j].create_date,"YYYY-MM-DD HH:mm:ss") %></td>
             </tr>
-            {{/each}}
-            {{/if}}
+            <% } %>
+            <% } %>
             <tr>
-                <td colspan="1">下单用户: <span class="global_text_primary">{{$value.user.username}}</span><br><span style="font-size: 13px">联系方式: <span class="global_text_primary">{{$value.user.tel}}</span></span></td>
-                <td colspan="1">收货地址: <span class="global_text_primary">{{$value.user.address}}</span></td>
+                <td colspan="1">下单用户: <span class="global_text_primary"><%=logisticsList[i].user.username %></span><br><span style="font-size: 13px">联系方式: <span class="global_text_primary"><%=logisticsList[i].user.tel %></span></span></td>
+                <td colspan="1">收货地址: <span class="global_text_primary"><%=logisticsList[i].user.address %></span></td>
                 <td colspan="2">
                     <div class="ui input" style="width: 100%">
                         <input name="logistics" type="text" style="width: 100%">
                     </div>
                 </td>
                 <td colspan="1">
-                    <div class="ui basic button attachLogisticsBtn" data-id="{{$value._id}}">
+                    <div class="ui basic button attachLogisticsBtn" data-id="<%=logisticsList[i]._id %>">
                         添加物流信息
                     </div>
                 </td>
@@ -177,6 +176,14 @@
 
     $(document).ready(function(){
         var loadPage = (function(){
+            template.helper('obj2date', function (obj, format) {
+                if(!!obj){
+                    return  moment(obj).format(format)
+                }else{
+                    return ""
+                }
+            });
+
             scrollLoadingLock = false;
             loadIndex = 1;
             $(window).scroll(function(){
@@ -196,9 +203,6 @@
                         success: function(data){
                             var logisticsList = data.res;
                             if(logisticsList.length != 0){
-                                for(var i = 0;i < logisticsList.length;i ++){
-                                    logisticsList[i].order.create_time =  moment(logisticsList[i].order.create_time).format("YYYY-MM-DD HH:mm:ss");
-                                }
                                 var logisticsTableTmpl = template('logisticsTableTmpl', {logisticsList: logisticsList});
 
                                 $(".loadMoreOrders").hide();

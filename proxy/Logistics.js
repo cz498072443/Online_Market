@@ -41,6 +41,8 @@ function verifyParams(params) {
         'state': params.state || false,
         'content': params.content || []
     };
-
+    if(params.create_time !== ""){
+        result["create_time"] = new Date(params.create_time);
+    }
     return result;
 }
