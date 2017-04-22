@@ -28,6 +28,10 @@ exports.getOneByOrder = function(orderId, callback){
     Logistics.findOne({orderId: orderId}).exec(callback);
 };
 
+exports.removeByOrder = function (orderId, callback) {
+    Logistics.remove({orderId: orderId}).exec(callback);
+};
+
 exports.update = function (id, params, callback) {
     Logistics.findOneAndUpdate({_id:id}, verifyParams(params)).exec(function(err,doc){
         callback(err,doc);

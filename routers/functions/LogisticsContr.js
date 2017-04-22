@@ -104,7 +104,23 @@ router.put('/update',function(req, res){
             } else {
                 res.send(doc);
             }
-        })
+        });
+
+        User.getOneById(newLogistics.userId, function(err, doc){
+            News.createOne({
+                "username": doc.username,
+                "type": 7,
+                "content": "您有一条新的物流消息！" ,
+                "create_time": req.body.date
+            },function (err, doc) {});
+        });
+
+        News.createOne({
+            "username": req.session.user.username,
+            "type": 7,
+            "content": req.session.user.username+" 更新了物流消息" ,
+            "create_time": req.body.date
+        },function (err, doc) {});
     });
 
     Logistics.getOneById(req.body.id,function(err, doc){
@@ -113,7 +129,7 @@ router.put('/update',function(req, res){
         } else {
             ep.emit('findLogistics',doc)
         }
-    })
+    });
 });
 
 router.get('/ConfirmReceive',function(req,res){
@@ -130,6 +146,13 @@ router.get('/ConfirmReceive',function(req,res){
                 res.send(200);
             }
         })
+
+        News.createOne({
+            "username": req.session.user.username,
+            "type": 7,
+            "content": req.session.user.username+" 已确认收货,订单号为 "+ newLogistics.orderId ,
+            "create_time": req.query.create_time
+        },function (err, doc) {});
     });
 
     Logistics.getOneById(req.query.id,function(err, doc){
@@ -150,16 +173,13 @@ router.get('/loadMore', pageControl, function(req, res){
             var logisticsArray = [];
             var ep = new eventproxy();
             ep.after('find_orders', docs.length, function(){
-                console.log("wocao")
                 var ep2 = new eventproxy();
 
                 ep2.after('find_customers', logisticsArray.length, function(){
-                    console.log("finish")
                     res.send({code:100, res:logisticsArray});
                 });
 
                 for(var i = 0;i < logisticsArray.length;i ++){
-                    console.log("aaa")
                     User.getOneById(logisticsArray[i].userId,test(i));
 
                     function test(i){
@@ -169,7 +189,6 @@ router.get('/loadMore', pageControl, function(req, res){
                             } else {
                                 logisticsArray[i].user = docs;
                                 ep2.emit('find_customers');
-                                console.log(logisticsArray);
                             }
                         })
                     }

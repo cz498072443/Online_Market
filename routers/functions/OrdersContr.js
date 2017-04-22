@@ -80,7 +80,13 @@ router.delete('/delete',pageControl,function(req, res){
                 "create_time": req.body.create_time
             },function (err, doc) {});
 
-            res.send(200);
+            Logistics.removeByOrder(req.body.id, function(err, doc){
+                if(err){
+                    res.send(400);
+                }else{
+                    res.send(200);
+                }
+            });
         }
     });
 });
