@@ -76,7 +76,7 @@ router.post('/add',pageControl,function(req, res){
                 "username": loc_user.username,
                 "type": 3,
                 "content": loc_user.username+" 添加了商品:" + req.body.name ,
-                "create_time": req.body.create_time
+                "create_time": req.body.create_time,
             },function (err, doc) {});
             res.send(200);
         }

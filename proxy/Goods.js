@@ -3,7 +3,7 @@
 var Goods = require("./../models/").Goods;
 
 exports.findAll = function (findNum, skipIndex, callback) {
-    Goods.find({}).sort({create_time: -1}).limit(findNum).skip(skipIndex * findNum).exec(function(err,docs){
+    Goods.find({}).sort({modify_time: -1}).limit(findNum).skip(skipIndex * findNum).exec(function(err,docs){
         callback(err,docs);
     });
 };
@@ -77,8 +77,11 @@ function verifyParams(params) {
         'price': params.price,
         'sales': params.sales || 0
     };
-    if(params.create_time !== ""){
-        result["create_time"] = new Date(params.create_time);
+    if(params.create_time != "" && params.create_time){
+        result.create_time = params.create_time;
+    }
+    if(params.modify_time != "" && params.modify_time){
+        result.modify_time = params.modify_time;
     }
     return result;
 }
