@@ -32,6 +32,10 @@ exports.removeByOrder = function (orderId, callback) {
     Logistics.remove({orderId: orderId}).exec(callback);
 };
 
+exports.removeByUser = function (userId, callback) {
+    Logistics.remove({userId: userId}).exec(callback);
+};
+
 exports.update = function (id, params, callback) {
     Logistics.findOneAndUpdate({_id:id}, verifyParams(params)).exec(function(err,doc){
         callback(err,doc);

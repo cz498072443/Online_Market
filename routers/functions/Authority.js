@@ -8,6 +8,7 @@ var router = express.Router();
 var User = require("./../../proxy").User;
 var News = require("./../../proxy").News;
 var Orders = require("./../../proxy").Orders;
+var Logistics = require("./../../proxy").Logistics;
 var levels = require("./../../public/json/levels");
 
 var eventproxy = require("eventproxy");
@@ -146,7 +147,7 @@ router.delete('/DeleteOne', function(req, res, next){
     var ep = new eventproxy();
 
     ep.fail(next);
-    ep.all('removeUser', 'removeNews', 'removeOrders', function(){
+    ep.all('removeUser', 'removeNews', 'removeOrders', 'removeLogistics', function(){
         res.send(200);
 
         News.createOne({
@@ -184,6 +185,14 @@ router.delete('/DeleteOne', function(req, res, next){
                     res.send(400);
                 } else {
                     ep.emit('removeUser');
+                }
+            });
+
+            Logistics.removeByUser(userId, function (err, docs) {
+                if(err){
+                    res.send(400);
+                } else {
+                    ep.emit('removeLogistics');
                 }
             });
         }
